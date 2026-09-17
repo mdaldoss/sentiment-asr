@@ -357,6 +357,39 @@ def recoverability_cv(
     }
 
 
+def f0_rank_consistency(grid: list[D1ClipSpec], measurements: dict[str, Measurement]) -> dict:
+    """For each of the 8 (text_condition, length, speed_condition) cells,
+    rank the 5 emotions by F0 mean (1 = highest), then average each
+    emotion's rank across cells. A working, direction-consistent tag effect
+    should keep an emotion's rank roughly stable across cells (e.g. happy
+    usually high, sad usually low); pure generation noise gives every
+    emotion a mean rank near 3.0 (chance, for 5 items) with no consistent
+    winner or loser. This is a second angle on the same question as
+    f0_span_across_emotions_hz (which averages the RAW values across cells,
+    and can wash out a real but sign-flipping effect) -- rank averaging is
+    robust to that, so the two are reported side by side."""
+    by_cell: dict[tuple[str, str, str], dict[str, float]] = {}
+    for spec in grid:
+        f0 = measurements[spec.clip_id].f0_mean
+        if f0 is not None:
+            by_cell.setdefault(spec.cell, {})[spec.emotion] = f0
+
+    ranks: dict[str, list[int]] = {e: [] for e in EMOTIONS}
+    for vals in by_cell.values():
+        order = sorted(vals, key=lambda e: vals[e], reverse=True)
+        for rank, emotion in enumerate(order, start=1):
+            ranks[emotion].append(rank)
+
+    chance_mean_rank = (len(EMOTIONS) + 1) / 2  # 3.0 for 5 emotions
+    return {
+        "chance_mean_rank": chance_mean_rank,
+        "n_cells": len(by_cell),
+        "mean_rank_by_emotion": {
+            emotion: (float(np.mean(r)) if r else None) for emotion, r in ranks.items()
+        },
+    }
+
+
 def _sentiment_ordering_holds(per_emotion_summary: dict, field: str) -> bool | None:
     """True if this instrument's mean per-emotion reading is ordered
     positive > neutral > negative by D1_EMOTION_SENTIMENT -- the same
@@ -535,6 +568,8 @@ def main() -> None:
     if all(v is not None for v in means_by_emotion.values()):
         f0_span = max(means_by_emotion.values()) - min(means_by_emotion.values())
 
+    rank_consistency = f0_rank_consistency(grid, measurements)
+
     # Same check D0 ran and found scrambled (frustrated > happy; angry >
     # calm): does each instrument's valence-like reading, averaged per
     # emotion, come out ordered positive > neutral > negative -- the
@@ -557,6 +592,7 @@ def main() -> None:
         "recoverability_cv": cv_result,
         "per_emotion_summary": per_emotion_summary,
         "f0_span_across_emotions_hz": f0_span,
+        "f0_rank_consistency": rank_consistency,
         "valence_ordering_matches_intended_sentiment": valence_ordering,
         "per_clip": [
             {**asdict(spec), **{f"m_{k}": v for k, v in asdict(measurements[spec.clip_id]).items()}}
@@ -567,9 +603,15 @@ def main() -> None:
             "that). recoverability_cv's accuracy is a leave-one-carrier-out logistic "
             "regression on no-fitting descriptive/eGeMAPS features (chance=0.20, 5-way); "
             "per_emotion_summary's F0/valence means are the primary descriptive evidence "
-            "and need no fitting. Listen at report/d1_listening.html -- it is the real "
-            "arbiter this probe exists to produce, since measurement can be wrong in ways "
-            "listening isn't (see D0's own domain-gap finding, results/d0_emotion_space.json)."
+            "and need no fitting. f0_rank_consistency is a second, robustness check on "
+            "f0_span_across_emotions_hz: averaging raw F0 across cells can wash out a real "
+            "but sign-flipping effect, so mean rank per emotion (chance=3.0 for 5 items) is "
+            "reported alongside it -- a mean rank near 3.0 for every emotion means no "
+            "emotion is consistently higher- or lower-pitched than the others across "
+            "conditions, which raw span alone cannot rule out. Listen at "
+            "report/d1_listening.html -- it is the real arbiter this probe exists to "
+            "produce, since measurement can be wrong in ways listening isn't (see D0's own "
+            "domain-gap finding, results/d0_emotion_space.json)."
         ),
     }
 

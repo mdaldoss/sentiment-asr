@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
 from scripts.gen_emotion_probe_d1 import (
@@ -13,6 +14,7 @@ from scripts.gen_emotion_probe_d1 import (
     _sentiment_ordering_holds,
     build_grid,
     build_model_comparison,
+    f0_rank_consistency,
     pick_best_cell,
     recoverability_cv,
 )
@@ -230,3 +232,58 @@ class TestSentimentOrderingHolds:
             "frustrated": {"field": -0.4},
         }
         assert _sentiment_ordering_holds(summary, "field") is None
+
+
+class TestF0RankConsistency:
+    def test_chance_mean_rank_is_three_for_five_emotions(self) -> None:
+        grid = build_grid()
+        measurements = {s.clip_id: _measurement(s.clip_id, f0_mean=150.0) for s in grid}
+        result = f0_rank_consistency(grid, measurements)
+        assert result["chance_mean_rank"] == pytest.approx(3.0)
+
+    def test_counts_all_eight_grid_cells(self) -> None:
+        grid = build_grid()
+        measurements = {s.clip_id: _measurement(s.clip_id, f0_mean=150.0) for s in grid}
+        result = f0_rank_consistency(grid, measurements)
+        assert result["n_cells"] == len(TEXT_CONDITIONS) * len(LENGTHS) * len(SPEED_CONDITIONS)
+
+    def test_consistently_highest_emotion_has_mean_rank_near_one(self) -> None:
+        grid = build_grid()
+        emotion_f0 = {
+            "happy": 300.0,
+            "sad": 90.0,
+            "angry": 150.0,
+            "calm": 120.0,
+            "frustrated": 100.0,
+        }
+        measurements = {
+            s.clip_id: _measurement(s.clip_id, f0_mean=emotion_f0[s.emotion]) for s in grid
+        }
+        result = f0_rank_consistency(grid, measurements)
+        assert result["mean_rank_by_emotion"]["happy"] == pytest.approx(1.0)
+
+    def test_no_systematic_differentiation_keeps_ranks_within_bounds(self) -> None:
+        """Small, per-clip jitter with no relationship to emotion identity
+        should never push a mean rank outside the valid [1, 5] range, and
+        should not reproduce the perfectly-separated pattern of the
+        consistently-highest test above. Exact ties are deliberately
+        avoided: with truly identical F0 values, Python's stable sort
+        tie-breaks by dict insertion order every cell, giving each emotion
+        a perfectly consistent (but meaningless) rank -- a degenerate case
+        real, noisy measurements never hit."""
+        rng = np.random.default_rng(42)
+        grid = build_grid()
+        jitter = {s.clip_id: 150.0 + float(rng.uniform(-5, 5)) for s in grid}
+        measurements = {s.clip_id: _measurement(s.clip_id, f0_mean=jitter[s.clip_id]) for s in grid}
+        result = f0_rank_consistency(grid, measurements)
+        mean_ranks = list(result["mean_rank_by_emotion"].values())
+        assert all(1.0 <= r <= 5.0 for r in mean_ranks)
+        assert len(set(mean_ranks)) > 1  # random jitter, not a perfect tie-break artifact
+
+    def test_missing_f0_excludes_that_clip_from_its_cell(self) -> None:
+        grid = build_grid()
+        measurements = {s.clip_id: _measurement(s.clip_id, f0_mean=150.0) for s in grid}
+        first_id = grid[0].clip_id
+        measurements[first_id] = _measurement(first_id, f0_mean=None)
+        result = f0_rank_consistency(grid, measurements)  # must not raise
+        assert result["n_cells"] == 8

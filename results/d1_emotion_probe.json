@@ -51,6 +51,17 @@
     }
   },
   "f0_span_across_emotions_hz": 7.984390475750047,
+  "f0_rank_consistency": {
+    "chance_mean_rank": 3.0,
+    "n_cells": 8,
+    "mean_rank_by_emotion": {
+      "happy": 2.75,
+      "sad": 3.125,
+      "angry": 2.875,
+      "calm": 3.0,
+      "frustrated": 3.25
+    }
+  },
   "valence_ordering_matches_intended_sentiment": {
     "permissive": false,
     "research": true
@@ -1227,5 +1238,5 @@
       "m_research_arousal": 0.3649366497993469
     }
   ],
-  "interpretation": "Coarse, ~40-clip synthetic probe (CLAUDE.md rule 6: not claimed as more than that). recoverability_cv's accuracy is a leave-one-carrier-out logistic regression on no-fitting descriptive/eGeMAPS features (chance=0.20, 5-way); per_emotion_summary's F0/valence means are the primary descriptive evidence and need no fitting. Listen at report/d1_listening.html -- it is the real arbiter this probe exists to produce, since measurement can be wrong in ways listening isn't (see D0's own domain-gap finding, results/d0_emotion_space.json)."
+  "interpretation": "Coarse, ~40-clip synthetic probe (CLAUDE.md rule 6: not claimed as more than that). recoverability_cv's accuracy is a leave-one-carrier-out logistic regression on no-fitting descriptive/eGeMAPS features (chance=0.20, 5-way); per_emotion_summary's F0/valence means are the primary descriptive evidence and need no fitting. f0_rank_consistency is a second, robustness check on f0_span_across_emotions_hz: averaging raw F0 across cells can wash out a real but sign-flipping effect, so mean rank per emotion (chance=3.0 for 5 items) is reported alongside it -- a mean rank near 3.0 for every emotion means no emotion is consistently higher- or lower-pitched than the others across conditions, which raw span alone cannot rule out. Listen at report/d1_listening.html -- it is the real arbiter this probe exists to produce, since measurement can be wrong in ways listening isn't (see D0's own domain-gap finding, results/d0_emotion_space.json)."
 }
