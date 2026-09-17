@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Secrets -- never commit
+.env
+
+# Large downloads and caches, not fixtures
+data/cremad/
+data/cache/
+*.tar.gz
+*.zip
+
+# Generated, reproducible via `make all`
+results/*.json
+report/index.html
