@@ -2,65 +2,109 @@
 
 Sentiment (positive / neutral / negative) from **raw speech audio** — not from a transcript.
 
-Built for a take-home assignment. The interesting question is not "what accuracy?" but
-**"does the model hear the tone, or is it just reading the words?"** — so the evaluation is
-built around deliberately incongruent speech, where what is said and how it is said disagree.
-
-## Status
-
-🚧 Scaffolding complete, implementation in progress. See `docs/TASKS.md`.
-
-Done: core types, emotion→sentiment mapping, speaker-disjoint splitting, manifest schema,
-and the invariant test suite (35 tests).
+The interesting question isn't "what accuracy?" but **"does the model hear the tone, or
+is it just reading the words?"** — so the evaluation is built around deliberately
+incongruent speech, where what is said and how it is said disagree. See `DESIGN.md`
+for the full write-up.
 
 ## Quick start
 
 ```bash
 make setup     # venv + dependencies
-make test      # invariant tests -- no data or API key needed
-make data      # download CREMA-D (~470 MB, ODbL)
-make all       # train, evaluate, regenerate the HTML report
-make demo      # single-clip end-to-end. No API key required.
+make test      # invariant tests -- no data, model download, or API key needed
+make data      # download CREMA-D (~470 MB, ODbL) -- one-time
+make train     # fit the acoustic probe(s). BACKEND=permissive (default) | research
+make demo      # single real clip, end-to-end. No API key needed.
+make eval      # full evaluation sweep -> results/*.json
+make report    # regenerate report/index.html from results/*.json
 ```
 
-Evaluation runs entirely from committed fixtures. An API key is needed **only** to
-regenerate the synthetic sets (`make gen-probe`, `make gen-synthetic`).
+`make demo` downloads CREMA-D on first run if needed, then runs the recommended
+(fusion) solution on one real clip. Expect the first run of any command to be slow —
+it downloads pretrained models (WavLM, faster-whisper, the audeering VAD model) from
+Hugging Face; they cache locally afterward. Model *loading* dominates a single CLI
+invocation's latency (~20s) far more than inference itself does — see `DESIGN.md`'s
+limitations for what that means for a real deployment.
+
+Evaluation runs entirely from committed fixtures and the two committed trained
+artifacts (`data/cache/probe_permissive.joblib`, `data/cache/thresholds_research.json`)
+— no API key needed for any of the above. A key is needed **only** to *regenerate* the
+synthetic datasets:
+
+```bash
+cp .env.example .env   # fill in CARTESIA_API_KEY
+make gen-probe         # D0: Cartesia emotion-space probe
+make gen-synthetic      # E2: synthetic incongruence set
+```
+
+## CLI
+
+```bash
+uv run python -m ssa.cli --audio path/to/clip.wav                    # recommended (fusion)
+uv run python -m ssa.cli --audio clip.wav --solution acoustic        # acoustic-only
+uv run python -m ssa.cli --audio clip.wav --solution acoustic --backend research  # CC-BY-NC-SA-4.0, research use only
+uv run python -m ssa.cli --audio clip.wav --json                     # machine-readable output
+```
 
 ## Approach
 
 Three solutions spanning the lexical↔acoustic axis, all behind one interface so the
 evaluation harness compares them directly:
 
-| | Solution | Reads |
-|---|---|---|
-| **A** | Lexical-only — ASR → text sentiment | the words |
-| **B** | Acoustic-only — frozen encoder + probe | the tone |
-| **C** | Fusion — calibrated late fusion with abstention | both |
+| | Solution | Reads | License |
+|---|---|---|---|
+| **A** | Lexical — ASR (faster-whisper) → text sentiment | the words | MIT |
+| **B** | Acoustic — frozen encoder + trained probe | the tone | permissive (WavLM, MIT) or research (audeering, CC-BY-NC-SA-4.0) |
+| **C** | Fusion — calibrated late fusion + abstention | both | recommended default |
 
-Evaluated on four datasets: a public corpus (CREMA-D, speaker-disjoint **and** random splits,
-to quantify leakage), a synthetic incongruence set, human recordings, and an unsupervised
-probe of the TTS emotion space.
+Evaluated on CREMA-D (public benchmark, speaker-disjoint **and** random splits to
+quantify leakage), a synthetic incongruence set generated via Cartesia TTS, human
+recordings, and an unsupervised probe of Cartesia's emotion-tag space.
 
 **Headline metric — Prosody Sensitivity Index (PSI):** on clips where words and tone
-disagree, the fraction of predictions that follow the *tone*. 1.0 = listens, 0.0 = reads the
-transcript.
+disagree, the fraction of predictions that follow the *tone*. 1.0 = listens, 0.0 = reads
+the transcript. See `ssa/eval/metrics.py` for the exact definition.
+
+**Real, measured result:** the permissive backend scores **UAR=0.744** on CREMA-D's
+held-out speaker-disjoint test split (never touched during training). See `DESIGN.md`
+and `report/index.html` for the full results, including a real leakage measurement and
+an unexpected domain-gap finding from the D0 probe.
+
+## Status
+
+Core pipeline complete and tested (182 tests). CREMA-D benchmark results are real,
+measured end-to-end. Synthetic incongruence set (E2) generation is **76/90 clips**
+complete — the script is resumable and finishes in one command once Cartesia budget is
+topped up. Human recordings (E3) are not yet captured — `make record` runs the
+teleprompter (needs a microphone; not exercisable in this environment). See `DESIGN.md`
+→ Known limitations for the complete, honest accounting, and `report/index.html` for
+whatever has landed most recently.
 
 ## Documentation
 
-- `CLAUDE.md` — project rules, invariants, pinned facts
-- `docs/ARCHITECTURE.md` — module contracts and the rationale behind each
-- `docs/TASKS.md` — ordered implementation plan
-- `DESIGN.md` — the design write-up (pending)
+- `DESIGN.md` — the design write-up: approach, trade-offs, evaluation, limitations, next steps
+- `CLAUDE.md` — project rules, invariants, pinned facts (for anyone extending this)
+- `docs/ARCHITECTURE.md` — module-by-module contracts and rationale
+- `docs/TASKS.md` — the ordered implementation plan this was built against
+- `report/index.html` — live results dashboard, regenerate with `make report`
 
 ## Data & licensing
 
 | Asset | License | Redistributed here? |
 |---|---|---|
 | CREMA-D | ODbL v1.0 | No — `make data` fetches it |
-| Synthetic (Cartesia) | generated, commercial license held | Yes, committed |
-| Recordings | authors' own | Yes, committed |
-| `audeering` VAD model | **CC-BY-NC-SA-4.0, research only** | No — flagged at runtime |
-| WavLM, faster-whisper | MIT | No |
+| Synthetic (Cartesia) | generated | Not yet — 76/90 E2 clips generated locally, held back until the set is complete (see Status) |
+| Recordings | authors' own | Not yet recorded |
+| `audeering` VAD model | **CC-BY-NC-SA-4.0, research only** | No — flagged at runtime, in the CLI, and in the report |
+| WavLM, faster-whisper, text classifier | MIT / Apache-2.0 | No — downloaded, cached locally |
 
-The strongest acoustic model is non-commercial. That is surfaced in the CLI and the report
-rather than buried: a permissive backend is provided alongside it.
+The strongest acoustic model (research backend) is non-commercial. That's surfaced
+loudly — CLI warning, README, report — rather than buried: a fully permissive backend
+ships alongside it as the deployable default.
+
+## Testing
+
+```bash
+make test              # fast, network-free (default)
+uv run pytest -m network   # exercises real models -- slower, needs downloads
+```

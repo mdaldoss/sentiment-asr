@@ -30,8 +30,8 @@ eval:  ## Evaluate every solution on every dataset -> results/*.json
 report:  ## Regenerate report/index.html from results/*.json
 	uv run python -m ssa.report
 
-demo:  ## End-to-end demo on a committed clip. No API key needed.
-	uv run python -m ssa.cli --audio data/recorded/demo.wav
+demo: data  ## End-to-end demo on a CREMA-D clip (fetches it first if needed). No API key needed.
+	uv run python -m ssa.cli --audio data/cremad/AudioWAV/1001_DFA_ANG_XX.wav
 
 all: data train eval report  ## Full pipeline
 
