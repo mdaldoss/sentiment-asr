@@ -21,8 +21,8 @@ lint:  ## Lint and type-check
 data:  ## Download CREMA-D and build manifests (~470 MB)
 	uv run python scripts/fetch_cremad.py
 
-train:  ## Train the acoustic probe (speaker-disjoint split)
-	uv run python -m ssa.train --backend permissive
+train:  ## Train the acoustic probe (speaker-disjoint split). BACKEND=permissive|research
+	uv run python -m ssa.train --backend $${BACKEND:-permissive}
 
 eval:  ## Evaluate every solution on every dataset -> results/*.json
 	uv run python -m ssa.eval --suite all
