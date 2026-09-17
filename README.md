@@ -93,7 +93,7 @@ whatever has landed most recently.
 | Asset | License | Redistributed here? |
 |---|---|---|
 | CREMA-D | ODbL v1.0 | No — `make data` fetches it |
-| Synthetic (Cartesia) | generated | Not yet — 76/90 E2 clips generated locally, held back until the set is complete (see Status) |
+| Synthetic (Cartesia) | generated | Yes — 76/90 E2 clips committed (partial manifest); remaining 14 land once Cartesia budget is topped up |
 | Recordings | authors' own | Not yet recorded |
 | `audeering` VAD model | **CC-BY-NC-SA-4.0, research only** | No — flagged at runtime, in the CLI, and in the report |
 | WavLM, faster-whisper, text classifier | MIT / Apache-2.0 | No — downloaded, cached locally |
