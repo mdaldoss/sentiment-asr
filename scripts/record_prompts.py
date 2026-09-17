@@ -32,7 +32,7 @@ import soundfile as sf
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.gen_synthetic import CARRIERS  # noqa: E402 -- reuse E2's carrier sentences
+from ssa.carriers import CARRIERS  # noqa: E402 -- reuse E2's carrier sentences, no cartesia dep
 from ssa.manifest import add_congruence, write_manifest  # noqa: E402
 from ssa.types import SAMPLE_RATE, Sentiment  # noqa: E402
 

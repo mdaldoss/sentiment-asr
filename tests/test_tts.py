@@ -44,3 +44,33 @@ class TestGenerateClip:
         assert kwargs["generation_config"]["emotion"] == "sad"
         assert kwargs["voice"]["id"] == "v42"
         assert kwargs["transcript"] == "hi"
+
+    def test_default_omits_speed_and_uses_default_model(self, tmp_path: Path) -> None:
+        mock_client = MagicMock()
+        mock_client.tts.generate.return_value.read.return_value = b""
+        out_path = tmp_path / "clip.wav"
+
+        generate_clip(mock_client, text="hi", emotion="sad", voice_id="v42", out_path=out_path)
+
+        _args, kwargs = mock_client.tts.generate.call_args
+        assert "speed" not in kwargs["generation_config"]
+        assert kwargs["model_id"] == "sonic-3"
+
+    def test_speed_and_model_id_pass_through_when_given(self, tmp_path: Path) -> None:
+        mock_client = MagicMock()
+        mock_client.tts.generate.return_value.read.return_value = b""
+        out_path = tmp_path / "clip.wav"
+
+        generate_clip(
+            mock_client,
+            text="hi",
+            emotion="angry",
+            voice_id="v42",
+            out_path=out_path,
+            speed=1.15,
+            model_id="sonic-3.5",
+        )
+
+        _args, kwargs = mock_client.tts.generate.call_args
+        assert kwargs["generation_config"]["speed"] == 1.15
+        assert kwargs["model_id"] == "sonic-3.5"

@@ -28,3 +28,8 @@ data/cache/d0_probe/
 
 *.tar.gz
 *.zip
+
+# This project pins deps via pyproject.toml extras + `uv pip install -e`,
+# not `uv sync` -- a lockfile isn't part of the workflow; don't commit one
+# `uv run` generates as a side effect.
+uv.lock

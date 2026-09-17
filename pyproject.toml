@@ -20,7 +20,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-generate = ["cartesia>=1.0", "sounddevice>=0.4"]
+# Split so `make record` (no API, no key, just a microphone) never needs
+# `cartesia` installed -- see ssa/carriers.py's module docstring for the
+# bug this fixes.
+record = ["sounddevice>=0.4"]
+generate = ["cartesia>=1.0"]
 dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6", "mypy>=1.11"]
 
 [project.scripts]

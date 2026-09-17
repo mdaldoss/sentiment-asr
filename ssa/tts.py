@@ -44,15 +44,32 @@ def get_client() -> Cartesia:
 
 
 def generate_clip(
-    client: Cartesia, *, text: str, emotion: str, voice_id: str, out_path: Path
+    client: Cartesia,
+    *,
+    text: str,
+    emotion: str,
+    voice_id: str,
+    out_path: Path,
+    speed: float | None = None,
+    model_id: str = MODEL_ID,
 ) -> None:
-    """Generate one clip and save it as 16kHz mono PCM16 WAV."""
+    """Generate one clip and save it as 16kHz mono PCM16 WAV.
+
+    `speed` is passed through generation_config (Cartesia's documented
+    0.6-1.5 range); None omits the key entirely, i.e. Cartesia's own
+    default -- used as D1/E5's "speed=default" baseline condition.
+    `model_id` defaults to MODEL_ID (sonic-3) but is overridable, e.g. for
+    D1's sonic-3 vs sonic-3.5 comparison cell.
+    """
+    generation_config: dict[str, object] = {"emotion": emotion}
+    if speed is not None:
+        generation_config["speed"] = speed
     resp = client.tts.generate(
-        model_id=MODEL_ID,
+        model_id=model_id,
         transcript=text,
         voice={"mode": "id", "id": voice_id},
         output_format={"container": "wav", "encoding": "pcm_s16le", "sample_rate": SAMPLE_RATE},
-        generation_config={"emotion": emotion},
+        generation_config=generation_config,
     )
     audio_bytes = resp.read()
     out_path.parent.mkdir(parents=True, exist_ok=True)

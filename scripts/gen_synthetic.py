@@ -43,6 +43,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 load_dotenv(REPO_ROOT / ".env")
 
+from ssa.carriers import CARRIERS  # noqa: E402
 from ssa.manifest import add_congruence, write_manifest  # noqa: E402
 from ssa.mapping import labelled_tags, map_emotion  # noqa: E402
 from ssa.tts import VOICE_IDS, generate_clip, get_client  # noqa: E402
@@ -52,33 +53,6 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 OUT_DIR = REPO_ROOT / "data" / "synthetic"
-
-# 5 sentences per text-sentiment, chosen for clear lexical polarity so
-# text_sentiment is unambiguous to a human reader (and to Solution A's text
-# classifier) independent of how they're spoken.
-CARRIERS: dict[Sentiment, list[str]] = {
-    Sentiment.POSITIVE: [
-        "I'm thrilled about the good news today.",
-        "This turned out to be the best day of my life.",
-        "I really appreciate everything you've done for me.",
-        "What a wonderful surprise this has been.",
-        "I'm so proud of how this all turned out.",
-    ],
-    Sentiment.NEUTRAL: [
-        "The meeting is scheduled for three o'clock.",
-        "I need to pick up groceries later today.",
-        "The report is due next Tuesday afternoon.",
-        "Please turn off the lights when you leave.",
-        "The train departs from platform four.",
-    ],
-    Sentiment.NEGATIVE: [
-        "This is terrible, I can't believe it happened.",
-        "I'm so disappointed in how this went.",
-        "Everything about this situation is awful.",
-        "I hate how things turned out this time.",
-        "This has been a complete disaster for us.",
-    ],
-}
 
 # Cartesia's own documentation names only 6 tags as giving best results;
 # these 3 span the sentiment axis and were confirmed (results/d0_emotion_space.json)
