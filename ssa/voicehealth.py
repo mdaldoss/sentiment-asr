@@ -74,6 +74,23 @@ class VoiceQuality:
     avqi: float | None  # composite, only if all six inputs available
 
 
+@dataclass(frozen=True, slots=True)
+class PitchStats:
+    """Descriptive F0 (fundamental frequency) statistics over voiced frames.
+
+    Unlike VoiceQuality's dysphonia measures, this is about prosody, not
+    pathology: pitch height and variability are basic acoustic correlates
+    of emotional arousal (higher/more variable F0 for excited states, lower
+    F0 for sad/calm ones). Added for scripts/gen_emotion_probe_d1.py, which
+    needs a no-fitting, no-model-inference instrument to measure whether
+    Cartesia's emotion tags are audible at all. Same defensive convention
+    as voice_quality: never raises, fields are None on a pathological clip."""
+
+    f0_mean: float | None  # Hz
+    f0_std: float | None  # Hz
+    f0_range: float | None  # Hz, max - min over voiced frames
+
+
 def voice_quality(clip: AudioClip) -> VoiceQuality:
     """Extract voice-quality measures for one clip. Never raises on a
     pathological clip (too short, silent, unvoiced) -- affected fields are
@@ -112,6 +129,29 @@ def voice_quality(clip: AudioClip) -> VoiceQuality:
         tilt=tilt,
         avqi=avqi,
     )
+
+
+def pitch_stats(clip: AudioClip) -> PitchStats:
+    """Extract F0 mean/std/range for one clip. Never raises on a
+    pathological clip -- fields are None instead, per the module docstring."""
+    snd = parselmouth.Sound(clip.samples.astype(np.float64), sampling_frequency=clip.sr)
+    voiced = _safe(_extract_f0_values, snd)
+    if voiced is None or len(voiced) == 0:
+        return PitchStats(f0_mean=None, f0_std=None, f0_range=None)
+    return PitchStats(
+        f0_mean=float(voiced.mean()),
+        f0_std=float(voiced.std()),
+        f0_range=float(voiced.max() - voiced.min()),
+    )
+
+
+def _extract_f0_values(snd: parselmouth.Sound) -> np.ndarray:
+    pitch = snd.to_pitch(pitch_floor=_PITCH_FLOOR_HZ, pitch_ceiling=_PITCH_CEILING_HZ)
+    values = pitch.selected_array["frequency"]
+    voiced = values[values > 0]  # unvoiced frames are reported as 0 Hz
+    if len(voiced) == 0:
+        raise ValueError("no voiced frames for pitch")
+    return voiced
 
 
 def _extract_cpps(snd: parselmouth.Sound) -> float:

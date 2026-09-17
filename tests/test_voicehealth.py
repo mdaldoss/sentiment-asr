@@ -10,7 +10,7 @@ from __future__ import annotations
 import numpy as np
 
 from ssa.types import SAMPLE_RATE, AudioClip
-from ssa.voicehealth import voice_quality
+from ssa.voicehealth import pitch_stats, voice_quality
 
 
 def _harmonic_clip(amplitude: float = 0.5, f0: float = 120.0) -> AudioClip:
@@ -75,3 +75,42 @@ class TestVoiceQuality:
         vq = voice_quality(_harmonic_clip(amplitude=0.05))
         assert vq.cpps is not None
         assert vq.hnr is not None
+
+
+class TestPitchStats:
+    def test_harmonic_signal_recovers_approximate_f0(self) -> None:
+        stats = pitch_stats(_harmonic_clip(f0=120.0))
+        assert stats.f0_mean is not None
+        assert 110.0 < stats.f0_mean < 130.0
+
+    def test_higher_f0_signal_has_higher_mean(self) -> None:
+        low = pitch_stats(_harmonic_clip(f0=100.0))
+        high = pitch_stats(_harmonic_clip(f0=200.0))
+        assert low.f0_mean is not None and high.f0_mean is not None
+        assert high.f0_mean > low.f0_mean
+
+    def test_steady_tone_has_low_f0_std(self) -> None:
+        """A perfectly steady synthetic harmonic has near-constant F0 --
+        this is the discriminator D1 relies on to separate a flat delivery
+        from one with real pitch movement."""
+        stats = pitch_stats(_harmonic_clip(f0=150.0))
+        assert stats.f0_std is not None
+        assert stats.f0_std < 5.0
+
+    def test_pure_noise_has_no_recoverable_pitch(self) -> None:
+        rng = np.random.default_rng(7)
+        noise = AudioClip(
+            clip_id="noise_pitch",
+            samples=(rng.standard_normal(SAMPLE_RATE) * 0.3).astype(np.float32),
+        )
+        stats = pitch_stats(noise)
+        assert stats.f0_mean is None
+        assert stats.f0_std is None
+        assert stats.f0_range is None
+
+    def test_silence_does_not_raise(self) -> None:
+        silence = AudioClip(
+            clip_id="silence_pitch", samples=np.zeros(SAMPLE_RATE, dtype=np.float32)
+        )
+        stats = pitch_stats(silence)  # must not raise
+        assert stats.f0_mean is None
