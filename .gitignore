@@ -9,12 +9,21 @@ __pycache__/
 # Secrets -- never commit
 .env
 
-# Large downloads and caches, not fixtures
+# Large download, not a fixture -- `make data` fetches it (ODbL, ~470MB)
 data/cremad/
-data/cache/
+
+# Derived caches: large, cheaply reproducible from CREMA-D + CPU time via
+# `make train` (embeddings ~21 min, VAD ~15 min). The trained artifacts
+# THEMSELVES are committed (see exceptions below) so `make demo`/`make eval`
+# work immediately after clone without a ~35 min retrain first.
+data/cache/*
+!data/cache/probe_permissive.joblib
+!data/cache/thresholds_research.json
+
+# TTS-generated audio: regenerable with a Cartesia key (see .env.example),
+# costs API budget to regenerate -- results/d0_emotion_space.json (the
+# analysis, not the raw clips) is what's committed.
+data/cache/d0_probe/
+
 *.tar.gz
 *.zip
-
-# Generated, reproducible via `make all`
-results/*.json
-report/index.html

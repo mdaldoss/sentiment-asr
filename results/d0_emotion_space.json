@@ -1,0 +1,1567 @@
+{
+  "n_clips": 116,
+  "n_tags": 58,
+  "carriers": {
+    "weather": "The weather today is quite unusual.",
+    "report": "I need to finish this report by Friday."
+  },
+  "voice_id": "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
+  "best_k": 2,
+  "silhouette_score": 0.5613667405296342,
+  "per_clip": [
+    {
+      "clip_id": "d0_affectionate_weather",
+      "tag": "affectionate",
+      "carrier": "weather",
+      "valence": 0.4625260829925537,
+      "arousal": 0.3780112862586975,
+      "dominance": 0.4940410852432251,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_affectionate_report",
+      "tag": "affectionate",
+      "carrier": "report",
+      "valence": 0.5545070767402649,
+      "arousal": 0.4489295482635498,
+      "dominance": 0.5470336079597473,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_agitated_weather",
+      "tag": "agitated",
+      "carrier": "weather",
+      "valence": 0.4256025552749634,
+      "arousal": 0.3309369385242462,
+      "dominance": 0.4643881916999817,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_agitated_report",
+      "tag": "agitated",
+      "carrier": "report",
+      "valence": 0.5822323560714722,
+      "arousal": 0.5475969314575195,
+      "dominance": 0.5967418551445007,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_alarmed_weather",
+      "tag": "alarmed",
+      "carrier": "weather",
+      "valence": 0.39266330003738403,
+      "arousal": 0.298309326171875,
+      "dominance": 0.4272913336753845,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_alarmed_report",
+      "tag": "alarmed",
+      "carrier": "report",
+      "valence": 0.5611169934272766,
+      "arousal": 0.4480149447917938,
+      "dominance": 0.5459668040275574,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_amazed_weather",
+      "tag": "amazed",
+      "carrier": "weather",
+      "valence": 0.4776681065559387,
+      "arousal": 0.36347082257270813,
+      "dominance": 0.48474961519241333,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_amazed_report",
+      "tag": "amazed",
+      "carrier": "report",
+      "valence": 0.5515120625495911,
+      "arousal": 0.4428081214427948,
+      "dominance": 0.5353857278823853,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_angry_weather",
+      "tag": "angry",
+      "carrier": "weather",
+      "valence": 0.448453426361084,
+      "arousal": 0.35174667835235596,
+      "dominance": 0.4887981116771698,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_angry_report",
+      "tag": "angry",
+      "carrier": "report",
+      "valence": 0.5377959609031677,
+      "arousal": 0.3846474289894104,
+      "dominance": 0.49808114767074585,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_anticipation_weather",
+      "tag": "anticipation",
+      "carrier": "weather",
+      "valence": 0.429364413022995,
+      "arousal": 0.34901735186576843,
+      "dominance": 0.4753212332725525,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_anticipation_report",
+      "tag": "anticipation",
+      "carrier": "report",
+      "valence": 0.49295318126678467,
+      "arousal": 0.36855876445770264,
+      "dominance": 0.4843348562717438,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_anxious_weather",
+      "tag": "anxious",
+      "carrier": "weather",
+      "valence": 0.4511342942714691,
+      "arousal": 0.365012526512146,
+      "dominance": 0.4987843334674835,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_anxious_report",
+      "tag": "anxious",
+      "carrier": "report",
+      "valence": 0.5455091595649719,
+      "arousal": 0.4689016342163086,
+      "dominance": 0.5537983775138855,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_apologetic_weather",
+      "tag": "apologetic",
+      "carrier": "weather",
+      "valence": 0.42855337262153625,
+      "arousal": 0.33433136343955994,
+      "dominance": 0.4723362922668457,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_apologetic_report",
+      "tag": "apologetic",
+      "carrier": "report",
+      "valence": 0.5029717087745667,
+      "arousal": 0.33133378624916077,
+      "dominance": 0.46465668082237244,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_bored_weather",
+      "tag": "bored",
+      "carrier": "weather",
+      "valence": 0.4305647015571594,
+      "arousal": 0.36999762058258057,
+      "dominance": 0.4980297088623047,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_bored_report",
+      "tag": "bored",
+      "carrier": "report",
+      "valence": 0.46195700764656067,
+      "arousal": 0.36313846707344055,
+      "dominance": 0.48235225677490234,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_calm_weather",
+      "tag": "calm",
+      "carrier": "weather",
+      "valence": 0.41817808151245117,
+      "arousal": 0.3555285632610321,
+      "dominance": 0.4946826696395874,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_calm_report",
+      "tag": "calm",
+      "carrier": "report",
+      "valence": 0.5540727376937866,
+      "arousal": 0.4215896427631378,
+      "dominance": 0.5297765731811523,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_confident_weather",
+      "tag": "confident",
+      "carrier": "weather",
+      "valence": 0.4708455204963684,
+      "arousal": 0.3874862492084503,
+      "dominance": 0.5054718255996704,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_confident_report",
+      "tag": "confident",
+      "carrier": "report",
+      "valence": 0.4724840521812439,
+      "arousal": 0.4184150993824005,
+      "dominance": 0.5251283049583435,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_confused_weather",
+      "tag": "confused",
+      "carrier": "weather",
+      "valence": 0.4269833266735077,
+      "arousal": 0.31179842352867126,
+      "dominance": 0.4542650878429413,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_confused_report",
+      "tag": "confused",
+      "carrier": "report",
+      "valence": 0.5009368658065796,
+      "arousal": 0.42645376920700073,
+      "dominance": 0.5209903717041016,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_contemplative_weather",
+      "tag": "contemplative",
+      "carrier": "weather",
+      "valence": 0.4251839816570282,
+      "arousal": 0.3430554270744324,
+      "dominance": 0.48458608984947205,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_contemplative_report",
+      "tag": "contemplative",
+      "carrier": "report",
+      "valence": 0.5250791907310486,
+      "arousal": 0.4733441174030304,
+      "dominance": 0.5643442273139954,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_contempt_weather",
+      "tag": "contempt",
+      "carrier": "weather",
+      "valence": 0.4593134820461273,
+      "arousal": 0.36322322487831116,
+      "dominance": 0.48261433839797974,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_contempt_report",
+      "tag": "contempt",
+      "carrier": "report",
+      "valence": 0.5424051284790039,
+      "arousal": 0.48102882504463196,
+      "dominance": 0.5710164308547974,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_content_weather",
+      "tag": "content",
+      "carrier": "weather",
+      "valence": 0.4511337876319885,
+      "arousal": 0.37025195360183716,
+      "dominance": 0.4948471188545227,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_content_report",
+      "tag": "content",
+      "carrier": "report",
+      "valence": 0.523074746131897,
+      "arousal": 0.3676479458808899,
+      "dominance": 0.48334643244743347,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_curious_weather",
+      "tag": "curious",
+      "carrier": "weather",
+      "valence": 0.4593895673751831,
+      "arousal": 0.40010181069374084,
+      "dominance": 0.5168741941452026,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_curious_report",
+      "tag": "curious",
+      "carrier": "report",
+      "valence": 0.5640397071838379,
+      "arousal": 0.5256840586662292,
+      "dominance": 0.6023743748664856,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_dejected_weather",
+      "tag": "dejected",
+      "carrier": "weather",
+      "valence": 0.45261114835739136,
+      "arousal": 0.3647845387458801,
+      "dominance": 0.501386821269989,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_dejected_report",
+      "tag": "dejected",
+      "carrier": "report",
+      "valence": 0.4595995843410492,
+      "arousal": 0.3552352786064148,
+      "dominance": 0.47437742352485657,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_determined_weather",
+      "tag": "determined",
+      "carrier": "weather",
+      "valence": 0.42055177688598633,
+      "arousal": 0.29917407035827637,
+      "dominance": 0.4381730556488037,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_determined_report",
+      "tag": "determined",
+      "carrier": "report",
+      "valence": 0.5318587422370911,
+      "arousal": 0.41495901346206665,
+      "dominance": 0.5282313823699951,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_disappointed_weather",
+      "tag": "disappointed",
+      "carrier": "weather",
+      "valence": 0.4150775372982025,
+      "arousal": 0.30390894412994385,
+      "dominance": 0.4400550425052643,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_disappointed_report",
+      "tag": "disappointed",
+      "carrier": "report",
+      "valence": 0.5294419527053833,
+      "arousal": 0.4152226746082306,
+      "dominance": 0.5157092213630676,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_disgusted_weather",
+      "tag": "disgusted",
+      "carrier": "weather",
+      "valence": 0.44847702980041504,
+      "arousal": 0.3580227196216583,
+      "dominance": 0.4940979778766632,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_disgusted_report",
+      "tag": "disgusted",
+      "carrier": "report",
+      "valence": 0.5062182545661926,
+      "arousal": 0.3490244150161743,
+      "dominance": 0.4686463475227356,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_distant_weather",
+      "tag": "distant",
+      "carrier": "weather",
+      "valence": 0.4519381523132324,
+      "arousal": 0.36712002754211426,
+      "dominance": 0.49399691820144653,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_distant_report",
+      "tag": "distant",
+      "carrier": "report",
+      "valence": 0.5209907293319702,
+      "arousal": 0.4064749777317047,
+      "dominance": 0.5204910635948181,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_elated_weather",
+      "tag": "elated",
+      "carrier": "weather",
+      "valence": 0.44949373602867126,
+      "arousal": 0.31948065757751465,
+      "dominance": 0.4475274384021759,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_elated_report",
+      "tag": "elated",
+      "carrier": "report",
+      "valence": 0.5351678133010864,
+      "arousal": 0.44707784056663513,
+      "dominance": 0.5385909676551819,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_enthusiastic_weather",
+      "tag": "enthusiastic",
+      "carrier": "weather",
+      "valence": 0.4264315366744995,
+      "arousal": 0.3418908417224884,
+      "dominance": 0.4679473638534546,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_enthusiastic_report",
+      "tag": "enthusiastic",
+      "carrier": "report",
+      "valence": 0.46817347407341003,
+      "arousal": 0.3558167517185211,
+      "dominance": 0.4495103061199188,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_envious_weather",
+      "tag": "envious",
+      "carrier": "weather",
+      "valence": 0.4368446171283722,
+      "arousal": 0.3403283357620239,
+      "dominance": 0.47028371691703796,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_envious_report",
+      "tag": "envious",
+      "carrier": "report",
+      "valence": 0.5234543085098267,
+      "arousal": 0.41266414523124695,
+      "dominance": 0.5279079675674438,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_euphoric_weather",
+      "tag": "euphoric",
+      "carrier": "weather",
+      "valence": 0.4419957995414734,
+      "arousal": 0.3611394762992859,
+      "dominance": 0.4766930937767029,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_euphoric_report",
+      "tag": "euphoric",
+      "carrier": "report",
+      "valence": 0.4715554118156433,
+      "arousal": 0.3342738449573517,
+      "dominance": 0.43752729892730713,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_excited_weather",
+      "tag": "excited",
+      "carrier": "weather",
+      "valence": 0.45234227180480957,
+      "arousal": 0.3104396164417267,
+      "dominance": 0.45218560099601746,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_excited_report",
+      "tag": "excited",
+      "carrier": "report",
+      "valence": 0.5012475252151489,
+      "arousal": 0.3701709508895874,
+      "dominance": 0.4690522253513336,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_flirtatious_weather",
+      "tag": "flirtatious",
+      "carrier": "weather",
+      "valence": 0.46854016184806824,
+      "arousal": 0.3616006374359131,
+      "dominance": 0.478850394487381,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_flirtatious_report",
+      "tag": "flirtatious",
+      "carrier": "report",
+      "valence": 0.5518413186073303,
+      "arousal": 0.4332829713821411,
+      "dominance": 0.5409361124038696,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_frustrated_weather",
+      "tag": "frustrated",
+      "carrier": "weather",
+      "valence": 0.5127135515213013,
+      "arousal": 0.391997367143631,
+      "dominance": 0.5095579028129578,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_frustrated_report",
+      "tag": "frustrated",
+      "carrier": "report",
+      "valence": 0.5768693685531616,
+      "arousal": 0.400991827249527,
+      "dominance": 0.5078318119049072,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_grateful_weather",
+      "tag": "grateful",
+      "carrier": "weather",
+      "valence": 0.4259470999240875,
+      "arousal": 0.3362138569355011,
+      "dominance": 0.46991899609565735,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_grateful_report",
+      "tag": "grateful",
+      "carrier": "report",
+      "valence": 0.5167145729064941,
+      "arousal": 0.37418586015701294,
+      "dominance": 0.4951486885547638,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_guilty_weather",
+      "tag": "guilty",
+      "carrier": "weather",
+      "valence": 0.3938707113265991,
+      "arousal": 0.2974163591861725,
+      "dominance": 0.4364084303379059,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_guilty_report",
+      "tag": "guilty",
+      "carrier": "report",
+      "valence": 0.51485276222229,
+      "arousal": 0.3520360291004181,
+      "dominance": 0.4726499915122986,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_happy_weather",
+      "tag": "happy",
+      "carrier": "weather",
+      "valence": 0.49161460995674133,
+      "arousal": 0.3832818269729614,
+      "dominance": 0.5137808322906494,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_happy_report",
+      "tag": "happy",
+      "carrier": "report",
+      "valence": 0.53447425365448,
+      "arousal": 0.44151920080184937,
+      "dominance": 0.5514436364173889,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_hesitant_weather",
+      "tag": "hesitant",
+      "carrier": "weather",
+      "valence": 0.42498254776000977,
+      "arousal": 0.3284386098384857,
+      "dominance": 0.4665549695491791,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_hesitant_report",
+      "tag": "hesitant",
+      "carrier": "report",
+      "valence": 0.4929538071155548,
+      "arousal": 0.33439725637435913,
+      "dominance": 0.45537295937538147,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_hurt_weather",
+      "tag": "hurt",
+      "carrier": "weather",
+      "valence": 0.4423319101333618,
+      "arousal": 0.3363897502422333,
+      "dominance": 0.4823131561279297,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_hurt_report",
+      "tag": "hurt",
+      "carrier": "report",
+      "valence": 0.48481127619743347,
+      "arousal": 0.345813125371933,
+      "dominance": 0.46872687339782715,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_insecure_weather",
+      "tag": "insecure",
+      "carrier": "weather",
+      "valence": 0.4308837354183197,
+      "arousal": 0.3757420480251312,
+      "dominance": 0.4976927936077118,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_insecure_report",
+      "tag": "insecure",
+      "carrier": "report",
+      "valence": 0.5408668518066406,
+      "arousal": 0.4514264762401581,
+      "dominance": 0.5569607615470886,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_ironic_weather",
+      "tag": "ironic",
+      "carrier": "weather",
+      "valence": 0.43399739265441895,
+      "arousal": 0.37697848677635193,
+      "dominance": 0.5043917298316956,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_ironic_report",
+      "tag": "ironic",
+      "carrier": "report",
+      "valence": 0.5337765216827393,
+      "arousal": 0.43965715169906616,
+      "dominance": 0.5535880923271179,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_mad_weather",
+      "tag": "mad",
+      "carrier": "weather",
+      "valence": 0.4445858895778656,
+      "arousal": 0.29128360748291016,
+      "dominance": 0.4429696500301361,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_mad_report",
+      "tag": "mad",
+      "carrier": "report",
+      "valence": 0.559639036655426,
+      "arousal": 0.47086015343666077,
+      "dominance": 0.5601980090141296,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_melancholic_weather",
+      "tag": "melancholic",
+      "carrier": "weather",
+      "valence": 0.4230331480503082,
+      "arousal": 0.3859766721725464,
+      "dominance": 0.5051074028015137,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_melancholic_report",
+      "tag": "melancholic",
+      "carrier": "report",
+      "valence": 0.4854303002357483,
+      "arousal": 0.36692556738853455,
+      "dominance": 0.4847078025341034,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_mysterious_weather",
+      "tag": "mysterious",
+      "carrier": "weather",
+      "valence": 0.4736833870410919,
+      "arousal": 0.3866157829761505,
+      "dominance": 0.5151404738426208,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_mysterious_report",
+      "tag": "mysterious",
+      "carrier": "report",
+      "valence": 0.5471091866493225,
+      "arousal": 0.45716091990470886,
+      "dominance": 0.5558561086654663,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_neutral_weather",
+      "tag": "neutral",
+      "carrier": "weather",
+      "valence": 0.3983621597290039,
+      "arousal": 0.3035174012184143,
+      "dominance": 0.44654831290245056,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_neutral_report",
+      "tag": "neutral",
+      "carrier": "report",
+      "valence": 0.521159827709198,
+      "arousal": 0.4120882749557495,
+      "dominance": 0.526947021484375,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_nostalgic_weather",
+      "tag": "nostalgic",
+      "carrier": "weather",
+      "valence": 0.4407057762145996,
+      "arousal": 0.3369375169277191,
+      "dominance": 0.47213831543922424,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_nostalgic_report",
+      "tag": "nostalgic",
+      "carrier": "report",
+      "valence": 0.49320149421691895,
+      "arousal": 0.4042224884033203,
+      "dominance": 0.508151113986969,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_outraged_weather",
+      "tag": "outraged",
+      "carrier": "weather",
+      "valence": 0.4410616159439087,
+      "arousal": 0.3502200245857239,
+      "dominance": 0.4800718426704407,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_outraged_report",
+      "tag": "outraged",
+      "carrier": "report",
+      "valence": 0.5419163703918457,
+      "arousal": 0.4412246346473694,
+      "dominance": 0.5475292801856995,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_panicked_weather",
+      "tag": "panicked",
+      "carrier": "weather",
+      "valence": 0.45916348695755005,
+      "arousal": 0.36774569749832153,
+      "dominance": 0.4901435375213623,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_panicked_report",
+      "tag": "panicked",
+      "carrier": "report",
+      "valence": 0.519335150718689,
+      "arousal": 0.47981756925582886,
+      "dominance": 0.5734472274780273,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_peaceful_weather",
+      "tag": "peaceful",
+      "carrier": "weather",
+      "valence": 0.46437132358551025,
+      "arousal": 0.3673864006996155,
+      "dominance": 0.48960089683532715,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_peaceful_report",
+      "tag": "peaceful",
+      "carrier": "report",
+      "valence": 0.5166783928871155,
+      "arousal": 0.4232799708843231,
+      "dominance": 0.519614040851593,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_proud_weather",
+      "tag": "proud",
+      "carrier": "weather",
+      "valence": 0.46515634655952454,
+      "arousal": 0.28488287329673767,
+      "dominance": 0.42324334383010864,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_proud_report",
+      "tag": "proud",
+      "carrier": "report",
+      "valence": 0.5135165452957153,
+      "arousal": 0.4070895314216614,
+      "dominance": 0.5035234093666077,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_rejected_weather",
+      "tag": "rejected",
+      "carrier": "weather",
+      "valence": 0.408486545085907,
+      "arousal": 0.34718871116638184,
+      "dominance": 0.47191929817199707,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_rejected_report",
+      "tag": "rejected",
+      "carrier": "report",
+      "valence": 0.5058553218841553,
+      "arousal": 0.43976566195487976,
+      "dominance": 0.5396134257316589,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_resigned_weather",
+      "tag": "resigned",
+      "carrier": "weather",
+      "valence": 0.4786132574081421,
+      "arousal": 0.37650397419929504,
+      "dominance": 0.5020731091499329,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_resigned_report",
+      "tag": "resigned",
+      "carrier": "report",
+      "valence": 0.5204212665557861,
+      "arousal": 0.4114972651004791,
+      "dominance": 0.5145860314369202,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_sad_weather",
+      "tag": "sad",
+      "carrier": "weather",
+      "valence": 0.36609894037246704,
+      "arousal": 0.29098939895629883,
+      "dominance": 0.435187965631485,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_sad_report",
+      "tag": "sad",
+      "carrier": "report",
+      "valence": 0.5379076600074768,
+      "arousal": 0.4333212971687317,
+      "dominance": 0.5433218479156494,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_sarcastic_weather",
+      "tag": "sarcastic",
+      "carrier": "weather",
+      "valence": 0.45053809881210327,
+      "arousal": 0.34105801582336426,
+      "dominance": 0.47131162881851196,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_sarcastic_report",
+      "tag": "sarcastic",
+      "carrier": "report",
+      "valence": 0.47589001059532166,
+      "arousal": 0.39348354935646057,
+      "dominance": 0.5048171281814575,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_scared_weather",
+      "tag": "scared",
+      "carrier": "weather",
+      "valence": 0.4136205315589905,
+      "arousal": 0.366651326417923,
+      "dominance": 0.4971662759780884,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_scared_report",
+      "tag": "scared",
+      "carrier": "report",
+      "valence": 0.5789750814437866,
+      "arousal": 0.5158658623695374,
+      "dominance": 0.6093462109565735,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_serene_weather",
+      "tag": "serene",
+      "carrier": "weather",
+      "valence": 0.44282031059265137,
+      "arousal": 0.3753032684326172,
+      "dominance": 0.5042668581008911,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_serene_report",
+      "tag": "serene",
+      "carrier": "report",
+      "valence": 0.5559893846511841,
+      "arousal": 0.4476345479488373,
+      "dominance": 0.5476444363594055,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_skeptical_weather",
+      "tag": "skeptical",
+      "carrier": "weather",
+      "valence": 0.4419063925743103,
+      "arousal": 0.29206204414367676,
+      "dominance": 0.4373665750026703,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_skeptical_report",
+      "tag": "skeptical",
+      "carrier": "report",
+      "valence": 0.5514217019081116,
+      "arousal": 0.42195484042167664,
+      "dominance": 0.5237012505531311,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_surprised_weather",
+      "tag": "surprised",
+      "carrier": "weather",
+      "valence": 0.4807838201522827,
+      "arousal": 0.36310574412345886,
+      "dominance": 0.48762208223342896,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_surprised_report",
+      "tag": "surprised",
+      "carrier": "report",
+      "valence": 0.5322200059890747,
+      "arousal": 0.43826714158058167,
+      "dominance": 0.5363092422485352,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_sympathetic_weather",
+      "tag": "sympathetic",
+      "carrier": "weather",
+      "valence": 0.42300844192504883,
+      "arousal": 0.3430842161178589,
+      "dominance": 0.48426753282546997,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_sympathetic_report",
+      "tag": "sympathetic",
+      "carrier": "report",
+      "valence": 0.5164886713027954,
+      "arousal": 0.3743388056755066,
+      "dominance": 0.4842396378517151,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_threatened_weather",
+      "tag": "threatened",
+      "carrier": "weather",
+      "valence": 0.4655831754207611,
+      "arousal": 0.4035770893096924,
+      "dominance": 0.5320256948471069,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_threatened_report",
+      "tag": "threatened",
+      "carrier": "report",
+      "valence": 0.5513147115707397,
+      "arousal": 0.4612135887145996,
+      "dominance": 0.5457293391227722,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_tired_weather",
+      "tag": "tired",
+      "carrier": "weather",
+      "valence": 0.44975394010543823,
+      "arousal": 0.3610207438468933,
+      "dominance": 0.48400112986564636,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_tired_report",
+      "tag": "tired",
+      "carrier": "report",
+      "valence": 0.5099625587463379,
+      "arousal": 0.4200369417667389,
+      "dominance": 0.532567024230957,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_triumphant_weather",
+      "tag": "triumphant",
+      "carrier": "weather",
+      "valence": 0.4428517818450928,
+      "arousal": 0.33950307965278625,
+      "dominance": 0.46773451566696167,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_triumphant_report",
+      "tag": "triumphant",
+      "carrier": "report",
+      "valence": 0.493501216173172,
+      "arousal": 0.3789882957935333,
+      "dominance": 0.503423273563385,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_trust_weather",
+      "tag": "trust",
+      "carrier": "weather",
+      "valence": 0.4817543625831604,
+      "arousal": 0.330526739358902,
+      "dominance": 0.4632274806499481,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_trust_report",
+      "tag": "trust",
+      "carrier": "report",
+      "valence": 0.531674861907959,
+      "arousal": 0.4258088767528534,
+      "dominance": 0.5290664434432983,
+      "cluster": 1
+    },
+    {
+      "clip_id": "d0_wistful_weather",
+      "tag": "wistful",
+      "carrier": "weather",
+      "valence": 0.4047204852104187,
+      "arousal": 0.29744359850883484,
+      "dominance": 0.43324750661849976,
+      "cluster": 0
+    },
+    {
+      "clip_id": "d0_wistful_report",
+      "tag": "wistful",
+      "carrier": "report",
+      "valence": 0.5053710341453552,
+      "arousal": 0.3118878901004791,
+      "dominance": 0.4377327859401703,
+      "cluster": 0
+    }
+  ],
+  "per_tag": {
+    "affectionate": {
+      "mean_valence": 0.5085165798664093,
+      "mean_arousal": 0.41347041726112366,
+      "mean_dominance": 0.5205373466014862,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "agitated": {
+      "mean_valence": 0.5039174556732178,
+      "mean_arousal": 0.4392669349908829,
+      "mean_dominance": 0.5305650234222412,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "alarmed": {
+      "mean_valence": 0.4768901467323303,
+      "mean_arousal": 0.3731621354818344,
+      "mean_dominance": 0.48662906885147095,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "amazed": {
+      "mean_valence": 0.5145900845527649,
+      "mean_arousal": 0.40313947200775146,
+      "mean_dominance": 0.5100676715373993,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "angry": {
+      "mean_valence": 0.49312469363212585,
+      "mean_arousal": 0.3681970536708832,
+      "mean_dominance": 0.4934396296739578,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "anticipation": {
+      "mean_valence": 0.46115879714488983,
+      "mean_arousal": 0.35878805816173553,
+      "mean_dominance": 0.47982804477214813,
+      "clusters": [
+        0
+      ]
+    },
+    "anxious": {
+      "mean_valence": 0.4983217269182205,
+      "mean_arousal": 0.4169570803642273,
+      "mean_dominance": 0.5262913554906845,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "apologetic": {
+      "mean_valence": 0.46576254069805145,
+      "mean_arousal": 0.33283257484436035,
+      "mean_dominance": 0.46849648654460907,
+      "clusters": [
+        0
+      ]
+    },
+    "bored": {
+      "mean_valence": 0.44626085460186005,
+      "mean_arousal": 0.36656804382801056,
+      "mean_dominance": 0.4901909828186035,
+      "clusters": [
+        0
+      ]
+    },
+    "calm": {
+      "mean_valence": 0.4861254096031189,
+      "mean_arousal": 0.38855910301208496,
+      "mean_dominance": 0.5122296214103699,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "confident": {
+      "mean_valence": 0.47166478633880615,
+      "mean_arousal": 0.4029506742954254,
+      "mean_dominance": 0.515300065279007,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "confused": {
+      "mean_valence": 0.46396009624004364,
+      "mean_arousal": 0.369126096367836,
+      "mean_dominance": 0.4876277297735214,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "contemplative": {
+      "mean_valence": 0.4751315861940384,
+      "mean_arousal": 0.4081997722387314,
+      "mean_dominance": 0.5244651585817337,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "contempt": {
+      "mean_valence": 0.5008593052625656,
+      "mean_arousal": 0.42212602496147156,
+      "mean_dominance": 0.5268153846263885,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "content": {
+      "mean_valence": 0.48710426688194275,
+      "mean_arousal": 0.3689499497413635,
+      "mean_dominance": 0.4890967756509781,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "curious": {
+      "mean_valence": 0.5117146372795105,
+      "mean_arousal": 0.46289293467998505,
+      "mean_dominance": 0.5596242845058441,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "dejected": {
+      "mean_valence": 0.4561053663492203,
+      "mean_arousal": 0.36000990867614746,
+      "mean_dominance": 0.4878821223974228,
+      "clusters": [
+        0
+      ]
+    },
+    "determined": {
+      "mean_valence": 0.4762052595615387,
+      "mean_arousal": 0.3570665419101715,
+      "mean_dominance": 0.4832022190093994,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "disappointed": {
+      "mean_valence": 0.4722597450017929,
+      "mean_arousal": 0.3595658093690872,
+      "mean_dominance": 0.47788213193416595,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "disgusted": {
+      "mean_valence": 0.47734764218330383,
+      "mean_arousal": 0.3535235673189163,
+      "mean_dominance": 0.4813721626996994,
+      "clusters": [
+        0
+      ]
+    },
+    "distant": {
+      "mean_valence": 0.4864644408226013,
+      "mean_arousal": 0.3867975026369095,
+      "mean_dominance": 0.5072439908981323,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "elated": {
+      "mean_valence": 0.49233077466487885,
+      "mean_arousal": 0.3832792490720749,
+      "mean_dominance": 0.4930592030286789,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "enthusiastic": {
+      "mean_valence": 0.4473025053739548,
+      "mean_arousal": 0.34885379672050476,
+      "mean_dominance": 0.4587288349866867,
+      "clusters": [
+        0
+      ]
+    },
+    "envious": {
+      "mean_valence": 0.4801494628190994,
+      "mean_arousal": 0.37649624049663544,
+      "mean_dominance": 0.4990958422422409,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "euphoric": {
+      "mean_valence": 0.45677560567855835,
+      "mean_arousal": 0.3477066606283188,
+      "mean_dominance": 0.457110196352005,
+      "clusters": [
+        0
+      ]
+    },
+    "excited": {
+      "mean_valence": 0.47679489850997925,
+      "mean_arousal": 0.34030528366565704,
+      "mean_dominance": 0.46061891317367554,
+      "clusters": [
+        0
+      ]
+    },
+    "flirtatious": {
+      "mean_valence": 0.5101907402276993,
+      "mean_arousal": 0.3974418044090271,
+      "mean_dominance": 0.5098932534456253,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "frustrated": {
+      "mean_valence": 0.5447914600372314,
+      "mean_arousal": 0.396494597196579,
+      "mean_dominance": 0.5086948573589325,
+      "clusters": [
+        1
+      ]
+    },
+    "grateful": {
+      "mean_valence": 0.47133083641529083,
+      "mean_arousal": 0.355199858546257,
+      "mean_dominance": 0.48253384232521057,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "guilty": {
+      "mean_valence": 0.4543617367744446,
+      "mean_arousal": 0.3247261941432953,
+      "mean_dominance": 0.45452921092510223,
+      "clusters": [
+        0
+      ]
+    },
+    "happy": {
+      "mean_valence": 0.5130444318056107,
+      "mean_arousal": 0.4124005138874054,
+      "mean_dominance": 0.5326122343540192,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "hesitant": {
+      "mean_valence": 0.4589681774377823,
+      "mean_arousal": 0.3314179331064224,
+      "mean_dominance": 0.4609639644622803,
+      "clusters": [
+        0
+      ]
+    },
+    "hurt": {
+      "mean_valence": 0.46357159316539764,
+      "mean_arousal": 0.34110143780708313,
+      "mean_dominance": 0.4755200147628784,
+      "clusters": [
+        0
+      ]
+    },
+    "insecure": {
+      "mean_valence": 0.48587529361248016,
+      "mean_arousal": 0.41358426213264465,
+      "mean_dominance": 0.5273267775774002,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "ironic": {
+      "mean_valence": 0.4838869571685791,
+      "mean_arousal": 0.40831781923770905,
+      "mean_dominance": 0.5289899110794067,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "mad": {
+      "mean_valence": 0.5021124631166458,
+      "mean_arousal": 0.38107188045978546,
+      "mean_dominance": 0.5015838295221329,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "melancholic": {
+      "mean_valence": 0.45423172414302826,
+      "mean_arousal": 0.37645111978054047,
+      "mean_dominance": 0.49490760266780853,
+      "clusters": [
+        0
+      ]
+    },
+    "mysterious": {
+      "mean_valence": 0.5103962868452072,
+      "mean_arousal": 0.4218883514404297,
+      "mean_dominance": 0.5354982912540436,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "neutral": {
+      "mean_valence": 0.45976099371910095,
+      "mean_arousal": 0.3578028380870819,
+      "mean_dominance": 0.4867476671934128,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "nostalgic": {
+      "mean_valence": 0.4669536352157593,
+      "mean_arousal": 0.3705800026655197,
+      "mean_dominance": 0.4901447147130966,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "outraged": {
+      "mean_valence": 0.4914889931678772,
+      "mean_arousal": 0.39572232961654663,
+      "mean_dominance": 0.5138005614280701,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "panicked": {
+      "mean_valence": 0.4892493188381195,
+      "mean_arousal": 0.4237816333770752,
+      "mean_dominance": 0.5317953824996948,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "peaceful": {
+      "mean_valence": 0.49052485823631287,
+      "mean_arousal": 0.3953331857919693,
+      "mean_dominance": 0.5046074688434601,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "proud": {
+      "mean_valence": 0.48933644592761993,
+      "mean_arousal": 0.3459862023591995,
+      "mean_dominance": 0.46338337659835815,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "rejected": {
+      "mean_valence": 0.45717093348503113,
+      "mean_arousal": 0.3934771865606308,
+      "mean_dominance": 0.505766361951828,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "resigned": {
+      "mean_valence": 0.4995172619819641,
+      "mean_arousal": 0.3940006196498871,
+      "mean_dominance": 0.5083295702934265,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "sad": {
+      "mean_valence": 0.4520033001899719,
+      "mean_arousal": 0.36215534806251526,
+      "mean_dominance": 0.4892549067735672,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "sarcastic": {
+      "mean_valence": 0.46321405470371246,
+      "mean_arousal": 0.3672707825899124,
+      "mean_dominance": 0.48806437849998474,
+      "clusters": [
+        0
+      ]
+    },
+    "scared": {
+      "mean_valence": 0.49629780650138855,
+      "mean_arousal": 0.44125859439373016,
+      "mean_dominance": 0.5532562434673309,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "serene": {
+      "mean_valence": 0.4994048476219177,
+      "mean_arousal": 0.41146890819072723,
+      "mean_dominance": 0.5259556472301483,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "skeptical": {
+      "mean_valence": 0.49666404724121094,
+      "mean_arousal": 0.3570084422826767,
+      "mean_dominance": 0.4805339127779007,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "surprised": {
+      "mean_valence": 0.5065019130706787,
+      "mean_arousal": 0.40068644285202026,
+      "mean_dominance": 0.5119656622409821,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "sympathetic": {
+      "mean_valence": 0.4697485566139221,
+      "mean_arousal": 0.35871151089668274,
+      "mean_dominance": 0.48425358533859253,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "threatened": {
+      "mean_valence": 0.5084489434957504,
+      "mean_arousal": 0.432395339012146,
+      "mean_dominance": 0.5388775169849396,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "tired": {
+      "mean_valence": 0.47985824942588806,
+      "mean_arousal": 0.3905288428068161,
+      "mean_dominance": 0.5082840770483017,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "triumphant": {
+      "mean_valence": 0.4681764990091324,
+      "mean_arousal": 0.3592456877231598,
+      "mean_dominance": 0.48557889461517334,
+      "clusters": [
+        0
+      ]
+    },
+    "trust": {
+      "mean_valence": 0.5067146122455597,
+      "mean_arousal": 0.3781678080558777,
+      "mean_dominance": 0.49614696204662323,
+      "clusters": [
+        0,
+        1
+      ]
+    },
+    "wistful": {
+      "mean_valence": 0.45504575967788696,
+      "mean_arousal": 0.304665744304657,
+      "mean_dominance": 0.435490146279335,
+      "clusters": [
+        0
+      ]
+    }
+  },
+  "valence_span": 0.21613341569900513,
+  "interpretation": "Duration/RMS vary substantially by tag (confirmed manually -- Cartesia is responding to the emotion parameter), but the measured valence range across all 58 tags spans only 0.216 on a [0,1] scale, clustered near 0.5. This is read as a DOMAIN-GAP finding: the audeering VAD model (trained on real naturalistic speech, MSP-Podcast) does not reliably decode valence from synthetic TTS prosody, not as evidence Cartesia's tags are inert. Consequently, E2/E4 tag selection is NOT gated by this clustering (it was too degenerate to trust as a filter) -- instead it draws a deliberately diverse tag set directly from ssa.mapping.CARTESIA_MAP, with ground-truth prosody labels coming from TTS INTENT (the requested tag), following the EMIS precedent (arXiv 2510.25054), not from re-verifying with this or any other classifier. This finding is itself reported as a caveat on any acoustic-solution result measured on synthetic data, and strengthens the case for E3 (human recordings) as the necessary validity anchor for E2."
+}
