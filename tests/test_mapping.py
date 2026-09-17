@@ -47,7 +47,7 @@ def test_labelled_tags_excludes_ambiguous() -> None:
 
 def test_d0_probe_set_includes_ambiguous() -> None:
     """D0 is unsupervised, so it uses the full vocabulary."""
-    assert AMBIGUOUS_TAGS <= set(all_cartesia_tags())
+    assert set(all_cartesia_tags()) >= AMBIGUOUS_TAGS
 
 
 def test_cartesia_vocabulary_size() -> None:

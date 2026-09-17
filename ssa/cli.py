@@ -28,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
         help="acoustic backend; 'research' is CC-BY-NC-SA-4.0, research use only",
     )
     parser.add_argument("--json", action="store_true", help="emit JSON instead of text")
-    args = parser.parse_args(argv)
+    parser.parse_args(argv)
 
     raise SystemExit("not implemented yet -- see docs/TASKS.md")
 

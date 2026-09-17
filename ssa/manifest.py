@@ -49,7 +49,9 @@ def write_manifest(df: pd.DataFrame, path: Path) -> None:
     logger.info("wrote %d rows to %s", len(df), path)
 
 
-def load_manifest(path: Path, *, validate: bool = True, repo_root: Path | None = None) -> pd.DataFrame:
+def load_manifest(
+    path: Path, *, validate: bool = True, repo_root: Path | None = None
+) -> pd.DataFrame:
     """Load a manifest CSV. Validates by default."""
     df = pd.read_csv(path, dtype={"clip_id": str, "speaker_id": str, "voice_id": str})
     df["voice_id"] = df["voice_id"].fillna("")
