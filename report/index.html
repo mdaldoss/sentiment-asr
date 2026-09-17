@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Speech Sentiment Analyzer — Results</title>
+<style>
+    :root {
+      color-scheme: light;
+      --surface: #fcfcfb; --surface-2: #f5f4f1; --text: #0b0b0b; --text-2: #52514e;
+      --border: #e2e0da; --good: #0ca30c; --warn: #fab219;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+        --border: #3a3936; --good: #0ca30c; --warn: #fab219;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+      --border: #3a3936; --good: #0ca30c; --warn: #fab219;
+    }
+    body { background: var(--surface); color: var(--text); font-family: -apple-system, BlinkMacSystemFont,
+           "Segoe UI", sans-serif; max-width: 980px; margin: 0 auto; padding: 24px 16px 80px;
+           line-height: 1.5; }
+    h1 { font-size: 1.6rem; } h2 { font-size: 1.25rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+         padding-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    thead th { color: var(--text-2); font-weight: 600; font-size: 0.82rem; text-transform: uppercase; }
+    .caption { color: var(--text-2); font-size: 0.86rem; }
+    .finding { background: var(--surface-2); border-left: 3px solid #eda100; padding: 10px 14px; border-radius: 4px; }
+    .unmeasured { background: var(--surface-2); border-left: 3px solid var(--text-2); padding: 10px 14px;
+                  border-radius: 4px; font-style: italic; }
+    .pending { color: var(--text-2); font-style: italic; }
+    .scatter { width: 100%; max-width: 480px; display: block; }
+    .axis { stroke: var(--border); stroke-width: 1; }
+    .axis-label { fill: var(--text-2); font-size: 11px; }
+    .status-list { list-style: none; padding: 0; }
+    .status-list li { padding: 4px 0; }
+    .status-list li.done { color: var(--good); }
+    .status-list li.pending { color: var(--warn); }
+    header { border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+<header>
+  <h1>Speech Sentiment Analyzer — Results Dashboard</h1>
+  <p class="caption">Generated from <code>results/*.json</code> by <code>ssa/report.py</code> &mdash;
+  every number here traces to a committed result file. See <code>DESIGN.md</code> for the
+  full write-up.</p>
+</header>
+
+<h2>Status</h2>
+<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='pending'>&hellip; E2 (synthetic incongruence set)</li><li class='pending'>&hellip; E3 (human recordings)</li></ul>
+
+<h2>Main comparison: solutions &times; datasets</h2>
+
+    <table>
+      <thead><tr>
+        <th>Solution</th><th>Dataset / split</th><th>n</th>
+        <th>UAR</th><th>Macro-F1</th><th>Accuracy</th>
+        <th>PSI<sub>contested</sub></th><th>PSI<sub>strict</sub></th><th>Abstention</th>
+      </tr></thead>
+      <tbody><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.744</td><td class='num'>0.744</td><td class='num'>0.816</td><td class='num'>0.945</td><td class='num'>0.837</td><td class='num'>0.0%</td></tr></tbody>
+    </table>
+    <p class="caption">UAR is the headline accuracy-family metric (class-imbalance robust). PSI is the
+    headline prosody metric: 1.0 = follows tone, 0.0 = follows words, 0.5/0.33 = chance
+    (contested/strict respectively). See DESIGN.md for the full metric definitions.</p>
+    
+
+<h2>The leakage exposé (Solution B, permissive backend)</h2>
+
+    <table>
+      <thead><tr><th>Split</th><th>n test</th><th>Speakers overlapping train/test</th><th>UAR</th><th>Macro-F1</th></tr></thead>
+      <tbody>
+        <tr><td>Speaker-disjoint (honest)</td><td>1470</td><td>0</td>
+            <td class="num">0.744</td><td class="num">0.744</td></tr>
+        <tr><td>Random (leaky)</td><td>1488</td>
+            <td>91</td>
+            <td class="num">0.761</td><td class="num">0.743</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">Leakage inflation on this dataset+model: <strong>+0.017 UAR points</strong>.
+    Smaller than the 10&ndash;40 point swings reported for cross-corpus generalisation in the
+    literature (arXiv 2207.02104) &mdash; plausibly because WavLM's pretrained representation is
+    already fairly speaker-invariant, and CREMA-D's 91 actors all read the same 12 sentences, so
+    within-speaker variation may be less dominant here than in less controlled corpora. Reported as
+    measured, not adjusted to match the expected range.</p>
+    
+
+<h2>D0: Cartesia emotion-space probe</h2>
+
+    <svg viewBox="0 0 480 320" class="scatter" role="img"
+         aria-label="Valence-arousal scatter of 116 Cartesia clips across 58 tags">
+      <line x1="40" y1="280" x2="440" y2="280" class="axis"/>
+      <line x1="40" y1="40" x2="40" y2="280" class="axis"/>
+      <text x="240.0" y="312" class="axis-label" text-anchor="middle">Valence &rarr;</text>
+      <text x="12" y="160.0" class="axis-label" text-anchor="middle"
+            transform="rotate(-90 12 160.0)">Arousal &rarr;</text>
+      <circle cx="218.5" cy="194.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>affectionate (weather) v=0.463 a=0.378</title></circle><circle cx="388.7" cy="130.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>affectionate (report) v=0.555 a=0.449</title></circle><circle cx="150.1" cy="237.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>agitated (weather) v=0.426 a=0.331</title></circle><circle cx="440.0" cy="40.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>agitated (report) v=0.582 a=0.548</title></circle><circle cx="89.2" cy="267.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>alarmed (weather) v=0.393 a=0.298</title></circle><circle cx="400.9" cy="131.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>alarmed (report) v=0.561 a=0.448</title></circle><circle cx="246.5" cy="208.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>amazed (weather) v=0.478 a=0.363</title></circle><circle cx="383.1" cy="135.7" r="4" fill="#eb6834" fill-opacity="0.75"><title>amazed (report) v=0.552 a=0.443</title></circle><circle cx="192.4" cy="218.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>angry (weather) v=0.448 a=0.352</title></circle><circle cx="357.8" cy="188.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>angry (report) v=0.538 a=0.385</title></circle><circle cx="157.1" cy="221.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anticipation (weather) v=0.429 a=0.349</title></circle><circle cx="274.8" cy="203.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anticipation (report) v=0.493 a=0.369</title></circle><circle cx="197.4" cy="206.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anxious (weather) v=0.451 a=0.365</title></circle><circle cx="372.0" cy="111.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>anxious (report) v=0.546 a=0.469</title></circle><circle cx="155.6" cy="234.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>apologetic (weather) v=0.429 a=0.334</title></circle><circle cx="293.3" cy="237.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>apologetic (report) v=0.503 a=0.331</title></circle><circle cx="159.3" cy="202.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>bored (weather) v=0.431 a=0.370</title></circle><circle cx="217.4" cy="208.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>bored (report) v=0.462 a=0.363</title></circle><circle cx="136.4" cy="215.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>calm (weather) v=0.418 a=0.356</title></circle><circle cx="387.9" cy="155.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>calm (report) v=0.554 a=0.422</title></circle><circle cx="233.9" cy="186.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>confident (weather) v=0.471 a=0.387</title></circle><circle cx="236.9" cy="158.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>confident (report) v=0.472 a=0.418</title></circle><circle cx="152.7" cy="255.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>confused (weather) v=0.427 a=0.312</title></circle><circle cx="289.5" cy="150.7" r="4" fill="#eb6834" fill-opacity="0.75"><title>confused (report) v=0.501 a=0.426</title></circle><circle cx="149.3" cy="226.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>contemplative (weather) v=0.425 a=0.343</title></circle><circle cx="334.2" cy="107.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>contemplative (report) v=0.525 a=0.473</title></circle><circle cx="212.5" cy="208.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>contempt (weather) v=0.459 a=0.363</title></circle><circle cx="366.3" cy="100.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>contempt (report) v=0.542 a=0.481</title></circle><circle cx="197.4" cy="202.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>content (weather) v=0.451 a=0.370</title></circle><circle cx="330.5" cy="204.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>content (report) v=0.523 a=0.368</title></circle><circle cx="212.7" cy="174.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>curious (weather) v=0.459 a=0.400</title></circle><circle cx="406.3" cy="60.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>curious (report) v=0.564 a=0.526</title></circle><circle cx="200.1" cy="207.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>dejected (weather) v=0.453 a=0.365</title></circle><circle cx="213.0" cy="215.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>dejected (report) v=0.460 a=0.355</title></circle><circle cx="140.8" cy="266.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>determined (weather) v=0.421 a=0.299</title></circle><circle cx="346.8" cy="161.2" r="4" fill="#eb6834" fill-opacity="0.75"><title>determined (report) v=0.532 a=0.415</title></circle><circle cx="130.6" cy="262.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disappointed (weather) v=0.415 a=0.304</title></circle><circle cx="342.3" cy="160.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>disappointed (report) v=0.529 a=0.415</title></circle><circle cx="192.5" cy="213.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disgusted (weather) v=0.448 a=0.358</title></circle><circle cx="299.3" cy="221.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disgusted (report) v=0.506 a=0.349</title></circle><circle cx="198.9" cy="204.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>distant (weather) v=0.452 a=0.367</title></circle><circle cx="326.7" cy="168.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>distant (report) v=0.521 a=0.406</title></circle><circle cx="194.3" cy="248.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>elated (weather) v=0.449 a=0.319</title></circle><circle cx="352.9" cy="131.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>elated (report) v=0.535 a=0.447</title></circle><circle cx="151.7" cy="227.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>enthusiastic (weather) v=0.426 a=0.342</title></circle><circle cx="228.9" cy="215.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>enthusiastic (report) v=0.468 a=0.356</title></circle><circle cx="170.9" cy="229.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>envious (weather) v=0.437 a=0.340</title></circle><circle cx="331.2" cy="163.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>envious (report) v=0.523 a=0.413</title></circle><circle cx="180.5" cy="210.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>euphoric (weather) v=0.442 a=0.361</title></circle><circle cx="235.2" cy="234.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>euphoric (report) v=0.472 a=0.334</title></circle><circle cx="199.6" cy="256.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>excited (weather) v=0.452 a=0.310</title></circle><circle cx="290.1" cy="202.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>excited (report) v=0.501 a=0.370</title></circle><circle cx="229.6" cy="209.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>flirtatious (weather) v=0.469 a=0.362</title></circle><circle cx="383.8" cy="144.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>flirtatious (report) v=0.552 a=0.433</title></circle><circle cx="311.3" cy="182.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>frustrated (weather) v=0.513 a=0.392</title></circle><circle cx="430.1" cy="173.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>frustrated (report) v=0.577 a=0.401</title></circle><circle cx="150.8" cy="233.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>grateful (weather) v=0.426 a=0.336</title></circle><circle cx="318.7" cy="198.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>grateful (report) v=0.517 a=0.374</title></circle><circle cx="91.4" cy="268.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>guilty (weather) v=0.394 a=0.297</title></circle><circle cx="315.3" cy="218.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>guilty (report) v=0.515 a=0.352</title></circle><circle cx="272.3" cy="190.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>happy (weather) v=0.492 a=0.383</title></circle><circle cx="351.6" cy="136.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>happy (report) v=0.534 a=0.442</title></circle><circle cx="149.0" cy="240.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hesitant (weather) v=0.425 a=0.328</title></circle><circle cx="274.8" cy="234.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hesitant (report) v=0.493 a=0.334</title></circle><circle cx="181.1" cy="232.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hurt (weather) v=0.442 a=0.336</title></circle><circle cx="259.7" cy="224.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hurt (report) v=0.485 a=0.346</title></circle><circle cx="159.9" cy="197.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>insecure (weather) v=0.431 a=0.376</title></circle><circle cx="363.4" cy="127.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>insecure (report) v=0.541 a=0.451</title></circle><circle cx="165.7" cy="195.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>ironic (weather) v=0.434 a=0.377</title></circle><circle cx="350.3" cy="138.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>ironic (report) v=0.534 a=0.440</title></circle><circle cx="185.3" cy="274.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>mad (weather) v=0.445 a=0.291</title></circle><circle cx="398.2" cy="110.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>mad (report) v=0.560 a=0.471</title></circle><circle cx="145.4" cy="187.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>melancholic (weather) v=0.423 a=0.386</title></circle><circle cx="260.8" cy="205.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>melancholic (report) v=0.485 a=0.367</title></circle><circle cx="239.1" cy="187.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>mysterious (weather) v=0.474 a=0.387</title></circle><circle cx="375.0" cy="122.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>mysterious (report) v=0.547 a=0.457</title></circle><circle cx="99.7" cy="263.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>neutral (weather) v=0.398 a=0.304</title></circle><circle cx="327.0" cy="163.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>neutral (report) v=0.521 a=0.412</title></circle><circle cx="178.1" cy="232.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>nostalgic (weather) v=0.441 a=0.337</title></circle><circle cx="275.2" cy="171.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>nostalgic (report) v=0.493 a=0.404</title></circle><circle cx="178.7" cy="220.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>outraged (weather) v=0.441 a=0.350</title></circle><circle cx="365.4" cy="137.2" r="4" fill="#eb6834" fill-opacity="0.75"><title>outraged (report) v=0.542 a=0.441</title></circle><circle cx="212.2" cy="204.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>panicked (weather) v=0.459 a=0.368</title></circle><circle cx="323.6" cy="101.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>panicked (report) v=0.519 a=0.480</title></circle><circle cx="221.9" cy="204.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>peaceful (weather) v=0.464 a=0.367</title></circle><circle cx="318.7" cy="153.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>peaceful (report) v=0.517 a=0.423</title></circle><circle cx="223.3" cy="280.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>proud (weather) v=0.465 a=0.285</title></circle><circle cx="312.8" cy="168.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>proud (report) v=0.514 a=0.407</title></circle><circle cx="118.4" cy="223.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>rejected (weather) v=0.408 a=0.347</title></circle><circle cx="298.6" cy="138.5" r="4" fill="#eb6834" fill-opacity="0.75"><title>rejected (report) v=0.506 a=0.440</title></circle><circle cx="248.2" cy="196.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>resigned (weather) v=0.479 a=0.377</title></circle><circle cx="325.6" cy="164.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>resigned (report) v=0.520 a=0.411</title></circle><circle cx="40.0" cy="274.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sad (weather) v=0.366 a=0.291</title></circle><circle cx="358.0" cy="144.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>sad (report) v=0.538 a=0.433</title></circle><circle cx="196.3" cy="228.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sarcastic (weather) v=0.451 a=0.341</title></circle><circle cx="243.2" cy="180.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sarcastic (report) v=0.476 a=0.393</title></circle><circle cx="127.9" cy="205.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>scared (weather) v=0.414 a=0.367</title></circle><circle cx="434.0" cy="69.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>scared (report) v=0.579 a=0.516</title></circle><circle cx="182.0" cy="197.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>serene (weather) v=0.443 a=0.375</title></circle><circle cx="391.4" cy="131.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>serene (report) v=0.556 a=0.448</title></circle><circle cx="180.3" cy="273.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>skeptical (weather) v=0.442 a=0.292</title></circle><circle cx="383.0" cy="154.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>skeptical (report) v=0.551 a=0.422</title></circle><circle cx="252.2" cy="208.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>surprised (weather) v=0.481 a=0.363</title></circle><circle cx="347.4" cy="139.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>surprised (report) v=0.532 a=0.438</title></circle><circle cx="145.3" cy="226.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sympathetic (weather) v=0.423 a=0.343</title></circle><circle cx="318.3" cy="198.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>sympathetic (report) v=0.516 a=0.374</title></circle><circle cx="224.1" cy="171.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>threatened (weather) v=0.466 a=0.404</title></circle><circle cx="382.8" cy="118.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>threatened (report) v=0.551 a=0.461</title></circle><circle cx="194.8" cy="210.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>tired (weather) v=0.450 a=0.361</title></circle><circle cx="306.2" cy="156.5" r="4" fill="#eb6834" fill-opacity="0.75"><title>tired (report) v=0.510 a=0.420</title></circle><circle cx="182.0" cy="230.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>triumphant (weather) v=0.443 a=0.340</title></circle><circle cx="275.8" cy="194.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>triumphant (report) v=0.494 a=0.379</title></circle><circle cx="254.0" cy="238.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>trust (weather) v=0.482 a=0.331</title></circle><circle cx="346.4" cy="151.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>trust (report) v=0.532 a=0.426</title></circle><circle cx="111.5" cy="268.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>wistful (weather) v=0.405 a=0.297</title></circle><circle cx="297.8" cy="255.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>wistful (report) v=0.505 a=0.312</title></circle>
+    </svg>
+    <p class="caption">
+      116 clips, 58 tags, k=2 clusters
+      (silhouette=0.561), valence span=0.216.
+      Hover a point for its tag.
+    </p>
+    <p class="finding"><strong>Finding:</strong> Duration/RMS vary substantially by tag (confirmed manually -- Cartesia is responding to the emotion parameter), but the measured valence range across all 58 tags spans only 0.216 on a [0,1] scale, clustered near 0.5. This is read as a DOMAIN-GAP finding: the audeering VAD model (trained on real naturalistic speech, MSP-Podcast) does not reliably decode valence from synthetic TTS prosody, not as evidence Cartesia's tags are inert. Consequently, E2/E4 tag selection is NOT gated by this clustering (it was too degenerate to trust as a filter) -- instead it draws a deliberately diverse tag set directly from ssa.mapping.CARTESIA_MAP, with ground-truth prosody labels coming from TTS INTENT (the requested tag), following the EMIS precedent (arXiv 2510.25054), not from re-verifying with this or any other classifier. This finding is itself reported as a caveat on any acoustic-solution result measured on synthetic data, and strengthens the case for E3 (human recordings) as the necessary validity anchor for E2.</p>
+    
+
+<h2>Voice-health demo</h2>
+
+    <p>Extraction implemented and verified against synthetic signals (see ssa/voicehealth.py,
+    ssa/paralinguistic.py): CPPS, HNR, jitter, shimmer, and an AVQI composite via
+    praat-parselmouth; whisper/breathiness detection via openSMILE eGeMAPS.</p>
+    <p class="unmeasured">The per-speaker longitudinal baseline gate (separating presbyphonia &mdash;
+    a trait drifting over years &mdash; from acute illness &mdash; a state deviating from a personal
+    baseline over days) is a <strong>design proposal, argued from literature, not measured in this study</strong>: no longitudinal
+    single-speaker data exists to validate it against. See DESIGN.md's roadmap.</p>
+    
+
+<footer class="caption">
+  <p>🤖 Report generator: <code>ssa/report.py</code>. Regenerate with <code>make report</code>.</p>
+</footer>
+</body>
+</html>

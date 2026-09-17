@@ -40,6 +40,11 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+# report.py's HTML templates are triple-quoted f-strings; wrapping markup
+# lines to 100 cols hurts readability more than it helps.
+"ssa/report.py" = ["E501"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
