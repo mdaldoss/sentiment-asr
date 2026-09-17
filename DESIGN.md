@@ -67,6 +67,29 @@ quadrants "for free" for the roadmap, without training a second model.
 
 ## Results (measured, not projected)
 
+**The headline comparison** — A/B/C on the same stratified 300-clip CREMA-D test
+subset (100 per sentiment class):
+
+| Solution | UAR | Macro-F1 | PSI<sub>contested</sub> | Abstention |
+|---|---|---|---|---|
+| **A — Lexical** | 0.360 | 0.264 | **0.090** | 0.0% |
+| **B — Acoustic (permissive)** | **0.797** | 0.796 | 0.920 | 0.0% |
+| **C — Fusion** | 0.797 | 0.796 | 0.891 | 10.3% |
+
+This is exactly the shape the project's design predicts. **A is barely above chance**
+(1/3 for a balanced 3-way problem) **and structurally can't sense tone** (PSI=0.090,
+near the 0.0 "reads the transcript" pole) — because CREMA-D's carrier text is always
+neutral, a text classifier has almost nothing to work with, and correctly gets close
+to nothing right. **B, hearing only the tone, is the strongest of the three** by a wide
+margin. **C matches B's accuracy** while adding calibration: it abstains on 10.3% of
+predictions (the fitted threshold, chosen on validation data to flag genuinely
+low-confidence cases) and its fusion weight came out at `weight_lexical=0.45` —
+roughly balanced on paper, but B's near-certain predictions dominate the log-pooled
+result in practice, which is why C's PSI (0.891) stays close to B's rather than
+collapsing toward A's.
+
+**Full A/B/C numbers on E1's held-out speaker-disjoint test set:**
+
 | | UAR | Notes |
 |---|---|---|
 | B, permissive, speaker-disjoint test (n=1,470) | **0.744** | held out, never touched during training |
@@ -82,6 +105,14 @@ acoustic variance may matter less here than in less controlled corpora. Reported
 measured — the number did not confirm my prior expectation and I am not adjusting it
 to fit.
 
+**A caveat on this comparison, stated plainly:** because CREMA-D's text is always
+neutral, this A/B/C table demonstrates the words-vs-tone axis in the *easiest possible*
+direction for B (there is no competing lexical signal to resist). E2's crossed design
+— genuinely sentiment-laden text paired against conflicting tone — is the harder,
+more informative version of this same test, and it is what will actually tell us
+whether B (or C) can hold onto prosody when the words argue against it. That result
+was not available at submission time (see Known limitations).
+
 **A structural caveat on E1's PSI**, discovered while building the report: since
 CREMA-D's text is *always* neutral, an acoustic-only solution structurally cannot
 "read" sentiment-laden words that were never there — PSI on E1 came back at 0.945,
@@ -89,9 +120,10 @@ which looks impressive but is close to vacuous. This is precisely why E2/E3 (bui
 with genuinely sentiment-laden text) exist: E1 alone cannot test the words-vs-tone
 question in an interesting way.
 
-*A full A/B/C comparison table on a matched subset, and the E2/E3 PSI results, were
-still completing at submission time — see the live dashboard
-(`report/index.html`, regenerate with `make report`) for whatever had landed.*
+The full A/B/C comparison table is above. The E2/E3 PSI results (the harder,
+genuinely-competing-signals version of this test) were not available at submission
+time — see the live dashboard (`report/index.html`, regenerate with `make report`)
+for whatever has landed since.
 
 ## Key trade-offs
 

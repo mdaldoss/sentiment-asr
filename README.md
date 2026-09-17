@@ -65,8 +65,17 @@ recordings, and an unsupervised probe of Cartesia's emotion-tag space.
 disagree, the fraction of predictions that follow the *tone*. 1.0 = listens, 0.0 = reads
 the transcript. See `ssa/eval/metrics.py` for the exact definition.
 
-**Real, measured result:** the permissive backend scores **UAR=0.744** on CREMA-D's
-held-out speaker-disjoint test split (never touched during training). See `DESIGN.md`
+**Real, measured headline result** (300-clip stratified CREMA-D test subset):
+
+| | UAR | PSI<sub>contested</sub> |
+|---|---|---|
+| A — Lexical | 0.360 | 0.090 |
+| B — Acoustic | **0.797** | 0.920 |
+| C — Fusion | 0.797 | 0.891 |
+
+Exactly the shape the design predicts: lexical-only is barely above chance and
+structurally can't sense tone (CREMA-D's text is always neutral); acoustic-only, the
+only one that can actually hear the emotion, wins by a wide margin. See `DESIGN.md`
 and `report/index.html` for the full results, including a real leakage measurement and
 an unexpected domain-gap finding from the D0 probe.
 

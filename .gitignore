@@ -19,6 +19,7 @@ data/cremad/
 data/cache/*
 !data/cache/probe_permissive.joblib
 !data/cache/thresholds_research.json
+!data/cache/fusion_params.json
 
 # TTS-generated audio: regenerable with a Cartesia key (see .env.example),
 # costs API budget to regenerate -- results/d0_emotion_space.json (the
