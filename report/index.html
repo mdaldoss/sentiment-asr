@@ -54,8 +54,41 @@
   full write-up.</p>
 </header>
 
+<h2>What this is, and the one idea</h2>
+<p>Sentiment (positive / neutral / negative) from <strong>raw speech audio</strong>, not
+a handed-over transcript. The question that matters isn't "what accuracy?" but
+<strong>"does the model hear the tone, or is it just reading the words?"</strong>
+&mdash; an audio model can cheat by reading text sentiment instead of prosody, which
+published work confirms is the default failure mode (arXiv 2510.10444, arXiv
+2510.25054). Every dataset and metric here (PSI above all) exists to catch that.</p>
+
+<h2>Architecture</h2>
+<p>Three solutions on the lexical&harr;acoustic axis, one interface
+(<code>ssa.types.Solution</code>), so the evaluation harness treats them identically:</p>
+<table>
+  <thead><tr><th></th><th>Solution</th><th>Reads</th><th>License</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A</strong></td><td>Lexical &mdash; ASR (faster-whisper) &rarr; text sentiment</td><td>the words</td><td>MIT</td></tr>
+    <tr><td><strong>B</strong></td><td>Acoustic &mdash; frozen encoder + trained probe</td><td>the tone</td><td>permissive (WavLM) or research (audeering, CC-BY-NC-SA-4.0)</td></tr>
+    <tr><td><strong>C</strong></td><td>Fusion &mdash; calibrated late fusion + abstention</td><td>both</td><td>recommended default</td></tr>
+  </tbody>
+</table>
+<p class="caption">Shared internal representation: valence-arousal-dominance (VAD).
+Sentiment is a threshold read-out of valence. Late fusion (not joint) deliberately
+sacrifices some accuracy to keep PSI computable per branch &mdash; see DESIGN.md's
+Key trade-offs.</p>
+
+<h2>Method</h2>
+<p>Speaker-disjoint splits always (a parallel leaky split exists only to quantify the
+leakage gap, see below). <strong>UAR</strong> (unweighted average recall), not plain
+accuracy, is the headline metric &mdash; CREMA-D is imbalanced enough that a
+majority-class predictor would look good on accuracy alone. <strong>PSI</strong>
+(Prosody Sensitivity Index): on clips where words and tone disagree, the fraction of
+predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
+<code>ssa/eval/metrics.py</code>.</p>
+
 <h2>Status</h2>
-<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='done'>&check; E2 (synthetic incongruence set)</li><li class='pending'>&hellip; E3 (human recordings)</li></ul>
+<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='done'>&check; D1 (Cartesia emotion-rendering factorial probe)</li><li class='done'>&check; E2 (synthetic incongruence set)</li><li class='done'>&check; E3 (human recordings, both takes recorded + evaluated)</li></ul>
 
 <h2>Main comparison: solutions &times; datasets</h2>
 
@@ -65,7 +98,7 @@
         <th>UAR</th><th>Macro-F1</th><th>Accuracy</th>
         <th>PSI<sub>contested</sub></th><th>PSI<sub>strict</sub></th><th>Abstention</th>
       </tr></thead>
-      <tbody><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.744</td><td class='num'>0.744</td><td class='num'>0.816</td><td class='num'>0.945</td><td class='num'>0.837</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.360</td><td class='num'>0.264</td><td class='num'>0.360</td><td class='num'>0.090</td><td class='num'>0.085</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.797</td><td class='num'>0.796</td><td class='num'>0.797</td><td class='num'>0.920</td><td class='num'>0.800</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.797</td><td class='num'>0.796</td><td class='num'>0.797</td><td class='num'>0.891</td><td class='num'>0.775</td><td class='num'>10.3%</td></tr></tbody>
+      <tbody><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.744</td><td class='num'>0.744</td><td class='num'>0.816</td><td class='num'>0.945</td><td class='num'>0.837</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.360</td><td class='num'>0.264</td><td class='num'>0.360</td><td class='num'>0.090</td><td class='num'>0.085</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.797</td><td class='num'>0.796</td><td class='num'>0.797</td><td class='num'>0.920</td><td class='num'>0.800</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.797</td><td class='num'>0.796</td><td class='num'>0.797</td><td class='num'>0.891</td><td class='num'>0.775</td><td class='num'>10.3%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e3a / all</td><td>27</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.000</td><td class='num'>0.000</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.370</td><td class='num'>0.444</td><td class='num'>0.643</td><td class='num'>0.500</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.432</td><td class='num'>0.444</td><td class='num'>0.294</td><td class='num'>0.278</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.370</td><td class='num'>0.444</td><td class='num'>0.643</td><td class='num'>0.500</td><td class='num'>7.4%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e3b / all</td><td>27</td><td class='num'>0.370</td><td class='num'>0.369</td><td class='num'>0.370</td><td class='num'>0.056</td><td class='num'>0.056</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e3b / all</td><td>27</td><td class='num'>0.519</td><td class='num'>0.432</td><td class='num'>0.519</td><td class='num'>0.615</td><td class='num'>0.444</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e3b / all</td><td>27</td><td class='num'>0.593</td><td class='num'>0.576</td><td class='num'>0.593</td><td class='num'>0.444</td><td class='num'>0.444</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e3b / all</td><td>27</td><td class='num'>0.556</td><td class='num'>0.505</td><td class='num'>0.556</td><td class='num'>0.615</td><td class='num'>0.444</td><td class='num'>11.1%</td></tr></tbody>
     </table>
     <p class="caption">UAR is the headline accuracy-family metric (class-imbalance robust). PSI is the
     headline prosody metric: 1.0 = follows tone, 0.0 = follows words, 0.5/0.33 = chance
@@ -109,6 +142,87 @@
       Hover a point for its tag.
     </p>
     <p class="finding"><strong>Finding:</strong> Duration/RMS vary substantially by tag (confirmed manually -- Cartesia is responding to the emotion parameter), but the measured valence range across all 58 tags spans only 0.216 on a [0,1] scale, clustered near 0.5. This is read as a DOMAIN-GAP finding: the audeering VAD model (trained on real naturalistic speech, MSP-Podcast) does not reliably decode valence from synthetic TTS prosody, not as evidence Cartesia's tags are inert. Consequently, E2/E4 tag selection is NOT gated by this clustering (it was too degenerate to trust as a filter) -- instead it draws a deliberately diverse tag set directly from ssa.mapping.CARTESIA_MAP, with ground-truth prosody labels coming from TTS INTENT (the requested tag), following the EMIS precedent (arXiv 2510.25054), not from re-verifying with this or any other classifier. This finding is itself reported as a caveat on any acoustic-solution result measured on synthetic data, and strengthens the case for E3 (human recordings) as the necessary validity anchor for E2.</p>
+    
+
+<h2>D1: does Cartesia render these emotions audibly?</h2>
+
+    <p>Factorial probe: 5 emotions (happy/sad/angry/calm/frustrated) &times; text condition
+    (neutral/congruent) &times; length (short/long) &times; speed (default/adjusted) =
+    40 clips, plus a 5-clip sonic-3 vs sonic-3.5
+    comparison on the cell with the widest F0 spread. Measured with 4 independent
+    instruments (F0, eGeMAPS, our WavLM probe, the audeering VAD model).</p>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Chance</th></tr></thead>
+      <tbody>
+        <tr><td>Intended-emotion recoverability (leave-one-carrier-out)</td>
+            <td class="num">0.175</td><td class="num">0.200</td></tr>
+        <tr><td>F0 span across the 5 emotions (averaged over all 8 conditions)</td>
+            <td class="num">8.0 Hz</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">F0 rank of each emotion, averaged across the 8 conditions
+    (1 = highest pitch; chance = 3.0 for 5 classes):</p>
+    <table><thead><tr><th>Emotion</th><th>Mean rank</th></tr></thead><tbody><tr><td>happy</td><td class='num'>2.75</td></tr><tr><td>sad</td><td class='num'>3.12</td></tr><tr><td>angry</td><td class='num'>2.88</td></tr><tr><td>calm</td><td class='num'>3.00</td></tr><tr><td>frustrated</td><td class='num'>3.25</td></tr></tbody></table>
+    <p class="caption">Valence ordering (positive &gt; neutral &gt; negative) recovered?
+    Permissive (our WavLM probe): <strong>False</strong>.
+    Research (audeering): <strong>True</strong>.</p>
+    <p class="finding"><strong>Finding:</strong> Coarse, ~40-clip synthetic probe (CLAUDE.md rule 6: not claimed as more than that). recoverability_cv's accuracy is a leave-one-carrier-out logistic regression on no-fitting descriptive/eGeMAPS features (chance=0.20, 5-way); per_emotion_summary's F0/valence means are the primary descriptive evidence and need no fitting. f0_rank_consistency is a second, robustness check on f0_span_across_emotions_hz: averaging raw F0 across cells can wash out a real but sign-flipping effect, so mean rank per emotion (chance=3.0 for 5 items) is reported alongside it -- a mean rank near 3.0 for every emotion means no emotion is consistently higher- or lower-pitched than the others across conditions, which raw span alone cannot rule out. Listen at report/d1_listening.html -- it is the real arbiter this probe exists to produce, since measurement can be wrong in ways listening isn't (see D0's own domain-gap finding, results/d0_emotion_space.json).</p>
+    <p class="caption">Listen for yourself: <code>report/d1_listening.html</code>
+    (matched A/B pairs) and <code>report/listening_sorted.html</code>
+    (all D1+E3 clips, ranked by detection score).</p>
+    
+
+<h2>E3: human recordings, and a control on the D1 finding</h2>
+
+    <p>The exact instruments and method D1 used on Cartesia TTS (leave-one-carrier-out
+    recoverability, F0 rank consistency), re-run on real human speech &mdash; the same
+    27 prompts, spoken by the same person, recorded twice independently
+    (<code>data/recorded0</code>, <code>data/recorded</code>).</p>
+    <table>
+      <thead><tr><th>Source</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
+      <th>"positive" mean F0 rank (1=highest)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cartesia (D1)</strong></td>
+            <td class="num">0.175</td>
+            <td class="num">0.200</td>
+            <td class="num">8.0 Hz</td><td class="num">&mdash;</td></tr>
+        <tr><td>e3a</td><td class='num'>0.667</td><td class='num'>0.333</td><td class='num'>32.9 Hz</td><td class='num'>1.00</td></tr><tr><td>e3b</td><td class='num'>0.741</td><td class='num'>0.333</td><td class='num'>33.9 Hz</td><td class='num'>1.00</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">Test-retest correlation between the two human takes (same prompts,
+    same speaker, independent recordings) &mdash; how consistent is each instrument's own
+    reading of itself? F0 mean: r=0.79. Research-backend valence:
+    r=0.92. Permissive-backend valence proxy:
+    r=-0.19 &mdash; our shipped probe barely
+    correlates with itself across two takes of the same prompts.</p>
+    <p class="finding"><strong>Finding:</strong> Same instruments, same method as D1 (scripts/gen_emotion_probe_d1.py), run on real human recordings instead of Cartesia TTS. If recoverability/F0-span/rank come out well above chance here while D1 was at or below chance, that rules out the instruments as the explanation for D1's negative result -- the audio itself is what differs. Replicated across two independent takes by the same speaker; see test_retest_correlation_take0_vs_take1 for how consistent each instrument's own readings are across takes, which bears on Solution B's reliability, not just its accuracy. n=1 speaker -- this is a controlled instrument check, not a claim about speech-emotion recognition in general.</p>
+    
+
+<h2>What didn't work, and why</h2>
+
+    <p>The project's thesis made visible &mdash; failures kept in, not buried:</p>
+    <ul>
+      <li><strong>D0</strong> &mdash; Cartesia's emotion-tag clustering (audeering VAD
+      embedding) was too degenerate to trust as a tag filter for E2.</li>
+      <li><strong>D1</strong> &mdash; the user's proposed 5-emotion set was not
+      measurably audible in Cartesia's output on any tested text/length/speed
+      condition (recoverability below chance). See the D1 section above.</li>
+      <li><strong>E2</strong> &mdash; the 76-clip synthetic incongruence set is flat
+      and inexpressive, consistent with D0/D1; kept committed as the historical
+      exhibit for that finding rather than deleted or completed.</li>
+      <li><strong>Solution B (permissive) on E3</strong> &mdash; UAR 0.444/0.519 on a
+      new, real speaker, never predicting "positive" at all on one take, and barely
+      self-consistent across two independent recordings of the same prompts
+      (r=&minus;0.19). See the E3 section above.</li>
+      <li><strong>Per-speaker recalibration</strong> &mdash; tried on E3
+      (leave-one-carrier-out threshold fitting), helped in 1 of 4 backend&times;take
+      combinations and hurt in the other 3. Reported as a negative result at this
+      sample size, not shipped as a feature &mdash; see DESIGN.md.</li>
+      <li><strong>Live browser demo</strong> &mdash; not built in this session
+      (time/budget constraint, stated plainly rather than silently dropped). The CLI
+      (<code>uv run python -m ssa.cli --audio &lt;file&gt;</code>) gives the same
+      end-to-end prediction on any local recording today.</li>
+    </ul>
     
 
 <h2>Voice-health demo</h2>

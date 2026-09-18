@@ -188,6 +188,117 @@ def render_d0_section(d0: dict | None) -> str:
     """
 
 
+def render_d1_section(d1: dict | None) -> str:
+    if d1 is None:
+        return "<p class='pending'>D1 emotion-rendering probe not yet run.</p>"
+
+    cv = d1["recoverability_cv"]
+    rank = d1["f0_rank_consistency"]
+    rank_rows = "".join(
+        f"<tr><td>{emotion}</td><td class='num'>{v:.2f}</td></tr>"
+        for emotion, v in rank["mean_rank_by_emotion"].items()
+    )
+    ordering = d1["valence_ordering_matches_intended_sentiment"]
+    return f"""
+    <p>Factorial probe: 5 emotions (happy/sad/angry/calm/frustrated) &times; text condition
+    (neutral/congruent) &times; length (short/long) &times; speed (default/adjusted) =
+    {d1["grid_size"]} clips, plus a {d1["comparison_size"]}-clip sonic-3 vs sonic-3.5
+    comparison on the cell with the widest F0 spread. Measured with 4 independent
+    instruments (F0, eGeMAPS, our WavLM probe, the audeering VAD model).</p>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Chance</th></tr></thead>
+      <tbody>
+        <tr><td>Intended-emotion recoverability (leave-one-carrier-out)</td>
+            <td class="num">{_fmt(cv["accuracy"])}</td><td class="num">{_fmt(cv["chance"])}</td></tr>
+        <tr><td>F0 span across the 5 emotions (averaged over all 8 conditions)</td>
+            <td class="num">{_fmt(d1.get("f0_span_across_emotions_hz"), 1)} Hz</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">F0 rank of each emotion, averaged across the 8 conditions
+    (1 = highest pitch; chance = {_fmt(rank["chance_mean_rank"], 1)} for 5 classes):</p>
+    <table><thead><tr><th>Emotion</th><th>Mean rank</th></tr></thead><tbody>{rank_rows}</tbody></table>
+    <p class="caption">Valence ordering (positive &gt; neutral &gt; negative) recovered?
+    Permissive (our WavLM probe): <strong>{ordering.get("permissive")}</strong>.
+    Research (audeering): <strong>{ordering.get("research")}</strong>.</p>
+    <p class="finding"><strong>Finding:</strong> {d1["interpretation"]}</p>
+    <p class="caption">Listen for yourself: <code>report/d1_listening.html</code>
+    (matched A/B pairs) and <code>report/listening_sorted.html</code>
+    (all D1+E3 clips, ranked by detection score).</p>
+    """
+
+
+def render_e3_control_section(control: dict | None) -> str:
+    if control is None:
+        return "<p class='pending'>E3 evaluation / D1-vs-human control not yet run.</p>"
+
+    cartesia = control["cartesia_d1"]
+    takes = control["human_e3"]
+    tr = control["test_retest_correlation_take0_vs_take1"]
+
+    take_rows = "".join(
+        f"<tr><td>{label}</td>"
+        f"<td class='num'>{_fmt(t['recoverability_cv']['accuracy'])}</td>"
+        f"<td class='num'>{_fmt(t['recoverability_cv']['chance'])}</td>"
+        f"<td class='num'>{_fmt(t['f0_span_hz'], 1)} Hz</td>"
+        f"<td class='num'>{_fmt(t['f0_rank_consistency']['mean_rank_by_sentiment'].get('positive'), 2)}</td>"
+        "</tr>"
+        for label, t in takes.items()
+    )
+
+    return f"""
+    <p>The exact instruments and method D1 used on Cartesia TTS (leave-one-carrier-out
+    recoverability, F0 rank consistency), re-run on real human speech &mdash; the same
+    27 prompts, spoken by the same person, recorded twice independently
+    (<code>data/recorded0</code>, <code>data/recorded</code>).</p>
+    <table>
+      <thead><tr><th>Source</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
+      <th>"positive" mean F0 rank (1=highest)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cartesia (D1)</strong></td>
+            <td class="num">{_fmt(cartesia["recoverability_accuracy"])}</td>
+            <td class="num">{_fmt(cartesia["recoverability_chance"])}</td>
+            <td class="num">{_fmt(cartesia["f0_span_hz"], 1)} Hz</td><td class="num">&mdash;</td></tr>
+        {take_rows}
+      </tbody>
+    </table>
+    <p class="caption">Test-retest correlation between the two human takes (same prompts,
+    same speaker, independent recordings) &mdash; how consistent is each instrument's own
+    reading of itself? F0 mean: r={_fmt(tr.get("f0_mean"), 2)}. Research-backend valence:
+    r={_fmt(tr.get("research_valence"), 2)}. Permissive-backend valence proxy:
+    r={_fmt(tr.get("permissive_valence_proxy"), 2)} &mdash; our shipped probe barely
+    correlates with itself across two takes of the same prompts.</p>
+    <p class="finding"><strong>Finding:</strong> {control["interpretation"]}</p>
+    """
+
+
+def render_what_didnt_work() -> str:
+    return """
+    <p>The project's thesis made visible &mdash; failures kept in, not buried:</p>
+    <ul>
+      <li><strong>D0</strong> &mdash; Cartesia's emotion-tag clustering (audeering VAD
+      embedding) was too degenerate to trust as a tag filter for E2.</li>
+      <li><strong>D1</strong> &mdash; the user's proposed 5-emotion set was not
+      measurably audible in Cartesia's output on any tested text/length/speed
+      condition (recoverability below chance). See the D1 section above.</li>
+      <li><strong>E2</strong> &mdash; the 76-clip synthetic incongruence set is flat
+      and inexpressive, consistent with D0/D1; kept committed as the historical
+      exhibit for that finding rather than deleted or completed.</li>
+      <li><strong>Solution B (permissive) on E3</strong> &mdash; UAR 0.444/0.519 on a
+      new, real speaker, never predicting "positive" at all on one take, and barely
+      self-consistent across two independent recordings of the same prompts
+      (r=&minus;0.19). See the E3 section above.</li>
+      <li><strong>Per-speaker recalibration</strong> &mdash; tried on E3
+      (leave-one-carrier-out threshold fitting), helped in 1 of 4 backend&times;take
+      combinations and hurt in the other 3. Reported as a negative result at this
+      sample size, not shipped as a feature &mdash; see DESIGN.md.</li>
+      <li><strong>Live browser demo</strong> &mdash; not built in this session
+      (time/budget constraint, stated plainly rather than silently dropped). The CLI
+      (<code>uv run python -m ssa.cli --audio &lt;file&gt;</code>) gives the same
+      end-to-end prediction on any local recording today.</li>
+    </ul>
+    """
+
+
 def render_voicehealth_demo() -> str:
     return f"""
     <p>Extraction implemented and verified against synthetic signals (see ssa/voicehealth.py,
@@ -209,11 +320,16 @@ def render_status(results: list[dict[str, Any]]) -> str:
     have_e3 = (REPO_ROOT / "data/recorded").exists() and any(
         (REPO_ROOT / "data/recorded").glob("*.wav")
     )
+    have_e3_eval = (RESULTS_DIR / "d1_vs_e3_control.json").exists()
     items = [
         ("E1 (CREMA-D, public benchmark)", True),
         ("D0 (Cartesia emotion-space probe)", (RESULTS_DIR / "d0_emotion_space.json").exists()),
+        (
+            "D1 (Cartesia emotion-rendering factorial probe)",
+            (RESULTS_DIR / "d1_emotion_probe.json").exists(),
+        ),
         ("E2 (synthetic incongruence set)", have_e2),
-        ("E3 (human recordings)", have_e3),
+        ("E3 (human recordings, both takes recorded + evaluated)", have_e3 and have_e3_eval),
     ]
     li_parts = []
     for name, done in items:
@@ -230,6 +346,8 @@ def build_report() -> str:
     # from smaller hand-written result files (e.g. leakage_comparison_*.json).
     eval_results = [r for r in results if "confusion_matrix" in r]
     d0 = load_json_if_exists(RESULTS_DIR / "d0_emotion_space.json")
+    d1 = load_json_if_exists(RESULTS_DIR / "d1_emotion_probe.json")
+    e3_control = load_json_if_exists(RESULTS_DIR / "d1_vs_e3_control.json")
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
     disjoint_permissive = next(
         (
@@ -300,6 +418,39 @@ def build_report() -> str:
   full write-up.</p>
 </header>
 
+<h2>What this is, and the one idea</h2>
+<p>Sentiment (positive / neutral / negative) from <strong>raw speech audio</strong>, not
+a handed-over transcript. The question that matters isn't "what accuracy?" but
+<strong>"does the model hear the tone, or is it just reading the words?"</strong>
+&mdash; an audio model can cheat by reading text sentiment instead of prosody, which
+published work confirms is the default failure mode (arXiv 2510.10444, arXiv
+2510.25054). Every dataset and metric here (PSI above all) exists to catch that.</p>
+
+<h2>Architecture</h2>
+<p>Three solutions on the lexical&harr;acoustic axis, one interface
+(<code>ssa.types.Solution</code>), so the evaluation harness treats them identically:</p>
+<table>
+  <thead><tr><th></th><th>Solution</th><th>Reads</th><th>License</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A</strong></td><td>Lexical &mdash; ASR (faster-whisper) &rarr; text sentiment</td><td>the words</td><td>MIT</td></tr>
+    <tr><td><strong>B</strong></td><td>Acoustic &mdash; frozen encoder + trained probe</td><td>the tone</td><td>permissive (WavLM) or research (audeering, CC-BY-NC-SA-4.0)</td></tr>
+    <tr><td><strong>C</strong></td><td>Fusion &mdash; calibrated late fusion + abstention</td><td>both</td><td>recommended default</td></tr>
+  </tbody>
+</table>
+<p class="caption">Shared internal representation: valence-arousal-dominance (VAD).
+Sentiment is a threshold read-out of valence. Late fusion (not joint) deliberately
+sacrifices some accuracy to keep PSI computable per branch &mdash; see DESIGN.md's
+Key trade-offs.</p>
+
+<h2>Method</h2>
+<p>Speaker-disjoint splits always (a parallel leaky split exists only to quantify the
+leakage gap, see below). <strong>UAR</strong> (unweighted average recall), not plain
+accuracy, is the headline metric &mdash; CREMA-D is imbalanced enough that a
+majority-class predictor would look good on accuracy alone. <strong>PSI</strong>
+(Prosody Sensitivity Index): on clips where words and tone disagree, the fraction of
+predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
+<code>ssa/eval/metrics.py</code>.</p>
+
 <h2>Status</h2>
 {render_status(eval_results)}
 
@@ -311,6 +462,15 @@ def build_report() -> str:
 
 <h2>D0: Cartesia emotion-space probe</h2>
 {render_d0_section(d0)}
+
+<h2>D1: does Cartesia render these emotions audibly?</h2>
+{render_d1_section(d1)}
+
+<h2>E3: human recordings, and a control on the D1 finding</h2>
+{render_e3_control_section(e3_control)}
+
+<h2>What didn't work, and why</h2>
+{render_what_didnt_work()}
 
 <h2>Voice-health demo</h2>
 {render_voicehealth_demo()}

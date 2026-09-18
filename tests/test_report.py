@@ -9,9 +9,12 @@ from ssa.report import (
     _fmt,
     _pct,
     _solution_short,
+    render_d1_section,
+    render_e3_control_section,
     render_leakage_table,
     render_main_table,
     render_status,
+    render_what_didnt_work,
 )
 
 
@@ -121,3 +124,95 @@ class TestRenderStatus:
         html = render_status([])
         assert "done" in html
         assert "CREMA-D" in html
+
+
+def _fake_d1() -> dict:
+    return {
+        "grid_size": 40,
+        "comparison_size": 5,
+        "recoverability_cv": {"accuracy": 0.175, "chance": 0.2},
+        "f0_span_across_emotions_hz": 7.98,
+        "f0_rank_consistency": {
+            "chance_mean_rank": 3.0,
+            "mean_rank_by_emotion": {
+                "happy": 2.75,
+                "sad": 3.125,
+                "angry": 2.875,
+                "calm": 3.0,
+                "frustrated": 3.25,
+            },
+        },
+        "valence_ordering_matches_intended_sentiment": {"permissive": False, "research": True},
+        "interpretation": "coarse synthetic probe, see CLAUDE.md rule 6",
+    }
+
+
+def _fake_e3_control() -> dict:
+    return {
+        "cartesia_d1": {
+            "recoverability_accuracy": 0.175,
+            "recoverability_chance": 0.2,
+            "f0_span_hz": 7.98,
+        },
+        "human_e3": {
+            "e3a": {
+                "recoverability_cv": {"accuracy": 0.667, "chance": 0.333},
+                "f0_span_hz": 32.9,
+                "f0_rank_consistency": {"mean_rank_by_sentiment": {"positive": 1.0}},
+            },
+            "e3b": {
+                "recoverability_cv": {"accuracy": 0.741, "chance": 0.333},
+                "f0_span_hz": 33.9,
+                "f0_rank_consistency": {"mean_rank_by_sentiment": {"positive": 1.0}},
+            },
+        },
+        "test_retest_correlation_take0_vs_take1": {
+            "f0_mean": 0.785,
+            "rms": 0.410,
+            "research_valence": 0.921,
+            "permissive_valence_proxy": -0.191,
+        },
+        "interpretation": "same instruments as D1, run on human speech",
+    }
+
+
+class TestRenderD1Section:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_d1_section(None)
+
+    def test_renders_recoverability_and_chance(self) -> None:
+        html = render_d1_section(_fake_d1())
+        assert "0.175" in html
+        assert "0.200" in html
+
+    def test_renders_all_five_emotion_ranks(self) -> None:
+        html = render_d1_section(_fake_d1())
+        for emotion in ("happy", "sad", "angry", "calm", "frustrated"):
+            assert emotion in html
+
+    def test_renders_interpretation(self) -> None:
+        html = render_d1_section(_fake_d1())
+        assert "coarse synthetic probe" in html
+
+
+class TestRenderE3ControlSection:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_e3_control_section(None)
+
+    def test_renders_cartesia_and_both_takes(self) -> None:
+        html = render_e3_control_section(_fake_e3_control())
+        assert "0.175" in html
+        assert "0.667" in html
+        assert "0.741" in html
+
+    def test_renders_test_retest_correlations(self) -> None:
+        html = render_e3_control_section(_fake_e3_control())
+        assert "0.92" in html  # research_valence r, rounded to 2dp by _fmt
+        assert "-0.19" in html  # permissive_valence_proxy r
+
+
+class TestRenderWhatDidntWork:
+    def test_mentions_every_known_failure(self) -> None:
+        html = render_what_didnt_work()
+        for marker in ("D0", "D1", "E2", "Solution B", "recalibration", "Live browser demo"):
+            assert marker in html
