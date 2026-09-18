@@ -18,6 +18,7 @@ make demo      # single real clip, end-to-end. No API key needed.
 make eval-e3   # A/B/C on the recorded human set (both takes) + the D1-vs-human control
 make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for spot-checking
 make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> results/prosody_samples.json
+make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
 make report    # regenerate report/index.html from results/*.json
 ```
 
@@ -84,14 +85,18 @@ control that shows Solution B doesn't transfer cleanly to a new speaker either.
 
 ## Status
 
-Core pipeline complete and tested (233 tests). CREMA-D benchmark results are real,
+Core pipeline complete and tested (267 tests). CREMA-D benchmark results are real,
 measured end-to-end. **E3 (human recordings) is recorded and evaluated** — two
 independent takes, 27 clips each, `make eval-e3` — and doubles as a control that rules
 the measuring instruments out as the explanation for a headline negative finding: **D1
 measured Cartesia's emotion tags as not reliably audible on this content** (below-chance
 intended-emotion recoverability), replicated with a control showing the same instruments
-read real human speech at 2x+ chance. See `report/listening_sorted.html`
-(`make listening-sorted`) to listen to the ranked clips yourself. Synthetic incongruence
+read real human speech at 2x+ chance. **A same-design Hume Octave probe
+(`make probe-hume`) confirms this is vendor-specific, not a synthetic-TTS-wide limit** —
+its `description` field produces real differentiation on the identical carrier text.
+See `report/listening_sorted.html` (`make listening-sorted`) to listen to the ranked
+clips yourself, and `report/index.html` for which model actually extracts
+prosody/emotion (with papers) plus a VAD plot over 20 real samples. Synthetic incongruence
 set (E2) generation is **76/90 clips** complete and superseded for the audibility
 question by D1's finding — kept as the historical exhibit. See `DESIGN.md` → Known
 limitations for the complete, honest accounting, and `report/index.html` for whatever

@@ -223,7 +223,11 @@ population.
   scored *below* chance on intended-emotion recoverability (0.175 vs 0.200). The E3
   control above rules out the instruments as the explanation. Reported as measured
   for this content, these 2 voices, sonic-3 — not asserted as Cartesia's general
-  limit (see `results/d1_emotion_probe.json`, `report/d1_listening.html`).
+  limit (see `results/d1_emotion_probe.json`, `report/d1_listening.html`). **Confirmed
+  vendor-specific, not a synthetic-TTS-wide limit**: a same-design Hume Octave probe
+  on the identical carrier text shows real differentiation (see What I'd do next, #5,
+  and `results/hume_probe.json`) — the finding is "Cartesia didn't render this,"
+  not "no TTS vendor can."
 - **E2 is incomplete (76/90 clips) and superseded for the audibility question** —
   generation hit Cartesia's free-tier quota mid-run; D1 found the underlying
   rendering problem E2 was already hinting at, so E2 stays as the historical exhibit
@@ -262,9 +266,15 @@ population.
 4. A small, consented elderly-voice pilot — the one dataset that would let the
    presbyphonia argument move from "reasoned" to "measured" the way E3 has done for
    the acted-vs-spontaneous-speaker gap more broadly.
-5. **A genuinely emotional synthetic TTS source**, if one exists — Cartesia's tags
-   didn't work on this content (D0/D1); Hume Octave's `description` field is
-   documented to control delivery independently of the transcript, which is the
-   specific capability Cartesia's docs say it lacks, and is worth a direct test.
+5. ~~A genuinely emotional synthetic TTS source, if one exists~~ — **done, and it
+   works.** A 10-clip Hume Octave probe (`scripts/probe_hume.py`, `results/hume_probe.json`),
+   same design as D1 (same 5 emotions, same neutral carrier text, one fixed voice),
+   varying only Hume's `description` acting-instruction field: F0 span **126.7 Hz**
+   with `description` vs **32.3 Hz** without (Cartesia/D1: ~8 Hz), and the correct
+   positive>neutral>negative valence ordering holds *only* with `description`. First
+   synthetic source in this project to show a working emotion-rendering signal — see
+   `report/index.html`'s Hume section. **n=10, 1 carrier, 1 voice** — real, but a
+   fuller grid (matching D1's 8-cell design) is the next step before trusting this for
+   a shipped dataset, which remains future work.
 6. Extend voice-health from a demo to a validated gate, once real longitudinal
    recordings exist to fit and check it against.

@@ -1,0 +1,163 @@
+{
+  "n_clips": 10,
+  "carrier_text": "I need to check tomorrow's schedule.",
+  "voice": "Ava Song",
+  "descriptions_used": {
+    "happy": "happy, upbeat, smiling tone",
+    "sad": "sad, downcast, weary tone",
+    "angry": "angry, sharp, irritated tone",
+    "calm": "calm, relaxed, gentle tone",
+    "frustrated": "frustrated, tense, exasperated tone"
+  },
+  "summary": {
+    "with_description": {
+      "f0_by_emotion": {
+        "happy": 234.3188513939779,
+        "sad": 150.68950769467313,
+        "angry": 254.134016508172,
+        "calm": 154.96686924635696,
+        "frustrated": 277.43015026625585
+      },
+      "f0_span_hz": 126.74064257158273,
+      "valence_by_emotion": {
+        "happy": 0.6388651132583618,
+        "sad": 0.5510271787643433,
+        "angry": 0.4614378809928894,
+        "calm": 0.5539853572845459,
+        "frustrated": 0.48656558990478516
+      },
+      "valence_ordering_matches_intended_sentiment": true
+    },
+    "without_description": {
+      "f0_by_emotion": {
+        "happy": 163.54225243629503,
+        "sad": 157.7848631557207,
+        "angry": 183.43586677337905,
+        "calm": 151.09296631720574,
+        "frustrated": 154.74482005690314
+      },
+      "f0_span_hz": 32.34290045617331,
+      "valence_by_emotion": {
+        "happy": 0.5687640905380249,
+        "sad": 0.4926620125770569,
+        "angry": 0.4864223897457123,
+        "calm": 0.4685952961444855,
+        "frustrated": 0.49648430943489075
+      },
+      "valence_ordering_matches_intended_sentiment": false
+    }
+  },
+  "per_clip": [
+    {
+      "clip_id": "hume_happy_desc",
+      "emotion": "happy",
+      "has_description": true,
+      "f0_mean": 234.3188513939779,
+      "f0_std": 90.1198474691733,
+      "research_valence": 0.6388651132583618,
+      "research_arousal": 0.6923077702522278,
+      "permissive_predicted_sentiment": "negative",
+      "permissive_valence_proxy": -0.999881564599491
+    },
+    {
+      "clip_id": "hume_happy_nodesc",
+      "emotion": "happy",
+      "has_description": false,
+      "f0_mean": 163.54225243629503,
+      "f0_std": 48.6130277199477,
+      "research_valence": 0.5687640905380249,
+      "research_arousal": 0.5328202247619629,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -6.231951300121347e-07
+    },
+    {
+      "clip_id": "hume_sad_desc",
+      "emotion": "sad",
+      "has_description": true,
+      "f0_mean": 150.68950769467313,
+      "f0_std": 9.912430414191894,
+      "research_valence": 0.5510271787643433,
+      "research_arousal": 0.3992094099521637,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -0.34791641941403917
+    },
+    {
+      "clip_id": "hume_sad_nodesc",
+      "emotion": "sad",
+      "has_description": false,
+      "f0_mean": 157.7848631557207,
+      "f0_std": 36.906875682859216,
+      "research_valence": 0.4926620125770569,
+      "research_arousal": 0.4642265737056732,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -0.023304611428102362
+    },
+    {
+      "clip_id": "hume_angry_desc",
+      "emotion": "angry",
+      "has_description": true,
+      "f0_mean": 254.134016508172,
+      "f0_std": 41.74723732975643,
+      "research_valence": 0.4614378809928894,
+      "research_arousal": 0.7097453474998474,
+      "permissive_predicted_sentiment": "negative",
+      "permissive_valence_proxy": -0.9999123187626537
+    },
+    {
+      "clip_id": "hume_angry_nodesc",
+      "emotion": "angry",
+      "has_description": false,
+      "f0_mean": 183.43586677337905,
+      "f0_std": 25.322610956890554,
+      "research_valence": 0.4864223897457123,
+      "research_arousal": 0.4457796812057495,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -0.002578506711426033
+    },
+    {
+      "clip_id": "hume_calm_desc",
+      "emotion": "calm",
+      "has_description": true,
+      "f0_mean": 154.96686924635696,
+      "f0_std": 14.552245271680473,
+      "research_valence": 0.5539853572845459,
+      "research_arousal": 0.4378816485404968,
+      "permissive_predicted_sentiment": "negative",
+      "permissive_valence_proxy": -0.9999843835830607
+    },
+    {
+      "clip_id": "hume_calm_nodesc",
+      "emotion": "calm",
+      "has_description": false,
+      "f0_mean": 151.09296631720574,
+      "f0_std": 20.333534482537452,
+      "research_valence": 0.4685952961444855,
+      "research_arousal": 0.47735893726348877,
+      "permissive_predicted_sentiment": "negative",
+      "permissive_valence_proxy": -0.7275007963180542
+    },
+    {
+      "clip_id": "hume_frustrated_desc",
+      "emotion": "frustrated",
+      "has_description": true,
+      "f0_mean": 277.43015026625585,
+      "f0_std": 48.618703964289736,
+      "research_valence": 0.48656558990478516,
+      "research_arousal": 0.7263264060020447,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -0.0022634227796034523
+    },
+    {
+      "clip_id": "hume_frustrated_nodesc",
+      "emotion": "frustrated",
+      "has_description": false,
+      "f0_mean": 154.74482005690314,
+      "f0_std": 19.809827703571653,
+      "research_valence": 0.49648430943489075,
+      "research_arousal": 0.47211599349975586,
+      "permissive_predicted_sentiment": "neutral",
+      "permissive_valence_proxy": -4.454104792998643e-11
+    }
+  ],
+  "interpretation": "Falsification test of D1's Cartesia finding (results/d1_emotion_probe.json), using a vendor whose docs claim delivery control independent of the transcript. Only 1 carrier text -> descriptive only, no leave-one-carrier-out classifier (not enough carrier diversity to fit one honestly). Compare summary.with_description's f0_span_hz and valence_ordering against D1's f0_span_across_emotions_hz (~8 Hz) and scrambled ordering: if Hume's spread is meaningfully larger and/or the ordering holds, that is real differentiation Cartesia didn't show; if not, the D1 finding generalises beyond one vendor."
+}

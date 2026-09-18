@@ -11,6 +11,7 @@ from ssa.report import (
     _solution_short,
     render_d1_section,
     render_e3_control_section,
+    render_hume_section,
     render_leakage_table,
     render_main_table,
     render_models_section,
@@ -282,3 +283,45 @@ class TestRenderModelsSection:
     def test_clarifies_wavlm_is_not_the_emotion_model(self) -> None:
         html = render_models_section()
         assert "never on an emotion label" in html
+
+
+def _fake_hume() -> dict:
+    return {
+        "n_clips": 10,
+        "carrier_text": "I need to check tomorrow's schedule.",
+        "voice": "Ava Song",
+        "summary": {
+            "with_description": {
+                "f0_by_emotion": {"happy": 234.3, "sad": 150.7, "angry": 254.1},
+                "f0_span_hz": 126.7,
+                "valence_by_emotion": {"happy": 0.64, "sad": 0.55, "angry": 0.46},
+                "valence_ordering_matches_intended_sentiment": True,
+            },
+            "without_description": {
+                "f0_by_emotion": {"happy": 163.5, "sad": 157.8, "angry": 183.4},
+                "f0_span_hz": 32.3,
+                "valence_by_emotion": {"happy": 0.57, "sad": 0.49, "angry": 0.49},
+                "valence_ordering_matches_intended_sentiment": False,
+            },
+        },
+        "interpretation": "falsification test of D1's Cartesia finding",
+    }
+
+
+class TestRenderHumeSection:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_hume_section(None)
+
+    def test_renders_both_f0_spans(self) -> None:
+        html = render_hume_section(_fake_hume())
+        assert "126.7" in html
+        assert "32.3" in html
+
+    def test_renders_ordering_results(self) -> None:
+        html = render_hume_section(_fake_hume())
+        assert "True" in html
+        assert "False" in html
+
+    def test_renders_interpretation(self) -> None:
+        html = render_hume_section(_fake_hume())
+        assert "falsification test" in html

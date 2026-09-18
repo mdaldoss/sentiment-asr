@@ -278,8 +278,8 @@ def render_prosody_samples_section(data: dict | None) -> str:
         cx, cy = x(s["valence"]), y(s["arousal"])
         f0_label = f"{s['f0_mean']:.0f}Hz" if s["f0_mean"] else "n/a"
         title = (
-            f'{s["clip_id"]} &mdash; {s["source"]}, label={s["label"]} '
-            f'v={s["valence"]:.3f} a={s["arousal"]:.3f} f0={f0_label}'
+            f"{s['clip_id']} &mdash; {s['source']}, label={s['label']} "
+            f"v={s['valence']:.3f} a={s['arousal']:.3f} f0={f0_label}"
         )
         if is_mine:
             # square marker for "mine" (E3), circle for the public dataset (CREMA-D)
@@ -370,6 +370,61 @@ def render_d1_section(d1: dict | None) -> str:
     """
 
 
+def render_hume_section(data: dict | None) -> str:
+    """A falsification test of the D1 finding: same 5 emotions, same
+    neutral carrier text, a different vendor (Hume Octave) whose
+    `description` field is documented to control delivery independently
+    of the transcript -- the capability Cartesia's docs say it lacks."""
+    if data is None:
+        return "<p class='pending'>Hume probe not yet run (needs HUME_API_KEY).</p>"
+
+    with_desc = data["summary"]["with_description"]
+    without_desc = data["summary"]["without_description"]
+
+    def emotion_rows(group: dict) -> str:
+        return "".join(
+            f"<tr><td>{emotion}</td><td class='num'>{_fmt(f0, 0)} Hz</td>"
+            f"<td class='num'>{_fmt(group['valence_by_emotion'].get(emotion))}</td></tr>"
+            for emotion, f0 in group["f0_by_emotion"].items()
+        )
+
+    return f"""
+    <p>Same design as D1: {data["n_clips"]} clips, 5 emotions
+    (happy/sad/angry/calm/frustrated), one fixed voice ("{data["voice"]}"), the exact
+    same neutral carrier text D1 used
+    (<code>"{data["carrier_text"]}"</code>) &mdash; so only Hume's <code>description</code>
+    acting-instruction field varies. Only 1 carrier text, so this is descriptive only
+    (no leave-one-carrier-out classifier, same caveat as D1's neutral condition).</p>
+    <table>
+      <thead><tr><th>Condition</th><th>F0 span</th>
+      <th>Valence ordering (pos&gt;neu&gt;neg)?</th></tr></thead>
+      <tbody>
+        <tr><td>With <code>description</code></td>
+            <td class="num">{_fmt(with_desc["f0_span_hz"], 1)} Hz</td>
+            <td><strong>{with_desc["valence_ordering_matches_intended_sentiment"]}</strong></td></tr>
+        <tr><td>Without <code>description</code></td>
+            <td class="num">{_fmt(without_desc["f0_span_hz"], 1)} Hz</td>
+            <td><strong>{without_desc["valence_ordering_matches_intended_sentiment"]}</strong></td></tr>
+        <tr><td><em>Cartesia (D1), for comparison</em></td>
+            <td class="num">~8 Hz</td><td>scrambled (see above)</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">With <code>description</code>, per emotion:</p>
+    <table><thead><tr><th>Emotion</th><th>F0 mean</th><th>Valence</th></tr></thead>
+    <tbody>{emotion_rows(with_desc)}</tbody></table>
+    <p class="finding"><strong>Finding:</strong> {data["interpretation"]} On this
+    10-clip probe: Hume's <code>description</code> field produces roughly
+    {round(with_desc["f0_span_hz"] / max(without_desc["f0_span_hz"], 1e-6), 1)}&times;
+    the F0 spread of the same text without it, and recovers the correct
+    positive&gt;neutral&gt;negative valence ordering where the no-description
+    condition (and Cartesia's tags, D1) do not. This is the first synthetic source in
+    this project to show a working emotion-rendering signal &mdash; a real, positive
+    result, on a small (n=10, 1 carrier, 1 voice) probe that would need a fuller grid
+    (more carriers/voices, matching D1's design) before being trusted for a shipped
+    dataset.</p>
+    """
+
+
 def render_e3_control_section(control: dict | None) -> str:
     if control is None:
         return "<p class='pending'>E3 evaluation / D1-vs-human control not yet run.</p>"
@@ -439,6 +494,10 @@ def render_what_didnt_work() -> str:
       (<code>uv run python -m ssa.cli --audio &lt;file&gt;</code>) gives the same
       end-to-end prediction on any local recording today.</li>
     </ul>
+    <p class="finding"><strong>One thing that did work:</strong> the Hume Octave
+    falsification probe (below) shows real emotion differentiation on the same
+    carrier text D1 used on Cartesia &mdash; the synthetic-TTS story isn't "no
+    vendor can do this," it's "this vendor, on this content, couldn't."</p>
     """
 
 
@@ -473,6 +532,7 @@ def render_status(results: list[dict[str, Any]]) -> str:
         ),
         ("E2 (synthetic incongruence set)", have_e2),
         ("E3 (human recordings, both takes recorded + evaluated)", have_e3 and have_e3_eval),
+        ("Hume Octave falsification probe", (RESULTS_DIR / "hume_probe.json").exists()),
     ]
     li_parts = []
     for name, done in items:
@@ -491,6 +551,7 @@ def build_report() -> str:
     d0 = load_json_if_exists(RESULTS_DIR / "d0_emotion_space.json")
     d1 = load_json_if_exists(RESULTS_DIR / "d1_emotion_probe.json")
     prosody_samples = load_json_if_exists(RESULTS_DIR / "prosody_samples.json")
+    hume = load_json_if_exists(RESULTS_DIR / "hume_probe.json")
     e3_control = load_json_if_exists(RESULTS_DIR / "d1_vs_e3_control.json")
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
     disjoint_permissive = next(
@@ -615,6 +676,9 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>D1: does Cartesia render these emotions audibly?</h2>
 {render_d1_section(d1)}
+
+<h2>Hume Octave: a falsification test of the D1 finding</h2>
+{render_hume_section(hume)}
 
 <h2>E3: human recordings, and a control on the D1 finding</h2>
 {render_e3_control_section(e3_control)}

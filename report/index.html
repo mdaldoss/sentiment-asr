@@ -128,7 +128,7 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 <code>ssa/eval/metrics.py</code>.</p>
 
 <h2>Status</h2>
-<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='done'>&check; D1 (Cartesia emotion-rendering factorial probe)</li><li class='done'>&check; E2 (synthetic incongruence set)</li><li class='done'>&check; E3 (human recordings, both takes recorded + evaluated)</li></ul>
+<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='done'>&check; D1 (Cartesia emotion-rendering factorial probe)</li><li class='done'>&check; E2 (synthetic incongruence set)</li><li class='done'>&check; E3 (human recordings, both takes recorded + evaluated)</li><li class='done'>&check; Hume Octave falsification probe</li></ul>
 
 <h2>Main comparison: solutions &times; datasets</h2>
 
@@ -240,6 +240,43 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
     (all D1+E3 clips, ranked by detection score).</p>
     
 
+<h2>Hume Octave: a falsification test of the D1 finding</h2>
+
+    <p>Same design as D1: 10 clips, 5 emotions
+    (happy/sad/angry/calm/frustrated), one fixed voice ("Ava Song"), the exact
+    same neutral carrier text D1 used
+    (<code>"I need to check tomorrow's schedule."</code>) &mdash; so only Hume's <code>description</code>
+    acting-instruction field varies. Only 1 carrier text, so this is descriptive only
+    (no leave-one-carrier-out classifier, same caveat as D1's neutral condition).</p>
+    <table>
+      <thead><tr><th>Condition</th><th>F0 span</th>
+      <th>Valence ordering (pos&gt;neu&gt;neg)?</th></tr></thead>
+      <tbody>
+        <tr><td>With <code>description</code></td>
+            <td class="num">126.7 Hz</td>
+            <td><strong>True</strong></td></tr>
+        <tr><td>Without <code>description</code></td>
+            <td class="num">32.3 Hz</td>
+            <td><strong>False</strong></td></tr>
+        <tr><td><em>Cartesia (D1), for comparison</em></td>
+            <td class="num">~8 Hz</td><td>scrambled (see above)</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">With <code>description</code>, per emotion:</p>
+    <table><thead><tr><th>Emotion</th><th>F0 mean</th><th>Valence</th></tr></thead>
+    <tbody><tr><td>happy</td><td class='num'>234 Hz</td><td class='num'>0.639</td></tr><tr><td>sad</td><td class='num'>151 Hz</td><td class='num'>0.551</td></tr><tr><td>angry</td><td class='num'>254 Hz</td><td class='num'>0.461</td></tr><tr><td>calm</td><td class='num'>155 Hz</td><td class='num'>0.554</td></tr><tr><td>frustrated</td><td class='num'>277 Hz</td><td class='num'>0.487</td></tr></tbody></table>
+    <p class="finding"><strong>Finding:</strong> Falsification test of D1's Cartesia finding (results/d1_emotion_probe.json), using a vendor whose docs claim delivery control independent of the transcript. Only 1 carrier text -> descriptive only, no leave-one-carrier-out classifier (not enough carrier diversity to fit one honestly). Compare summary.with_description's f0_span_hz and valence_ordering against D1's f0_span_across_emotions_hz (~8 Hz) and scrambled ordering: if Hume's spread is meaningfully larger and/or the ordering holds, that is real differentiation Cartesia didn't show; if not, the D1 finding generalises beyond one vendor. On this
+    10-clip probe: Hume's <code>description</code> field produces roughly
+    3.9&times;
+    the F0 spread of the same text without it, and recovers the correct
+    positive&gt;neutral&gt;negative valence ordering where the no-description
+    condition (and Cartesia's tags, D1) do not. This is the first synthetic source in
+    this project to show a working emotion-rendering signal &mdash; a real, positive
+    result, on a small (n=10, 1 carrier, 1 voice) probe that would need a fuller grid
+    (more carriers/voices, matching D1's design) before being trusted for a shipped
+    dataset.</p>
+    
+
 <h2>E3: human recordings, and a control on the D1 finding</h2>
 
     <p>The exact instruments and method D1 used on Cartesia TTS (leave-one-carrier-out
@@ -291,6 +328,10 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
       (<code>uv run python -m ssa.cli --audio &lt;file&gt;</code>) gives the same
       end-to-end prediction on any local recording today.</li>
     </ul>
+    <p class="finding"><strong>One thing that did work:</strong> the Hume Octave
+    falsification probe (below) shows real emotion differentiation on the same
+    carrier text D1 used on Cartesia &mdash; the synthetic-TTS story isn't "no
+    vendor can do this," it's "this vendor, on this content, couldn't."</p>
     
 
 <h2>Voice-health demo</h2>
