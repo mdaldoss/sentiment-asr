@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval report demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 listening-sorted report demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -26,6 +26,12 @@ train:  ## Train the acoustic probe (speaker-disjoint split). BACKEND=permissive
 
 eval:  ## Evaluate every solution on every dataset -> results/*.json
 	uv run python -m ssa.eval --suite all
+
+eval-e3:  ## Evaluate A/B/C on both E3 recorded takes + the D1-vs-human control -> results/*.json
+	uv run python scripts/eval_e3.py
+
+listening-sorted:  ## report/listening_sorted.html -- D1 + E3 clips ranked by detection score
+	uv run python scripts/gen_listening_sorted.py
 
 report:  ## Regenerate report/index.html from results/*.json
 	uv run python -m ssa.report

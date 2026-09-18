@@ -1,0 +1,63 @@
+{
+  "cartesia_d1": {
+    "recoverability_accuracy": 0.175,
+    "recoverability_chance": 0.2,
+    "f0_span_hz": 7.984390475750047
+  },
+  "human_e3": {
+    "e3a": {
+      "n_clips": 27,
+      "recoverability_cv": {
+        "accuracy": 0.6666666666666666,
+        "n": 27,
+        "chance": 0.3333333333333333,
+        "n_dropped_missing_features": 0
+      },
+      "f0_rank_consistency": {
+        "chance_mean_rank": 2.0,
+        "mean_rank_by_sentiment": {
+          "positive": 1.0,
+          "neutral": 2.3333333333333335,
+          "negative": 2.6666666666666665
+        }
+      },
+      "f0_span_hz": 32.93566211592076,
+      "mean_f0_by_sentiment": {
+        "negative": 102.29,
+        "neutral": 107.46,
+        "positive": 135.22
+      }
+    },
+    "e3b": {
+      "n_clips": 27,
+      "recoverability_cv": {
+        "accuracy": 0.7407407407407407,
+        "n": 27,
+        "chance": 0.3333333333333333,
+        "n_dropped_missing_features": 0
+      },
+      "f0_rank_consistency": {
+        "chance_mean_rank": 2.0,
+        "mean_rank_by_sentiment": {
+          "positive": 1.0,
+          "negative": 2.7777777777777777,
+          "neutral": 2.2222222222222223
+        }
+      },
+      "f0_span_hz": 33.85536422097067,
+      "mean_f0_by_sentiment": {
+        "negative": 106.39,
+        "neutral": 116.65,
+        "positive": 140.24
+      }
+    }
+  },
+  "test_retest_correlation_take0_vs_take1": {
+    "n_paired": 27,
+    "f0_mean": 0.7853006529730333,
+    "rms": 0.4095440721795773,
+    "research_valence": 0.9207273022580582,
+    "permissive_valence_proxy": -0.1905946588204307
+  },
+  "interpretation": "Same instruments, same method as D1 (scripts/gen_emotion_probe_d1.py), run on real human recordings instead of Cartesia TTS. If recoverability/F0-span/rank come out well above chance here while D1 was at or below chance, that rules out the instruments as the explanation for D1's negative result -- the audio itself is what differs. Replicated across two independent takes by the same speaker; see test_retest_correlation_take0_vs_take1 for how consistent each instrument's own readings are across takes, which bears on Solution B's reliability, not just its accuracy. n=1 speaker -- this is a controlled instrument check, not a claim about speech-emotion recognition in general."
+}

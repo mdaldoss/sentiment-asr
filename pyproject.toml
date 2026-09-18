@@ -49,6 +49,7 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 # lines to 100 cols hurts readability more than it helps.
 "ssa/report.py" = ["E501"]
 "scripts/gen_emotion_probe_d1.py" = ["E501"]
+"scripts/gen_listening_sorted.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

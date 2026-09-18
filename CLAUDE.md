@@ -63,6 +63,12 @@ before changing.
 | ASR | `faster-whisper`, small, int8. MIT. **CTranslate2 has NO Apple MPS support** — CPU or CUDA only |
 | TTS | Cartesia. `generation_config.emotion` or SSML `<emotion value="..."/>`. **English only.** No intensity levels |
 | Cartesia free tier | 20K credits ≈ 27 min, **API access included** |
+| Cartesia primary emotions | Only 6 tags documented as giving best results: `neutral, calm, angry, content, sad, scared`. D1 (Phase 2) used 2 tags outside this set (`happy`, `frustrated`) — a real caveat on that finding, closed by re-testing on primary tags only (see `results/d1_emotion_probe.json`) |
+| Cartesia model versions | `sonic-3` (pinned, `ssa/tts.py`); `sonic-3.5`/`sonic-3.6`/`sonic-4` exist as of late 2026 but are untested here |
+| Hume Octave TTS | `pip install hume`, auth via `HUME_API_KEY`. Free tier 10K chars/month. `description` field (Octave 1 only) sets delivery **independently of the transcript** — the control Cartesia's `emotion` param lacks, since Cartesia's own docs say it "only work[s] when the emotion is consistent with the transcript." `speed` range 0.5–2.0 (not Cartesia's 0.6–1.5) |
+| ElevenLabs free tier | As of late 2026, includes 10K free API credits (~10 min Multilingual v2) with no commercial license — **re-verify before relying on this**, it contradicts an earlier internal note that the free tier had no API access at all |
+| RAVDESS | Zenodo record 1188976, `Audio_Speech_Actors_01-24.zip`, 208.5 MB, 1,440 clips, 24 actors, **CC BY-NC-SA-4.0 — eval only, never train** |
+| TESS | Two actresses aged 26 and 64 ("younger"/"older" talker), same 200 words, 7 emotions, **CC BY-NC-ND** — eval only, never train. n=2 speakers: a controlled anecdote, not a population claim |
 | Voice quality | CPPS via `praat-parselmouth` — the one dysphonia measure valid on *continuous* speech |
 | SOTA ceiling | <90% on ESD, <78% on IEMOCAP. **If you see >90% UAR speaker-independent, you have a bug**, most likely leakage |
 

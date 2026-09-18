@@ -1,0 +1,339 @@
+{
+  "solution": "B:acoustic(research/audeering-vad)",
+  "dataset": "e3b",
+  "split_type": "all",
+  "n_clips": 27,
+  "n_incongruent": 18,
+  "uar": 0.5925925925925926,
+  "macro_f1": 0.5763285024154589,
+  "accuracy": 0.5925925925925926,
+  "ece": 0.3031972747981582,
+  "psi_contested": 0.4444444444444444,
+  "psi_strict": 0.4444444444444444,
+  "confusion_matrix": [
+    [
+      8,
+      0,
+      1
+    ],
+    [
+      3,
+      4,
+      2
+    ],
+    [
+      3,
+      2,
+      4
+    ]
+  ],
+  "confusion_labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "abstention_rate": 0.0,
+  "latency_p50_ms": 256.7009179999786,
+  "latency_p95_ms": 302.814007399968,
+  "git_sha": "d0cdeda46f01f5f58052e0cc3b8a126b768161e6",
+  "timestamp": "2026-09-18T09:36:54.933187+00:00",
+  "predictions": [
+    {
+      "clip_id": "e3b_speaker1_positive_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.3745053311189016,
+      "abstained": false,
+      "latency_ms": 299.357552999993,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.455474747551812,
+      "abstained": false,
+      "latency_ms": 264.5617460000267,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "positive",
+      "confidence": 0.557780386909606,
+      "abstained": false,
+      "latency_ms": 237.95877500003826,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.3445447087287903,
+      "abstained": false,
+      "latency_ms": 226.53346300000976,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.4339227676391607,
+      "abstained": false,
+      "latency_ms": 247.5736819999952,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.6864340040418841,
+      "abstained": false,
+      "latency_ms": 269.32834400003003,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.4228185926164899,
+      "abstained": false,
+      "latency_ms": 260.5317079999736,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.5892140978858584,
+      "abstained": false,
+      "latency_ms": 211.97404499997674,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "positive",
+      "confidence": 0.8008531994289823,
+      "abstained": false,
+      "latency_ms": 256.7009179999786,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.4500940044720968,
+      "abstained": false,
+      "latency_ms": 261.3132930000006,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8485448625352652,
+      "abstained": false,
+      "latency_ms": 190.6916710000246,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.3781307008531358,
+      "abstained": false,
+      "latency_ms": 228.194000999963,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.34049591422080994,
+      "abstained": false,
+      "latency_ms": 235.33169400002407,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8344802856445308,
+      "abstained": false,
+      "latency_ms": 222.68273800000316,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.84302626715766,
+      "abstained": false,
+      "latency_ms": 296.45656899998585,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.4572823246320089,
+      "abstained": false,
+      "latency_ms": 259.37311799998497,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.38987678951687244,
+      "abstained": false,
+      "latency_ms": 256.5705479999565,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.41079351637098516,
+      "abstained": false,
+      "latency_ms": 346.86878900004103,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8295971502860386,
+      "abstained": false,
+      "latency_ms": 304.29534499995725,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7567609945933024,
+      "abstained": false,
+      "latency_ms": 287.93662799995445,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6312043319145839,
+      "abstained": false,
+      "latency_ms": 246.28713100003097,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6116761366526287,
+      "abstained": false,
+      "latency_ms": 271.18127199997843,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6131052325169246,
+      "abstained": false,
+      "latency_ms": 243.7505339999575,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.4483446081479391,
+      "abstained": false,
+      "latency_ms": 197.9845529999693,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8849733794728913,
+      "abstained": false,
+      "latency_ms": 289.54040100001066,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8547538245717683,
+      "abstained": false,
+      "latency_ms": 237.29962400000204,
+      "transcript": null
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7502062718073527,
+      "abstained": false,
+      "latency_ms": 271.87656400002425,
+      "transcript": null
+    }
+  ]
+}
