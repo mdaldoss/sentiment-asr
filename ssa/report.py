@@ -371,57 +371,122 @@ def render_d1_section(d1: dict | None) -> str:
 
 
 def render_hume_section(data: dict | None) -> str:
-    """A falsification test of the D1 finding: same 5 emotions, same
-    neutral carrier text, a different vendor (Hume Octave) whose
-    `description` field is documented to control delivery independently
-    of the transcript -- the capability Cartesia's docs say it lacks."""
+    """A falsification test of the D1 finding, at D1's own grid scale: 5
+    emotions x text_condition x length x description(on/off), the exact
+    same carrier texts D1 used on Cartesia, from a vendor (Hume Octave)
+    whose `description` field is documented to control delivery
+    independently of the transcript -- the capability Cartesia's docs say
+    it lacks."""
     if data is None:
         return "<p class='pending'>Hume probe not yet run (needs HUME_API_KEY).</p>"
 
     with_desc = data["summary"]["with_description"]
     without_desc = data["summary"]["without_description"]
+    neutral_desc = data["summary"]["neutral_text_with_description"]
+    congruent_desc = data["summary"]["congruent_text_with_description"]
 
     def emotion_rows(group: dict) -> str:
         return "".join(
             f"<tr><td>{emotion}</td><td class='num'>{_fmt(f0, 0)} Hz</td>"
-            f"<td class='num'>{_fmt(group['valence_by_emotion'].get(emotion))}</td></tr>"
-            for emotion, f0 in group["f0_by_emotion"].items()
+            f"<td class='num'>{_fmt(group['valence_mean_by_emotion'].get(emotion))}</td></tr>"
+            for emotion, f0 in group["f0_mean_by_emotion"].items()
         )
 
+    with_cv, without_cv = with_desc["recoverability_cv"], without_desc["recoverability_cv"]
+
     return f"""
-    <p>Same design as D1: {data["n_clips"]} clips, 5 emotions
-    (happy/sad/angry/calm/frustrated), one fixed voice ("{data["voice"]}"), the exact
-    same neutral carrier text D1 used
-    (<code>"{data["carrier_text"]}"</code>) &mdash; so only Hume's <code>description</code>
-    acting-instruction field varies. Only 1 carrier text, so this is descriptive only
-    (no leave-one-carrier-out classifier, same caveat as D1's neutral condition).</p>
+    <p>Same design as D1, same scale: {data["n_clips"]} clips, 5 emotions, the exact same
+    carrier texts D1 used on Cartesia (<code>ssa.carriers.D1_NEUTRAL_TEXT</code> and
+    <code>D1_CONGRUENT_TEXT</code>, both lengths), one fixed voice ("{data["voice"]}") &mdash;
+    so the comparison is apples-to-apples, and this time with genuine carrier diversity
+    (12 groups, same as D1) for an honest leave-one-carrier-out recoverability classifier.</p>
     <table>
-      <thead><tr><th>Condition</th><th>F0 span</th>
+      <thead><tr><th>Condition</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
       <th>Valence ordering (pos&gt;neu&gt;neg)?</th></tr></thead>
       <tbody>
         <tr><td>With <code>description</code></td>
+            <td class="num">{_fmt(with_cv["accuracy"])}</td>
+            <td class="num">{_fmt(with_cv["chance"])}</td>
             <td class="num">{_fmt(with_desc["f0_span_hz"], 1)} Hz</td>
             <td><strong>{with_desc["valence_ordering_matches_intended_sentiment"]}</strong></td></tr>
         <tr><td>Without <code>description</code></td>
+            <td class="num">{_fmt(without_cv["accuracy"])}</td>
+            <td class="num">{_fmt(without_cv["chance"])}</td>
             <td class="num">{_fmt(without_desc["f0_span_hz"], 1)} Hz</td>
             <td><strong>{without_desc["valence_ordering_matches_intended_sentiment"]}</strong></td></tr>
         <tr><td><em>Cartesia (D1), for comparison</em></td>
+            <td class="num">0.175</td><td class="num">0.200</td>
             <td class="num">~8 Hz</td><td>scrambled (see above)</td></tr>
       </tbody>
     </table>
-    <p class="caption">With <code>description</code>, per emotion:</p>
+    <p class="caption">The harder cut &mdash; does <code>description</code> work even on
+    <strong>neutral</strong> text, isolating prosody from wording entirely (this project's
+    gold-label rule)? Neutral valence range:
+    {_fmt(neutral_desc.get("valence_range"))}, F0 span {_fmt(neutral_desc.get("f0_span_hz"), 1)} Hz
+    (n={neutral_desc["n_clips"]}) vs. congruent valence range
+    {_fmt(congruent_desc.get("valence_range"))}, F0 span
+    {_fmt(congruent_desc.get("f0_span_hz"), 1)} Hz (n={congruent_desc["n_clips"]}).</p>
+    <p class="caption">With <code>description</code>, per emotion (averaged over all 4
+    text/length carriers):</p>
     <table><thead><tr><th>Emotion</th><th>F0 mean</th><th>Valence</th></tr></thead>
     <tbody>{emotion_rows(with_desc)}</tbody></table>
-    <p class="finding"><strong>Finding:</strong> {data["interpretation"]} On this
-    10-clip probe: Hume's <code>description</code> field produces roughly
-    {round(with_desc["f0_span_hz"] / max(without_desc["f0_span_hz"], 1e-6), 1)}&times;
-    the F0 spread of the same text without it, and recovers the correct
-    positive&gt;neutral&gt;negative valence ordering where the no-description
-    condition (and Cartesia's tags, D1) do not. This is the first synthetic source in
-    this project to show a working emotion-rendering signal &mdash; a real, positive
-    result, on a small (n=10, 1 carrier, 1 voice) probe that would need a fuller grid
-    (more carriers/voices, matching D1's design) before being trusted for a shipped
-    dataset.</p>
+    <p class="finding"><strong>Finding:</strong> {data["interpretation"]}</p>
+    """
+
+
+def render_backend_combo_section(data: dict | None) -> str:
+    """WavLM+probe (permissive) vs audeering/wav2vec2 (research), each
+    trained/evaluated across the 4 dataset combinations the user asked
+    for directly. See scripts/eval_backend_combos.py and
+    ssa.combo_manifests for the methodology this renders."""
+    if data is None:
+        return "<p class='pending'>Not yet run &mdash; <code>make eval-backend-combos</code>.</p>"
+
+    combos = data["combos"]
+
+    def cell(eval_dict: dict | None, field: str) -> str:
+        if eval_dict is None or "excluded_reason" in eval_dict:
+            return "<td class='num' title=\"trained on this speaker, see note below\">excl.*</td>"
+        return f"<td class='num'>{_fmt(eval_dict.get(field))}</td>"
+
+    rows = []
+    for name, combo in combos.items():
+        perm_eval = combo["permissive"]["eval"]
+        res_eval = combo["research"]["eval"]
+        rows.append(f"""
+        <tr><td rowspan="2"><code>{name}</code><br/><span class="caption">n_train={combo["train_n_clips"]}</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">{_fmt(perm_eval["cremad_test"]["uar"])}</td>
+            <td class="num">{_fmt(perm_eval["cremad_test"]["macro_f1"])}</td>
+            {cell(perm_eval.get("e3_both_takes"), "uar")}
+            {cell(perm_eval.get("e3_both_takes"), "macro_f1")}</tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">{_fmt(res_eval["cremad_test"]["uar"])}</td>
+            <td class="num">{_fmt(res_eval["cremad_test"]["macro_f1"])}</td>
+            {cell(res_eval.get("e3_both_takes"), "uar")}
+            {cell(res_eval.get("e3_both_takes"), "macro_f1")}</tr>
+        """)
+
+    descriptions = "".join(
+        f"<li><code>{name}</code> &mdash; {combo['description']}</li>"
+        for name, combo in combos.items()
+    )
+
+    return f"""
+    <p>{data.get("interpretation", "")}</p>
+    <table>
+      <thead><tr><th>Combo</th><th>Backend</th>
+      <th>CREMA-D test UAR</th><th>CREMA-D test macro-F1</th>
+      <th>E3 UAR</th><th>E3 macro-F1</th></tr></thead>
+      <tbody>{"".join(rows)}</tbody>
+    </table>
+    <p class="caption">Eval subset: {data.get("eval_subset_n")}-clip stratified sample of
+    CREMA-D test (seed={data.get("eval_subset_seed")}, fixed across every combo), plus both
+    E3 takes where evaluating on E3 doesn't put a training speaker on both sides of the
+    split. <strong>excl.*</strong> = that combo trained on E3's speaker, so E3 cannot also be
+    its eval set (CLAUDE.md rule 1) &mdash; not missing data, a deliberate exclusion.</p>
+    <p class="caption"><strong>&dagger;</strong> {data.get("research_backend_note", "")}</p>
+    <ul class="caption">{descriptions}</ul>
     """
 
 
@@ -554,6 +619,7 @@ def build_report() -> str:
     hume = load_json_if_exists(RESULTS_DIR / "hume_probe.json")
     e3_control = load_json_if_exists(RESULTS_DIR / "d1_vs_e3_control.json")
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
+    backend_combos = load_json_if_exists(RESULTS_DIR / "backend_combo_comparison.json")
     disjoint_permissive = next(
         (
             r
@@ -682,6 +748,9 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>E3: human recordings, and a control on the D1 finding</h2>
 {render_e3_control_section(e3_control)}
+
+<h2>Backend x training-data comparison: WavLM+probe vs audeering/wav2vec2</h2>
+{render_backend_combo_section(backend_combos)}
 
 <h2>What didn't work, and why</h2>
 {render_what_didnt_work()}

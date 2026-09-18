@@ -192,6 +192,51 @@ instrument check and a real transfer-failure measurement, not a claim about spee
 emotion recognition in general, and not yet a measurement of Ami's actual user
 population.
 
+## Backend x training-data comparison
+
+Requested directly: does folding the user's own recordings (E3) and/or the Hume
+Octave probe into training change either acoustic backend, across four
+combinations (`scripts/eval_backend_combos.py`, `results/backend_combo_comparison.json`;
+Cartesia excluded per the user's own instruction — D1 already found it added no
+signal). Same fixed 300-clip stratified CREMA-D-test subset for every combo; E3 is
+evaluated only for the two combos that never trained on it (CLAUDE.md rule 1 — E3
+has one real speaker, so a combo that trains on them cannot also score itself on
+them, even under a different clip_id):
+
+| Combo | n train | Permissive CREMA-D UAR | Permissive CREMA-D macro-F1 | Permissive E3 UAR | Research CREMA-D UAR | Research E3 UAR |
+|---|---|---|---|---|---|---|
+| `cremad_only` | 5,235 | 0.782 | 0.774 | 0.481 | 0.450 | 0.519 |
+| `cremad_e3` (+E3) | 5,289 | 0.782 | 0.771 | excl.\* | 0.450 | 0.519 |
+| `cremad_e3_hume` (+E3+Hume) | 5,309 | 0.783 | 0.775 | excl.\* | 0.450 | 0.519 |
+| `cremad_hume` (+Hume) | 5,255 | 0.785 | 0.778 | 0.481 | 0.450 | 0.519 |
+
+\* excluded, not missing: these two combos trained on E3's one speaker.
+
+**Two findings, both real, neither dramatic:**
+
+1. **Adding 54 clips of E3 and/or 20 clips of Hume to 5,235 clips of CREMA-D moves
+   the permissive backend's CREMA-D-test UAR by at most 0.003** — noise, not
+   signal, at this ratio (~1% of training volume). No sign of catastrophic
+   forgetting either. Read as: a handful of extra clips from one new source
+   doesn't perceptibly help *or* hurt the model on the benchmark it was already
+   tuned for.
+2. **The research backend is architecturally invariant here by construction** —
+   it has no trainable encoder, only two valence thresholds fit once from CREMA-D's
+   own held-out validation split, which none of these combos ever touch. Its
+   identical numbers across all four rows are a reported property of the
+   architecture, not a shortcut standing in for missing results (see
+   `results/backend_combo_comparison.json`'s `research_backend_note`).
+
+**The more informative negative result:** training on E3 doesn't buy a
+measurable transfer benefit either — E3 eval is excluded for combos that train
+on it, but there's no reason from these numbers to expect a better outcome if it
+weren't: 54 real clips against 5,235 acted ones is not enough training signal to
+move a shared classifier's decision boundary for one new voice. This is
+consistent with the E3 section's earlier finding that per-speaker *threshold*
+recalibration (fitting 2 numbers, not retraining a classifier) is the more
+promising lever at this sample size, not more raw training data from the same
+source.
+
 ## Key trade-offs
 
 1. **Late fusion over joint fusion** — sacrifices some accuracy to keep PSI
@@ -267,14 +312,25 @@ population.
    presbyphonia argument move from "reasoned" to "measured" the way E3 has done for
    the acted-vs-spontaneous-speaker gap more broadly.
 5. ~~A genuinely emotional synthetic TTS source, if one exists~~ — **done, and it
-   works.** A 10-clip Hume Octave probe (`scripts/probe_hume.py`, `results/hume_probe.json`),
-   same design as D1 (same 5 emotions, same neutral carrier text, one fixed voice),
-   varying only Hume's `description` acting-instruction field: F0 span **126.7 Hz**
-   with `description` vs **32.3 Hz** without (Cartesia/D1: ~8 Hz), and the correct
-   positive>neutral>negative valence ordering holds *only* with `description`. First
-   synthetic source in this project to show a working emotion-rendering signal — see
-   `report/index.html`'s Hume section. **n=10, 1 carrier, 1 voice** — real, but a
-   fuller grid (matching D1's 8-cell design) is the next step before trusting this for
-   a shipped dataset, which remains future work.
+   works, now at D1's own scale.** `scripts/probe_hume.py` / `results/hume_probe.json`
+   runs Hume Octave through the *exact same* 40-clip factorial grid D1 ran on Cartesia
+   (5 emotions × neutral/congruent text × short/long, one fixed voice), varying only
+   Hume's `description` acting-instruction field, with 12 genuine carrier groups this
+   time — enough for an honest leave-one-carrier-out recoverability classifier, not
+   just a descriptive F0 span:
+
+   | | with `description` | without `description` | Cartesia (D1) |
+   |---|---|---|---|
+   | Intended-emotion recoverability (LOCO) | **0.5** / chance 0.2 | 0.2 (= chance) | 0.175 / chance 0.2 |
+   | F0 span across emotions | **124.1 Hz** | 37.7 Hz | ~8 Hz |
+   | Valence ordering (pos>neu>neg) | True | True | scrambled |
+   | F0 span, **neutral text only** (harder case) | **134.8 Hz** | — | ~8 Hz |
+
+   `description` produces real, classifier-recoverable emotion signal even on
+   neutral text, which is exactly the condition that isolates prosody from wording
+   (this project's gold-label rule) — and the condition Cartesia failed hardest.
+   First synthetic source in this project to clear that bar. **n=40, 12 carrier
+   groups, 1 voice** — the grid D1 itself used, so the comparison to Cartesia's 0.175
+   is apples-to-apples; still 1 TTS voice, so voice diversity remains future work.
 6. Extend voice-health from a demo to a validated gate, once real longitudinal
    recordings exist to fit and check it against.

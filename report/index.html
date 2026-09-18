@@ -242,39 +242,42 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>Hume Octave: a falsification test of the D1 finding</h2>
 
-    <p>Same design as D1: 10 clips, 5 emotions
-    (happy/sad/angry/calm/frustrated), one fixed voice ("Ava Song"), the exact
-    same neutral carrier text D1 used
-    (<code>"I need to check tomorrow's schedule."</code>) &mdash; so only Hume's <code>description</code>
-    acting-instruction field varies. Only 1 carrier text, so this is descriptive only
-    (no leave-one-carrier-out classifier, same caveat as D1's neutral condition).</p>
+    <p>Same design as D1, same scale: 40 clips, 5 emotions, the exact same
+    carrier texts D1 used on Cartesia (<code>ssa.carriers.D1_NEUTRAL_TEXT</code> and
+    <code>D1_CONGRUENT_TEXT</code>, both lengths), one fixed voice ("Ava Song") &mdash;
+    so the comparison is apples-to-apples, and this time with genuine carrier diversity
+    (12 groups, same as D1) for an honest leave-one-carrier-out recoverability classifier.</p>
     <table>
-      <thead><tr><th>Condition</th><th>F0 span</th>
+      <thead><tr><th>Condition</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
       <th>Valence ordering (pos&gt;neu&gt;neg)?</th></tr></thead>
       <tbody>
         <tr><td>With <code>description</code></td>
-            <td class="num">126.7 Hz</td>
+            <td class="num">0.500</td>
+            <td class="num">0.200</td>
+            <td class="num">124.1 Hz</td>
             <td><strong>True</strong></td></tr>
         <tr><td>Without <code>description</code></td>
-            <td class="num">32.3 Hz</td>
-            <td><strong>False</strong></td></tr>
+            <td class="num">0.200</td>
+            <td class="num">0.200</td>
+            <td class="num">37.7 Hz</td>
+            <td><strong>True</strong></td></tr>
         <tr><td><em>Cartesia (D1), for comparison</em></td>
+            <td class="num">0.175</td><td class="num">0.200</td>
             <td class="num">~8 Hz</td><td>scrambled (see above)</td></tr>
       </tbody>
     </table>
-    <p class="caption">With <code>description</code>, per emotion:</p>
+    <p class="caption">The harder cut &mdash; does <code>description</code> work even on
+    <strong>neutral</strong> text, isolating prosody from wording entirely (this project's
+    gold-label rule)? Neutral valence range:
+    0.112, F0 span 134.8 Hz
+    (n=10) vs. congruent valence range
+    0.721, F0 span
+    174.6 Hz (n=10).</p>
+    <p class="caption">With <code>description</code>, per emotion (averaged over all 4
+    text/length carriers):</p>
     <table><thead><tr><th>Emotion</th><th>F0 mean</th><th>Valence</th></tr></thead>
-    <tbody><tr><td>happy</td><td class='num'>234 Hz</td><td class='num'>0.639</td></tr><tr><td>sad</td><td class='num'>151 Hz</td><td class='num'>0.551</td></tr><tr><td>angry</td><td class='num'>254 Hz</td><td class='num'>0.461</td></tr><tr><td>calm</td><td class='num'>155 Hz</td><td class='num'>0.554</td></tr><tr><td>frustrated</td><td class='num'>277 Hz</td><td class='num'>0.487</td></tr></tbody></table>
-    <p class="finding"><strong>Finding:</strong> Falsification test of D1's Cartesia finding (results/d1_emotion_probe.json), using a vendor whose docs claim delivery control independent of the transcript. Only 1 carrier text -> descriptive only, no leave-one-carrier-out classifier (not enough carrier diversity to fit one honestly). Compare summary.with_description's f0_span_hz and valence_ordering against D1's f0_span_across_emotions_hz (~8 Hz) and scrambled ordering: if Hume's spread is meaningfully larger and/or the ordering holds, that is real differentiation Cartesia didn't show; if not, the D1 finding generalises beyond one vendor. On this
-    10-clip probe: Hume's <code>description</code> field produces roughly
-    3.9&times;
-    the F0 spread of the same text without it, and recovers the correct
-    positive&gt;neutral&gt;negative valence ordering where the no-description
-    condition (and Cartesia's tags, D1) do not. This is the first synthetic source in
-    this project to show a working emotion-rendering signal &mdash; a real, positive
-    result, on a small (n=10, 1 carrier, 1 voice) probe that would need a fuller grid
-    (more carriers/voices, matching D1's design) before being trusted for a shipped
-    dataset.</p>
+    <tbody><tr><td>happy</td><td class='num'>200 Hz</td><td class='num'>0.681</td></tr><tr><td>sad</td><td class='num'>148 Hz</td><td class='num'>0.437</td></tr><tr><td>angry</td><td class='num'>272 Hz</td><td class='num'>0.326</td></tr><tr><td>calm</td><td class='num'>159 Hz</td><td class='num'>0.486</td></tr><tr><td>frustrated</td><td class='num'>235 Hz</td><td class='num'>0.401</td></tr></tbody></table>
+    <p class="finding"><strong>Finding:</strong> Enlarged falsification test of D1's Cartesia finding (results/d1_emotion_probe.json), at D1's own grid scale (40 clips, same carrier texts, 12 carrier groups) so the recoverability classifier is honest rather than descriptive-only. summary.with_description.recoverability_cv is the number directly comparable to D1's 0.175 (vs 0.200 chance); summary.without_description is the control. summary.neutral_text_with_description isolates the harder case -- does `description` work even when the words carry no emotional content, which is what this project's gold-label rule (prosody_sentiment, not text_sentiment) actually requires.</p>
     
 
 <h2>E3: human recordings, and a control on the D1 finding</h2>
@@ -301,6 +304,72 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
     r=-0.19 &mdash; our shipped probe barely
     correlates with itself across two takes of the same prompts.</p>
     <p class="finding"><strong>Finding:</strong> Same instruments, same method as D1 (scripts/gen_emotion_probe_d1.py), run on real human recordings instead of Cartesia TTS. If recoverability/F0-span/rank come out well above chance here while D1 was at or below chance, that rules out the instruments as the explanation for D1's negative result -- the audio itself is what differs. Replicated across two independent takes by the same speaker; see test_retest_correlation_take0_vs_take1 for how consistent each instrument's own readings are across takes, which bears on Solution B's reliability, not just its accuracy. n=1 speaker -- this is a controlled instrument check, not a claim about speech-emotion recognition in general.</p>
+    
+
+<h2>Backend x training-data comparison: WavLM+probe vs audeering/wav2vec2</h2>
+
+    <p>Direct comparison requested by the user: does adding the user's own recordings (E3) and/or the Hume Octave synthetic probe to training change either backend's CREMA-D-test performance, and what happens on E3 itself when it's held out entirely (cremad_only, cremad_hume) vs folded into training (cremad_e3, cremad_e3_hume, where E3 eval is excluded -- CLAUDE.md rule 1). Cartesia is excluded throughout per the user's request; see d1_emotion_probe.json for why it wouldn't have added signal anyway. n is small for the added sources (E3: 1 speaker, 2 takes; Hume: 1 pseudo-speaker) relative to CREMA-D's 91 actors, so any shift in permissive numbers here should be read as a directional signal, not a robust generalisation claim.</p>
+    <table>
+      <thead><tr><th>Combo</th><th>Backend</th>
+      <th>CREMA-D test UAR</th><th>CREMA-D test macro-F1</th>
+      <th>E3 UAR</th><th>E3 macro-F1</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><code>cremad_only</code><br/><span class="caption">n_train=5235</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.782</td>
+            <td class="num">0.774</td>
+            <td class='num'>0.481</td>
+            <td class='num'>0.421</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_e3</code><br/><span class="caption">n_train=5289</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.782</td>
+            <td class="num">0.771</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_e3_hume</code><br/><span class="caption">n_train=5309</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.783</td>
+            <td class="num">0.775</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_hume</code><br/><span class="caption">n_train=5255</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.785</td>
+            <td class="num">0.778</td>
+            <td class='num'>0.481</td>
+            <td class='num'>0.440</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        </tbody>
+    </table>
+    <p class="caption">Eval subset: 300-clip stratified sample of
+    CREMA-D test (seed=0, fixed across every combo), plus both
+    E3 takes where evaluating on E3 doesn't put a training speaker on both sides of the
+    split. <strong>excl.*</strong> = that combo trained on E3's speaker, so E3 cannot also be
+    its eval set (CLAUDE.md rule 1) &mdash; not missing data, a deliberate exclusion.</p>
+    <p class="caption"><strong>&dagger;</strong> The research backend (audeering/wav2vec2, CC-BY-NC-SA-4.0) has no trainable encoder -- only two valence thresholds, fit once from CREMA-D's own held-out validation split (ssa.train.train_research), which none of the extra sources ever enters in this design. Its numbers are therefore identical across all four combos by construction, computed once and reused here -- this is a real architectural property being reported, not a shortcut standing in for missing results. The permissive backend (WavLM + our own trained probe) is the one that actually differs by combo below.</p>
+    <ul class="caption"><li><code>cremad_only</code> &mdash; CREMA-D train split only -- the baseline.</li><li><code>cremad_e3</code> &mdash; CREMA-D train + both E3 takes (the user's own recordings).</li><li><code>cremad_e3_hume</code> &mdash; CREMA-D train + both E3 takes + Hume with-description clips.</li><li><code>cremad_hume</code> &mdash; CREMA-D train + Hume with-description clips (no E3).</li></ul>
     
 
 <h2>What didn't work, and why</h2>

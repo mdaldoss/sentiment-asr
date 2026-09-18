@@ -34,7 +34,7 @@ COLUMNS: tuple[str, ...] = (
     "split",
 )
 
-VALID_SOURCES: frozenset[str] = frozenset({"crema_d", "synthetic", "recorded"})
+VALID_SOURCES: frozenset[str] = frozenset({"crema_d", "synthetic", "recorded", "hume"})
 
 
 class ManifestError(ValueError):

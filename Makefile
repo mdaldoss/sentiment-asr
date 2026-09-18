@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval eval-e3 listening-sorted prosody-samples probe-hume report site demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report site demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -38,6 +38,9 @@ prosody-samples:  ## Extract VAD/F0 for 20 real samples (12 CREMA-D + 8 E3) -> r
 
 probe-hume:  ## [needs HUME_API_KEY + `pip install hume`] Falsification test of the D1 Cartesia finding
 	uv run python scripts/probe_hume.py
+
+eval-backend-combos:  ## WavLM+probe vs audeering across 4 dataset combos (cremad/+e3/+hume) -> results/backend_combo_comparison.json
+	uv run python scripts/eval_backend_combos.py
 
 report:  ## Regenerate report/index.html from results/*.json
 	uv run python -m ssa.report

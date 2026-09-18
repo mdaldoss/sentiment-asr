@@ -60,7 +60,12 @@ def _split_xy(
     return X, y
 
 
-def train_permissive(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
+def train_permissive(
+    manifest_path: Path = MANIFEST_PATH,
+    *,
+    probe_path: Path = PROBE_PATH,
+    cache_path: Path = CACHE_PATH,
+) -> dict[str, float]:
     if not manifest_path.exists():
         raise SystemExit(f"{manifest_path} not found -- run `make data` first")
 
@@ -69,7 +74,7 @@ def train_permissive(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
     assert_speaker_disjoint(manifest)
 
     encoder = WavLMEncoder()
-    cache = extract_and_cache(manifest, encoder, CACHE_PATH, repo_root=REPO_ROOT)
+    cache = extract_and_cache(manifest, encoder, cache_path, repo_root=REPO_ROOT)
 
     X_train, y_train = _split_xy(manifest, "train", cache)
     X_val, y_val = _split_xy(manifest, "val", cache)
@@ -115,9 +120,9 @@ def train_permissive(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
             best_uar,
         )
 
-    PROBE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump({"scaler": scaler, "clf": best_model, "model_type": best_name}, PROBE_PATH)
-    logger.info("saved %s probe (val UAR=%.3f) to %s", best_name, best_uar, PROBE_PATH)
+    probe_path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump({"scaler": scaler, "clf": best_model, "model_type": best_name}, probe_path)
+    logger.info("saved %s probe (val UAR=%.3f) to %s", best_name, best_uar, probe_path)
 
     return {"val_uar": best_uar, "val_macro_f1": best_f1, "model_type": best_name}
 
@@ -138,7 +143,12 @@ class _VADEmbedAdapter:
         return np.array([vad.valence, vad.arousal, vad.dominance], dtype=np.float32)
 
 
-def train_research(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
+def train_research(
+    manifest_path: Path = MANIFEST_PATH,
+    *,
+    thresholds_path: Path = THRESHOLDS_PATH,
+    vad_cache_path: Path = VAD_CACHE_PATH,
+) -> dict[str, float]:
     """Fit the research backend's two valence thresholds on the validation
     split. No learned parameters otherwise -- the audeering encoder is used
     zero-shot, exactly as published."""
@@ -154,7 +164,7 @@ def train_research(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
 
     vad_encoder = AudeeringVADEncoder()
     cache = extract_and_cache(
-        val, _VADEmbedAdapter(vad_encoder), VAD_CACHE_PATH, repo_root=REPO_ROOT
+        val, _VADEmbedAdapter(vad_encoder), vad_cache_path, repo_root=REPO_ROOT
     )
     vad_matrix, _ids = embeddings_matrix(val, cache)
     valences = vad_matrix[:, 0]  # (valence, arousal, dominance) per _VADEmbedAdapter
@@ -177,11 +187,11 @@ def train_research(manifest_path: Path = MANIFEST_PATH) -> dict[str, float]:
         val_f1,
     )
 
-    THRESHOLDS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    THRESHOLDS_PATH.write_text(
+    thresholds_path.parent.mkdir(parents=True, exist_ok=True)
+    thresholds_path.write_text(
         json.dumps({"low": thresholds.low, "high": thresholds.high}, indent=2)
     )
-    logger.info("saved thresholds to %s", THRESHOLDS_PATH)
+    logger.info("saved thresholds to %s", thresholds_path)
 
     return {"val_uar": val_uar, "val_macro_f1": val_f1}
 

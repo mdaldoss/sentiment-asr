@@ -9,6 +9,7 @@ from ssa.report import (
     _fmt,
     _pct,
     _solution_short,
+    render_backend_combo_section,
     render_d1_section,
     render_e3_control_section,
     render_hume_section,
@@ -287,25 +288,118 @@ class TestRenderModelsSection:
 
 def _fake_hume() -> dict:
     return {
-        "n_clips": 10,
-        "carrier_text": "I need to check tomorrow's schedule.",
+        "n_clips": 40,
         "voice": "Ava Song",
         "summary": {
             "with_description": {
-                "f0_by_emotion": {"happy": 234.3, "sad": 150.7, "angry": 254.1},
+                "n_clips": 20,
+                "f0_mean_by_emotion": {"happy": 234.3, "sad": 150.7, "angry": 254.1},
                 "f0_span_hz": 126.7,
-                "valence_by_emotion": {"happy": 0.64, "sad": 0.55, "angry": 0.46},
+                "valence_mean_by_emotion": {"happy": 0.64, "sad": 0.55, "angry": 0.46},
                 "valence_ordering_matches_intended_sentiment": True,
+                "recoverability_cv": {"accuracy": 0.55, "chance": 0.2, "n_carrier_groups": 12},
             },
             "without_description": {
-                "f0_by_emotion": {"happy": 163.5, "sad": 157.8, "angry": 183.4},
+                "n_clips": 20,
+                "f0_mean_by_emotion": {"happy": 163.5, "sad": 157.8, "angry": 183.4},
                 "f0_span_hz": 32.3,
-                "valence_by_emotion": {"happy": 0.57, "sad": 0.49, "angry": 0.49},
+                "valence_mean_by_emotion": {"happy": 0.57, "sad": 0.49, "angry": 0.49},
                 "valence_ordering_matches_intended_sentiment": False,
+                "recoverability_cv": {"accuracy": 0.15, "chance": 0.2, "n_carrier_groups": 12},
+            },
+            "neutral_text_with_description": {
+                "n_clips": 10,
+                "f0_span_hz": 90.0,
+                "valence_range": 0.3,
+            },
+            "congruent_text_with_description": {
+                "n_clips": 10,
+                "f0_span_hz": 140.0,
+                "valence_range": 0.4,
             },
         },
         "interpretation": "falsification test of D1's Cartesia finding",
     }
+
+
+def _fake_backend_combos() -> dict:
+    def eval_pair(uar_cremad: float, uar_e3: float | None) -> dict:
+        cremad = {
+            "dataset": "cremad_test",
+            "split_type": "combo_x",
+            "n_clips": 300,
+            "uar": uar_cremad,
+            "macro_f1": uar_cremad - 0.01,
+        }
+        e3 = (
+            {
+                "dataset": "e3_both_takes",
+                "split_type": "combo_x",
+                "n_clips": 54,
+                "uar": uar_e3,
+                "macro_f1": uar_e3 - 0.01,
+            }
+            if uar_e3 is not None
+            else {"excluded_reason": "combo trains on E3's speaker"}
+        )
+        return {"cremad_test": cremad, "e3_both_takes": e3}
+
+    research_eval = eval_pair(0.5, 0.44)
+    return {
+        "eval_subset_n": 300,
+        "eval_subset_seed": 0,
+        "combos": {
+            "cremad_only": {
+                "description": "CREMA-D train split only.",
+                "train_n_clips": 5235,
+                "permissive": {"eval": eval_pair(0.60, 0.44)},
+                "research": {"eval": research_eval},
+            },
+            "cremad_e3": {
+                "description": "CREMA-D train + both E3 takes.",
+                "train_n_clips": 5289,
+                "permissive": {"eval": eval_pair(0.61, None)},
+                "research": {"eval": research_eval},
+            },
+            "cremad_e3_hume": {
+                "description": "CREMA-D train + both E3 takes + Hume.",
+                "train_n_clips": 5309,
+                "permissive": {"eval": eval_pair(0.615, None)},
+                "research": {"eval": research_eval},
+            },
+            "cremad_hume": {
+                "description": "CREMA-D train + Hume, no E3.",
+                "train_n_clips": 5255,
+                "permissive": {"eval": eval_pair(0.605, 0.46)},
+                "research": {"eval": research_eval},
+            },
+        },
+        "research_backend_note": "identical across combos by construction",
+        "interpretation": "direct comparison of the two backends across four combos",
+    }
+
+
+class TestRenderBackendComboSection:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_backend_combo_section(None)
+
+    def test_renders_all_four_combo_names(self) -> None:
+        html = render_backend_combo_section(_fake_backend_combos())
+        for name in ("cremad_only", "cremad_e3", "cremad_e3_hume", "cremad_hume"):
+            assert name in html
+
+    def test_excluded_e3_shown_as_excl_not_a_number(self) -> None:
+        html = render_backend_combo_section(_fake_backend_combos())
+        assert "excl.*" in html
+
+    def test_renders_research_note_and_interpretation(self) -> None:
+        html = render_backend_combo_section(_fake_backend_combos())
+        assert "identical across combos by construction" in html
+        assert "direct comparison of the two backends" in html
+
+    def test_renders_included_e3_numbers(self) -> None:
+        html = render_backend_combo_section(_fake_backend_combos())
+        assert "0.440" in html or "0.44" in html
 
 
 class TestRenderHumeSection:

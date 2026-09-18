@@ -20,6 +20,7 @@ make eval-e3   # A/B/C on the recorded human set (both takes) + the D1-vs-human 
 make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for spot-checking
 make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> results/prosody_samples.json
 make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
+make eval-backend-combos  # WavLM+probe vs audeering across 4 training-data combos (needs make data + make probe-hume first)
 make report    # regenerate report/index.html from results/*.json
 make site      # regenerate /index.html and /architecture.html (the entry point + pipeline page)
 ```
@@ -98,7 +99,12 @@ read real human speech at 2x+ chance. **A same-design Hume Octave probe
 its `description` field produces real differentiation on the identical carrier text.
 See `report/listening_sorted.html` (`make listening-sorted`) to listen to the ranked
 clips yourself, and `report/index.html` for which model actually extracts
-prosody/emotion (with papers) plus a VAD plot over 20 real samples. Synthetic incongruence
+prosody/emotion (with papers) plus a VAD plot over 20 real samples. **A 4-combo
+backend comparison** (`make eval-backend-combos`) trains/evaluates WavLM+probe vs
+audeering across CREMA-D alone / +E3 / +E3+Hume / +Hume: adding 54–74 non-CREMA-D
+clips to 5,235 moves CREMA-D-test UAR by ≤0.003 (noise, not signal) and the
+zero-shot research backend is invariant by construction — see `report/index.html`.
+Synthetic incongruence
 set (E2) generation is **76/90 clips** complete and superseded for the audibility
 question by D1's finding — kept as the historical exhibit. See `DESIGN.md` → Known
 limitations for the complete, honest accounting, and `report/index.html` for whatever
