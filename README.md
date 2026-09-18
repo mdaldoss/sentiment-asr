@@ -15,7 +15,8 @@ make test      # invariant tests -- no data, model download, or API key needed
 make data      # download CREMA-D (~470 MB, ODbL) -- one-time
 make train     # fit the acoustic probe(s). BACKEND=permissive (default) | research
 make demo      # single real clip, end-to-end. No API key needed.
-make eval      # full evaluation sweep -> results/*.json
+make eval-e3   # A/B/C on the recorded human set (both takes) + the D1-vs-human control
+make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for spot-checking
 make report    # regenerate report/index.html from results/*.json
 ```
 
@@ -76,18 +77,24 @@ the transcript. See `ssa/eval/metrics.py` for the exact definition.
 Exactly the shape the design predicts: lexical-only is barely above chance and
 structurally can't sense tone (CREMA-D's text is always neutral); acoustic-only, the
 only one that can actually hear the emotion, wins by a wide margin. See `DESIGN.md`
-and `report/index.html` for the full results, including a real leakage measurement and
-an unexpected domain-gap finding from the D0 probe.
+and `report/index.html` for the full results, including a real leakage measurement,
+a domain-gap finding from the D0/D1 Cartesia probes, and the E3 human-recording
+control that shows Solution B doesn't transfer cleanly to a new speaker either.
 
 ## Status
 
-Core pipeline complete and tested (182 tests). CREMA-D benchmark results are real,
-measured end-to-end. Synthetic incongruence set (E2) generation is **76/90 clips**
-complete — the script is resumable and finishes in one command once Cartesia budget is
-topped up. Human recordings (E3) are not yet captured — `make record` runs the
-teleprompter (needs a microphone; not exercisable in this environment). See `DESIGN.md`
-→ Known limitations for the complete, honest accounting, and `report/index.html` for
-whatever has landed most recently.
+Core pipeline complete and tested (233 tests). CREMA-D benchmark results are real,
+measured end-to-end. **E3 (human recordings) is recorded and evaluated** — two
+independent takes, 27 clips each, `make eval-e3` — and doubles as a control that rules
+the measuring instruments out as the explanation for a headline negative finding: **D1
+measured Cartesia's emotion tags as not reliably audible on this content** (below-chance
+intended-emotion recoverability), replicated with a control showing the same instruments
+read real human speech at 2x+ chance. See `report/listening_sorted.html`
+(`make listening-sorted`) to listen to the ranked clips yourself. Synthetic incongruence
+set (E2) generation is **76/90 clips** complete and superseded for the audibility
+question by D1's finding — kept as the historical exhibit. See `DESIGN.md` → Known
+limitations for the complete, honest accounting, and `report/index.html` for whatever
+has landed most recently.
 
 ## Documentation
 
@@ -102,8 +109,8 @@ whatever has landed most recently.
 | Asset | License | Redistributed here? |
 |---|---|---|
 | CREMA-D | ODbL v1.0 | No — `make data` fetches it |
-| Synthetic (Cartesia) | generated | Yes — 76/90 E2 clips committed (partial manifest); remaining 14 land once Cartesia budget is topped up |
-| Recordings | authors' own | Not yet recorded |
+| Synthetic (Cartesia) | generated | Yes — 76/90 E2 clips + 45 D1 clips committed |
+| Recordings (E3) | authors' own | Yes — 2 takes, 30 clips each, committed |
 | `audeering` VAD model | **CC-BY-NC-SA-4.0, research only** | No — flagged at runtime, in the CLI, and in the report |
 | WavLM, faster-whisper, text classifier | MIT / Apache-2.0 | No — downloaded, cached locally |
 

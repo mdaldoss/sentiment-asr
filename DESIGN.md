@@ -47,12 +47,17 @@ quadrants "for free" for the roadmap, without training a second model.
   clips. Ground-truth prosody label is **TTS intent** (the requested emotion tag), not
   a re-classification by any model — following the EMIS paper's precedent (arXiv
   2510.25054).
-- **D0** — an unsupervised probe of Cartesia's ~58 emotion tags (2 carriers each, 116
-  clips), embedded with the audeering VAD model and clustered. Not used to gate E2's
-  tag selection (see Limitations) — it's a diagnostic, not a filter.
-- **Human recordings (E3)** — a teleprompter script (`scripts/record_prompts.py`)
-  records the same crossed design from real speakers, as the validity anchor for E2's
-  synthetic data.
+- **D0/D1** — Cartesia emotion-space probes: D0 an unsupervised clustering of ~58
+  tags (2 carriers each, 116 clips); D1 a dedicated factorial probe (40 clips) into
+  the user's proposed 5-emotion set (happy/sad/angry/calm/frustrated), crossing
+  text condition, length and speed. Both diagnostics, not filters — D1's finding
+  (below chance recoverability) is a headline result, not a gate on tag selection.
+- **Human recordings (E3)** — `scripts/record_prompts.py`'s teleprompter, the same
+  crossed design as E2 but spoken by a real person. **Recorded and evaluated**: two
+  independent takes (`data/recorded0`, `data/recorded`), 27 non-whisper clips each,
+  run through `scripts/eval_e3.py`. Doubles as the control that rules out the
+  measuring instruments as the explanation for D1's negative Cartesia result (see
+  the E3 section below).
 
 ## Evaluation methodology
 
@@ -125,6 +130,68 @@ genuinely-competing-signals version of this test) were not available at submissi
 time — see the live dashboard (`report/index.html`, regenerate with `make report`)
 for whatever has landed since.
 
+## E3: human recordings, and a control on the Cartesia finding
+
+E3 (`data/recorded{0,}/`, `scripts/eval_e3.py`) is now recorded and evaluated: 27
+non-whisper clips per take, two independent takes by the same speaker (same 30
+prompts, re-recorded — a free test-retest experiment), with genuinely sentiment-laden
+text crossed against instructed delivery, so **PSI is finally computed on
+competing signals**, not E1's structurally-neutral text.
+
+**A/B/C on E3 (n=27 per take, chance UAR=0.333):**
+
+| | take0 | take1 |
+|---|---|---|
+| A — lexical | 0.333 | 0.370 |
+| B — permissive | 0.444 | 0.519 |
+| B — research | 0.444 | 0.593 |
+| C — fusion | 0.444 | 0.556 |
+
+**The instruments are exonerated, with a control.** D0/D1 found Cartesia's emotion
+tags not measurably audible (recoverability 0.175 vs 0.200 chance, 5-way; F0 barely
+separates the 5 emotions). Running the *exact same instruments and method*
+(`results/d1_vs_e3_control.json`) on E3 instead of Cartesia:
+
+| | Cartesia (D1) | E3 take0 | E3 take1 |
+|---|---|---|---|
+| Intended-sentiment recoverability (leave-one-carrier-out) | **0.175** / chance 0.200 | **0.667** / chance 0.333 | **0.741** / chance 0.333 |
+| F0 spread between classes | ~8 Hz | 33 Hz | 34 Hz |
+| F0 rank of "positive" (1=highest) | ≈ chance | **#1 in every carrier** | **#1 in every carrier** |
+
+Replicated across two independently recorded takes, with a perfect and consistent
+pitch ordering both times. This rules out the measuring instruments as the
+explanation for D1's negative Cartesia result — the same instruments read real
+emotion out of human speech at more than double chance. **D1's finding about
+Cartesia stands; it is the synthetic audio, not the measurement, that lacks the
+prosody.**
+
+**The more important finding: Solution B doesn't transfer to this speaker, and the
+permissive backend isn't even self-consistent.** Trained on CREMA-D (acted, US
+studio actors), it scores UAR 0.444/0.519 on E3 and — on take1 — never once predicts
+"positive" (0/9 recall). Worse: its own per-clip valence reading correlates at
+**r = −0.19** between the two takes of the same prompts by the same speaker, while
+the research backend's reading correlates at **r = +0.92**. The research backend is
+both *more accurate* (0.444/0.593) and *far more stable* on this speaker — turning
+the permissive-vs-research licensing trade-off (see Key trade-offs, below) into
+something partially measured, not only argued.
+
+**Per-speaker recalibration was tried and mostly didn't help.** Fitting per-speaker
+decision thresholds (leave-one-carrier-out, so the number isn't circular) moved UAR
+by backend and take: permissive 0.444→0.556 (take0, helps) but 0.519→0.407 (take1,
+hurts); research 0.444→0.370 (take0, hurts) and 0.593→0.519 (take1, hurts). One win
+in four, at 27 clips fitting two thresholds on ~24 — this is fitting noise, not
+signal, and a probe with r=−0.19 test-retest has no stable per-clip score for a
+threshold to sit on anyway. **This is reported as a negative result, not shipped as
+a feature.** It sharpens, rather than undermines, the roadmap claim below: DESIGN.md
+always argued for *longitudinal* baselining over weeks, and this experiment shows
+concretely what a handful of clips cannot buy — evidence for, not against, needing
+the longer horizon.
+
+n=1 speaker (not a native English speaker, not elderly) — this is a controlled
+instrument check and a real transfer-failure measurement, not a claim about speech
+emotion recognition in general, and not yet a measurement of Ami's actual user
+population.
+
 ## Key trade-offs
 
 1. **Late fusion over joint fusion** — sacrifices some accuracy to keep PSI
@@ -133,7 +200,10 @@ for whatever has landed since.
    naturalistic training data) is CC-BY-NC-SA-4.0, non-commercial. Rather than pick
    one, both ship behind one interface; the CLI prints a license notice when the
    research backend loads. A company shipping this has a documented, working
-   alternative.
+   alternative. **This is no longer only a licensing argument**: on E3 (see above),
+   the non-commercial research backend is both more accurate and far more stable
+   across takes than the shipped permissive one — a measured reason, not just a
+   licensing one, to keep both behind one interface rather than commit to either.
 3. **Synthetic (E2) vs. human (E3) data, not either/or** — TTS gives scale, balance,
    and zero speaker confound; human speech is the validity anchor. Cross-checking them
    is itself a planned result, not an afterthought.
@@ -146,19 +216,24 @@ for whatever has landed since.
 - **E2 is incomplete (76/90 clips)** — generation hit Cartesia's free-tier quota
   mid-run. The script is resumable; the remaining 14 clips (plus any E4 augmentation)
   complete in one command once the key is topped up.
-- **E3 has not been recorded** — requires a human at a microphone; the teleprompter
-  script is built and tested (prompt construction, not the live recording loop, which
-  needs real hardware) but no clips exist yet.
-- **D0's clustering was too degenerate to trust as a tag filter.** The audeering VAD
-  model — trained on real speech — showed only a 0.216 valence span across all 58
-  Cartesia tags, and many tags' two carrier-instances split across different clusters.
-  Verified this is a genuine domain-gap finding, not a plumbing bug (duration and RMS
-  energy vary substantially and sensibly by tag), then changed plan: E2's tags are
-  drawn directly from the mapping table, not gated by this clustering.
+- **D0/D1: Cartesia's emotion tags are not measurably audible on this content** —
+  D0's clustering was too degenerate to trust as a tag filter (0.216 valence span
+  across 58 tags on the audeering model), and D1's dedicated factorial probe (40
+  clips: 5 emotions × neutral/congruent text × short/long × default/adjusted speed)
+  scored *below* chance on intended-emotion recoverability (0.175 vs 0.200). The E3
+  control above rules out the instruments as the explanation. Reported as measured
+  for this content, these 2 voices, sonic-3 — not asserted as Cartesia's general
+  limit (see `results/d1_emotion_probe.json`, `report/d1_listening.html`).
+- **E2 is incomplete (76/90 clips) and superseded for the audibility question** —
+  generation hit Cartesia's free-tier quota mid-run; D1 found the underlying
+  rendering problem E2 was already hinting at, so E2 stays as the historical exhibit
+  rather than being completed.
 - **Only 2 TTS voices** in the synthetic sets — thin voice diversity, stated rather
   than papered over.
-- **The permissive backend is trained on acted speech (CREMA-D)** and has not been
-  validated on natural, spontaneous speech at all.
+- **The permissive backend does not transfer to the one real speaker tested** — see
+  the E3 section above (UAR 0.444/0.519, r=−0.19 test-retest). Trained on acted
+  speech (CREMA-D); this is a first, small, but real cross-corpus/cross-speaker
+  failure measurement, not a hypothetical one.
 - **No elderly voices in any accessible dataset.** Domera Labs (the employer) builds a
   senior-focused companion device; the single most important idea in this project —
   that presbyphonia (age-related vocal-fold changes) can look acoustically like sadness
@@ -169,15 +244,27 @@ for whatever has landed since.
 
 ## What I'd do next, with more time or resources
 
-1. Complete E2/E4 and record E3; run the full PSI comparison across all three solutions.
-2. **Per-speaker longitudinal baselining** — the highest-value next step for the actual
-   product. Ami is a personal device with one persistent user; it can learn *that
-   person's* neutral over weeks, which dissolves both the presbyphonia confound and the
-   acute-illness-vs-trait confound described in the voice-health module, using the same
-   mechanism. This needs longitudinal single-speaker data this project doesn't have.
-2. **MSP-Podcast** for naturalistic-speech training data — CREMA-D's acted delivery is
-   a real generalization gap.
-3. A small, consented elderly-voice pilot — the one dataset that would let the
-   presbyphonia argument above move from "reasoned" to "measured."
-4. Extend voice-health from a demo to a validated gate, once E3 (and ideally real
-   longitudinal recordings) exist to fit and check it against.
+1. **Longitudinal per-speaker baselining, over weeks not clips** — E3's 27-clip
+   leave-one-carrier-out recalibration helped in 1 of 4 backend/take combinations and
+   hurt in the other 3 (see the E3 section above): a real, measured demonstration
+   that a handful of clips is the wrong horizon for this idea, not evidence against
+   it. Ami is a personal device with one persistent user; learning *that person's*
+   neutral over weeks is the version that could dissolve both the presbyphonia
+   confound and the acute-illness-vs-trait confound in the voice-health module. Needs
+   longitudinal single-speaker data this project still doesn't have.
+2. **Cross-corpus generalisation on public benchmarks** — RAVDESS (train CREMA-D,
+   test RAVDESS, both acted but different actors/recording setup) and a same-content
+   age contrast via TESS (26 vs 64 year old speaker, identical words) would extend
+   E3's single-speaker transfer-failure finding into something closer to a population
+   estimate. Both CC-BY-NC — eval only, per the licensing argument above.
+3. **MSP-Podcast** for naturalistic-speech training data — CREMA-D's acted delivery is
+   a real generalization gap, and it's now a *measured* one (E3), not just argued.
+4. A small, consented elderly-voice pilot — the one dataset that would let the
+   presbyphonia argument move from "reasoned" to "measured" the way E3 has done for
+   the acted-vs-spontaneous-speaker gap more broadly.
+5. **A genuinely emotional synthetic TTS source**, if one exists — Cartesia's tags
+   didn't work on this content (D0/D1); Hume Octave's `description` field is
+   documented to control delivery independently of the transcript, which is the
+   specific capability Cartesia's docs say it lacks, and is worth a direct test.
+6. Extend voice-health from a demo to a validated gate, once real longitudinal
+   recordings exist to fit and check it against.
