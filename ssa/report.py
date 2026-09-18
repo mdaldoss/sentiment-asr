@@ -38,6 +38,51 @@ COLOR_WARNING = "#fab219"
 UNMEASURED_NOTE = "argued from literature, not measured in this study"
 
 
+def render_models_section() -> str:
+    """Which model actually extracts prosody/emotion, and its paper --
+    shared verbatim between report/index.html and
+    report/listening_sorted.html (scripts/gen_listening_sorted.py imports
+    this function) since both pages get asked "which model did this?"."""
+    return """
+    <p>A common point of confusion, worth stating precisely: <strong>WavLM does not
+    transcribe or recognize emotion by itself</strong> &mdash; two different models do
+    two different jobs.</p>
+    <table>
+      <thead><tr><th></th><th>Model</th><th>What it actually is</th><th>Paper</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription (Solution A only)</td><td><code>faster-whisper</code></td>
+            <td>OpenAI's Whisper ASR, CTranslate2-optimized. Nothing to do with WavLM.</td>
+            <td>&mdash;</td></tr>
+        <tr><td>Acoustic, <strong>permissive</strong> backend</td>
+            <td><code>microsoft/wavlm-base</code></td>
+            <td>A general-purpose self-supervised speech encoder &mdash; trained to
+            reconstruct masked/overlapping speech, never on an emotion label. We pool its
+            hidden states (mean+std) and train <em>our own</em> logistic regression on top
+            (fit on CREMA-D). WavLM supplies the representation; the emotion mapping is
+            ours, not WavLM's.</td>
+            <td>Chen et al. 2022,
+            <a href="https://arxiv.org/abs/2110.13900">arXiv:2110.13900</a></td></tr>
+        <tr><td>Acoustic, <strong>research</strong> backend</td>
+            <td><code>audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</code></td>
+            <td>A wav2vec2-large-robust backbone <strong>fine-tuned end-to-end</strong> on
+            MSP-Podcast to directly regress valence/arousal/dominance (VAD). This is the
+            model that actually extracts prosody/emotion &mdash; no probe needed, it
+            outputs VAD directly, and is what the sample plot below uses.</td>
+            <td>Wagner et al. 2023, "Dawn of the Transformer Era in Speech Emotion
+            Recognition: Closing the Valence Gap",
+            <a href="https://arxiv.org/abs/2203.07378">arXiv:2203.07378</a></td></tr>
+      </tbody>
+    </table>
+    <p class="unmeasured">A caveat straight from the research-backend paper, stated
+    rather than glossed over (CLAUDE.md rule 6): its authors report that the model's
+    strong valence performance comes partly from <strong>implicit linguistic
+    information learned during fine-tuning</strong>, not from prosody alone. Even this
+    "acoustic" model may not be as prosody-pure as its name implies &mdash; it doesn't
+    undermine this project's core comparisons (Solution A genuinely never sees audio;
+    the D1-vs-E3 Cartesia finding holds regardless), but it belongs in the record.</p>
+    """
+
+
 def load_all_results() -> list[dict[str, Any]]:
     results = []
     for path in sorted(RESULTS_DIR.glob("*.json")):
@@ -185,6 +230,104 @@ def render_d0_section(d0: dict | None) -> str:
       Hover a point for its tag.
     </p>
     <p class="finding"><strong>Finding:</strong> {d0["interpretation"]}</p>
+    """
+
+
+_SENTIMENT_COLOR = {
+    "positive": COLOR_POSITIVE,
+    "neutral": COLOR_NEUTRAL,
+    "negative": COLOR_NEGATIVE,
+    # CREMA-D's own emotion tags, mapped to the same 3-color scheme via
+    # ssa.mapping.CREMA_D_MAP (HAP=positive, NEU=neutral, everything else negative)
+    "HAP": COLOR_POSITIVE,
+    "NEU": COLOR_NEUTRAL,
+    "ANG": COLOR_NEGATIVE,
+    "DIS": COLOR_NEGATIVE,
+    "FEA": COLOR_NEGATIVE,
+    "SAD": COLOR_NEGATIVE,
+}
+
+
+def render_prosody_samples_section(data: dict | None) -> str:
+    """20 real clips (12 CREMA-D + 8 E3), VAD extracted with the research
+    backend (the model that actually regresses emotion -- see the Models
+    section) plus F0, so the extracted signal is visible directly rather
+    than only its downstream classification accuracy."""
+    if data is None:
+        return "<p class='pending'>Prosody sample extraction not yet run.</p>"
+
+    samples = data["samples"]
+    svg_w, svg_h, pad = 560, 360, 44
+    valences = [s["valence"] for s in samples]
+    arousals = [s["arousal"] for s in samples]
+    vmin, vmax = min(valences), max(valences)
+    amin, amax = min(arousals), max(arousals)
+    vspan = max(vmax - vmin, 1e-6)
+    aspan = max(amax - amin, 1e-6)
+
+    def x(v: float) -> float:
+        return pad + (v - vmin) / vspan * (svg_w - 2 * pad)
+
+    def y(a: float) -> float:
+        return svg_h - pad - (a - amin) / aspan * (svg_h - 2 * pad)
+
+    marks = []
+    for s in samples:
+        color = _SENTIMENT_COLOR.get(s["label"], COLOR_NEUTRAL)
+        is_mine = s["source"].startswith("E3")
+        cx, cy = x(s["valence"]), y(s["arousal"])
+        f0_label = f"{s['f0_mean']:.0f}Hz" if s["f0_mean"] else "n/a"
+        title = (
+            f'{s["clip_id"]} &mdash; {s["source"]}, label={s["label"]} '
+            f'v={s["valence"]:.3f} a={s["arousal"]:.3f} f0={f0_label}'
+        )
+        if is_mine:
+            # square marker for "mine" (E3), circle for the public dataset (CREMA-D)
+            size = 7
+            marks.append(
+                f'<rect x="{cx - size:.1f}" y="{cy - size:.1f}" '
+                f'width="{2 * size}" height="{2 * size}" '
+                f'fill="{color}" fill-opacity="0.85" stroke="#333" stroke-width="0.5">'
+                f"<title>{title}</title></rect>"
+            )
+        else:
+            marks.append(
+                f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="{color}" fill-opacity="0.75">'
+                f"<title>{title}</title></circle>"
+            )
+
+    f0_rows = "".join(
+        f"<tr><td>{s['clip_id']}</td><td>{s['source']}</td><td>{s['label']}</td>"
+        f"<td class='num'>{_fmt(s['valence'])}</td><td class='num'>{_fmt(s['arousal'])}</td>"
+        f"<td class='num'>{_fmt(s.get('f0_mean'), 0)} Hz</td></tr>"
+        for s in sorted(samples, key=lambda s: s["valence"], reverse=True)
+    )
+
+    return f"""
+    <p>{data["n_cremad"]} clips from CREMA-D (public dataset, circles) and {data["n_e3"]}
+    from your own E3 recordings (squares), extracted with the same instrument
+    ({data["model"]}). Color = mapped sentiment (blue=positive, gray=neutral, red=negative).</p>
+    <svg viewBox="0 0 {svg_w} {svg_h}" class="scatter" role="img"
+         aria-label="Valence-arousal scatter of {len(samples)} sample clips from CREMA-D and E3">
+      <line x1="{pad}" y1="{svg_h - pad}" x2="{svg_w - pad}" y2="{svg_h - pad}" class="axis"/>
+      <line x1="{pad}" y1="{pad}" x2="{pad}" y2="{svg_h - pad}" class="axis"/>
+      <text x="{svg_w / 2}" y="{svg_h - 8}" class="axis-label" text-anchor="middle">Valence &rarr;</text>
+      <text x="12" y="{svg_h / 2}" class="axis-label" text-anchor="middle"
+            transform="rotate(-90 12 {svg_h / 2})">Arousal &rarr;</text>
+      {"".join(marks)}
+    </svg>
+    <p class="caption">Circle = CREMA-D (public), square = E3 (mine). Hover a point for its
+    clip id, label, exact VAD and F0. Full table, sorted by valence:</p>
+    <table>
+      <thead><tr><th>Clip</th><th>Source</th><th>Label</th><th>Valence</th><th>Arousal</th><th>F0 mean</th></tr></thead>
+      <tbody>{f0_rows}</tbody>
+    </table>
+    <p class="caption">CREMA-D's HAP samples read highest-valence and SAD lowest in this
+    20-clip draw &mdash; a sane ordering on real acted speech from a model that has
+    actually seen emotion labels (contrast with D0/D1's scrambled ordering on Cartesia's
+    synthetic output, above). Regenerate with <code>make prosody-samples</code>; the
+    selection is seeded/deterministic but small (n=20) &mdash; illustrative, not a
+    benchmark.</p>
     """
 
 
@@ -347,6 +490,7 @@ def build_report() -> str:
     eval_results = [r for r in results if "confusion_matrix" in r]
     d0 = load_json_if_exists(RESULTS_DIR / "d0_emotion_space.json")
     d1 = load_json_if_exists(RESULTS_DIR / "d1_emotion_probe.json")
+    prosody_samples = load_json_if_exists(RESULTS_DIR / "prosody_samples.json")
     e3_control = load_json_if_exists(RESULTS_DIR / "d1_vs_e3_control.json")
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
     disjoint_permissive = next(
@@ -442,6 +586,9 @@ Sentiment is a threshold read-out of valence. Late fusion (not joint) deliberate
 sacrifices some accuracy to keep PSI computable per branch &mdash; see DESIGN.md's
 Key trade-offs.</p>
 
+<h2>Which model actually extracts prosody/emotion</h2>
+{render_models_section()}
+
 <h2>Method</h2>
 <p>Speaker-disjoint splits always (a parallel leaky split exists only to quantify the
 leakage gap, see below). <strong>UAR</strong> (unweighted average recall), not plain
@@ -462,6 +609,9 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>D0: Cartesia emotion-space probe</h2>
 {render_d0_section(d0)}
+
+<h2>Extracted prosody/emotion on real samples: CREMA-D + your recordings</h2>
+{render_prosody_samples_section(prosody_samples)}
 
 <h2>D1: does Cartesia render these emotions audibly?</h2>
 {render_d1_section(d1)}

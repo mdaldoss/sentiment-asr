@@ -1,0 +1,228 @@
+{
+  "n_samples": 20,
+  "n_cremad": 12,
+  "n_e3": 8,
+  "model": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (Wagner et al. 2023, arXiv:2203.07378)",
+  "samples": [
+    {
+      "clip_id": "cremad_1067_ITH_ANG_XX",
+      "source": "CREMA-D (public)",
+      "label": "ANG",
+      "prosody_sentiment": "negative",
+      "valence": 0.2948482632637024,
+      "arousal": 0.4449070692062378,
+      "dominance": 0.4929399788379669,
+      "f0_mean": 165.42762280730105,
+      "f0_std": 22.631313633773726
+    },
+    {
+      "clip_id": "cremad_1010_IEO_ANG_MD",
+      "source": "CREMA-D (public)",
+      "label": "ANG",
+      "prosody_sentiment": "negative",
+      "valence": 0.37743040919303894,
+      "arousal": 0.5740594863891602,
+      "dominance": 0.594864547252655,
+      "f0_mean": 277.8977122645021,
+      "f0_std": 31.27399015703973
+    },
+    {
+      "clip_id": "cremad_1082_IWW_DIS_XX",
+      "source": "CREMA-D (public)",
+      "label": "DIS",
+      "prosody_sentiment": "negative",
+      "valence": 0.3456655442714691,
+      "arousal": 0.3935660421848297,
+      "dominance": 0.46658360958099365,
+      "f0_mean": 177.87967102251525,
+      "f0_std": 30.255403110722426
+    },
+    {
+      "clip_id": "cremad_1034_WSI_DIS_XX",
+      "source": "CREMA-D (public)",
+      "label": "DIS",
+      "prosody_sentiment": "negative",
+      "valence": 0.31467410922050476,
+      "arousal": 0.087112195789814,
+      "dominance": 0.23486553132534027,
+      "f0_mean": 128.35416062198368,
+      "f0_std": 50.6445614064656
+    },
+    {
+      "clip_id": "cremad_1042_TSI_FEA_XX",
+      "source": "CREMA-D (public)",
+      "label": "FEA",
+      "prosody_sentiment": "negative",
+      "valence": 0.2696714699268341,
+      "arousal": 0.5179381370544434,
+      "dominance": 0.5458523035049438,
+      "f0_mean": 218.2313341515818,
+      "f0_std": 45.41178505642816
+    },
+    {
+      "clip_id": "cremad_1012_IWW_FEA_XX",
+      "source": "CREMA-D (public)",
+      "label": "FEA",
+      "prosody_sentiment": "negative",
+      "valence": 0.32188668847084045,
+      "arousal": 0.41772526502609253,
+      "dominance": 0.47270339727401733,
+      "f0_mean": 206.91773031357704,
+      "f0_std": 44.503168180378616
+    },
+    {
+      "clip_id": "cremad_1022_IWW_HAP_XX",
+      "source": "CREMA-D (public)",
+      "label": "HAP",
+      "prosody_sentiment": "positive",
+      "valence": 0.41480913758277893,
+      "arousal": 0.2217414230108261,
+      "dominance": 0.29826852679252625,
+      "f0_mean": 148.82827413190705,
+      "f0_std": 45.61706833227119
+    },
+    {
+      "clip_id": "cremad_1001_IEO_HAP_HI",
+      "source": "CREMA-D (public)",
+      "label": "HAP",
+      "prosody_sentiment": "positive",
+      "valence": 0.5009846091270447,
+      "arousal": 0.7163600921630859,
+      "dominance": 0.7269754409790039,
+      "f0_mean": 214.2620661934477,
+      "f0_std": 38.16983487079918
+    },
+    {
+      "clip_id": "cremad_1057_MTI_NEU_XX",
+      "source": "CREMA-D (public)",
+      "label": "NEU",
+      "prosody_sentiment": "neutral",
+      "valence": 0.34745168685913086,
+      "arousal": 0.21453365683555603,
+      "dominance": 0.31065088510513306,
+      "f0_mean": 146.05830201596052,
+      "f0_std": 49.613481359989684
+    },
+    {
+      "clip_id": "cremad_1081_IOM_NEU_XX",
+      "source": "CREMA-D (public)",
+      "label": "NEU",
+      "prosody_sentiment": "neutral",
+      "valence": 0.4258948564529419,
+      "arousal": 0.1633729189634323,
+      "dominance": 0.2897031009197235,
+      "f0_mean": 113.40421991693317,
+      "f0_std": 45.31447444137556
+    },
+    {
+      "clip_id": "cremad_1082_IWW_SAD_XX",
+      "source": "CREMA-D (public)",
+      "label": "SAD",
+      "prosody_sentiment": "negative",
+      "valence": 0.34254884719848633,
+      "arousal": 0.3753058612346649,
+      "dominance": 0.44951367378234863,
+      "f0_mean": 184.93542918172375,
+      "f0_std": 37.24492453170659
+    },
+    {
+      "clip_id": "cremad_1090_ITS_SAD_XX",
+      "source": "CREMA-D (public)",
+      "label": "SAD",
+      "prosody_sentiment": "negative",
+      "valence": 0.2574015259742737,
+      "arousal": 0.0,
+      "dominance": 0.06348519772291183,
+      "f0_mean": 90.64513638115454,
+      "f0_std": 10.546799909103596
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_0_positive",
+      "source": "E3 (mine, e3a)",
+      "label": "positive",
+      "prosody_sentiment": "positive",
+      "valence": 0.2738833725452423,
+      "arousal": 0.4709380865097046,
+      "dominance": 0.5662345290184021,
+      "f0_mean": 141.5068715721236,
+      "f0_std": 48.63329447117585
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_2_neutral",
+      "source": "E3 (mine, e3a)",
+      "label": "neutral",
+      "prosody_sentiment": "neutral",
+      "valence": 0.08990741521120071,
+      "arousal": 0.17229971289634705,
+      "dominance": 0.344653457403183,
+      "f0_mean": 104.22933574476836,
+      "f0_std": 11.275778889376971
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_1_negative",
+      "source": "E3 (mine, e3a)",
+      "label": "negative",
+      "prosody_sentiment": "negative",
+      "valence": 0.33707311749458313,
+      "arousal": 0.215570330619812,
+      "dominance": 0.36983776092529297,
+      "f0_mean": 98.0798984255439,
+      "f0_std": 10.900775803749806
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_0_positive",
+      "source": "E3 (mine, e3a)",
+      "label": "positive",
+      "prosody_sentiment": "positive",
+      "valence": 0.43647265434265137,
+      "arousal": 0.446433961391449,
+      "dominance": 0.5314682722091675,
+      "f0_mean": 150.81017651158822,
+      "f0_std": 45.44219559262213
+    },
+    {
+      "clip_id": "e3b_speaker1_negative_2_positive",
+      "source": "E3 (mine, e3b)",
+      "label": "positive",
+      "prosody_sentiment": "positive",
+      "valence": 0.14987623691558838,
+      "arousal": 0.4790845215320587,
+      "dominance": 0.5781650543212891,
+      "f0_mean": 135.33364195247796,
+      "f0_std": 27.368078310334408
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_0_neutral",
+      "source": "E3 (mine, e3b)",
+      "label": "neutral",
+      "prosody_sentiment": "neutral",
+      "valence": 0.571186363697052,
+      "arousal": 0.26963940262794495,
+      "dominance": 0.4335838854312897,
+      "f0_mean": 110.15568380904936,
+      "f0_std": 17.62807551746929
+    },
+    {
+      "clip_id": "e3b_speaker1_positive_2_negative",
+      "source": "E3 (mine, e3b)",
+      "label": "negative",
+      "prosody_sentiment": "negative",
+      "valence": 0.5454696416854858,
+      "arousal": 0.26274552941322327,
+      "dominance": 0.42174896597862244,
+      "f0_mean": 98.45615256369997,
+      "f0_std": 12.81191335817441
+    },
+    {
+      "clip_id": "e3b_speaker1_neutral_1_neutral",
+      "source": "E3 (mine, e3b)",
+      "label": "neutral",
+      "prosody_sentiment": "neutral",
+      "valence": 0.4281895160675049,
+      "arousal": 0.37949755787849426,
+      "dominance": 0.49604907631874084,
+      "f0_mean": 115.22364405406029,
+      "f0_std": 11.006568966774648
+    }
+  ]
+}

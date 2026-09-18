@@ -13,6 +13,8 @@ from ssa.report import (
     render_e3_control_section,
     render_leakage_table,
     render_main_table,
+    render_models_section,
+    render_prosody_samples_section,
     render_status,
     render_what_didnt_work,
 )
@@ -216,3 +218,67 @@ class TestRenderWhatDidntWork:
         html = render_what_didnt_work()
         for marker in ("D0", "D1", "E2", "Solution B", "recalibration", "Live browser demo"):
             assert marker in html
+
+
+def _fake_prosody_samples() -> dict:
+    return {
+        "n_samples": 3,
+        "n_cremad": 2,
+        "n_e3": 1,
+        "model": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (Wagner et al. 2023)",
+        "samples": [
+            {
+                "clip_id": "cremad_x",
+                "source": "CREMA-D (public)",
+                "label": "HAP",
+                "valence": 0.5,
+                "arousal": 0.7,
+                "f0_mean": 214.0,
+            },
+            {
+                "clip_id": "cremad_y",
+                "source": "CREMA-D (public)",
+                "label": "SAD",
+                "valence": 0.26,
+                "arousal": 0.0,
+                "f0_mean": 91.0,
+            },
+            {
+                "clip_id": "e3a_z",
+                "source": "E3 (mine, e3a)",
+                "label": "positive",
+                "valence": 0.44,
+                "arousal": 0.45,
+                "f0_mean": 151.0,
+            },
+        ],
+    }
+
+
+class TestRenderProsodySamplesSection:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_prosody_samples_section(None)
+
+    def test_renders_all_clip_ids(self) -> None:
+        html = render_prosody_samples_section(_fake_prosody_samples())
+        assert "cremad_x" in html and "cremad_y" in html and "e3a_z" in html
+
+    def test_renders_model_citation(self) -> None:
+        html = render_prosody_samples_section(_fake_prosody_samples())
+        assert "Wagner et al. 2023" in html
+
+    def test_distinguishes_circle_and_square_markers(self) -> None:
+        html = render_prosody_samples_section(_fake_prosody_samples())
+        assert "<circle" in html  # CREMA-D
+        assert "<rect" in html  # E3 (mine)
+
+
+class TestRenderModelsSection:
+    def test_names_both_papers(self) -> None:
+        html = render_models_section()
+        assert "2110.13900" in html
+        assert "2203.07378" in html
+
+    def test_clarifies_wavlm_is_not_the_emotion_model(self) -> None:
+        html = render_models_section()
+        assert "never on an emotion label" in html

@@ -78,6 +78,46 @@ Sentiment is a threshold read-out of valence. Late fusion (not joint) deliberate
 sacrifices some accuracy to keep PSI computable per branch &mdash; see DESIGN.md's
 Key trade-offs.</p>
 
+<h2>Which model actually extracts prosody/emotion</h2>
+
+    <p>A common point of confusion, worth stating precisely: <strong>WavLM does not
+    transcribe or recognize emotion by itself</strong> &mdash; two different models do
+    two different jobs.</p>
+    <table>
+      <thead><tr><th></th><th>Model</th><th>What it actually is</th><th>Paper</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription (Solution A only)</td><td><code>faster-whisper</code></td>
+            <td>OpenAI's Whisper ASR, CTranslate2-optimized. Nothing to do with WavLM.</td>
+            <td>&mdash;</td></tr>
+        <tr><td>Acoustic, <strong>permissive</strong> backend</td>
+            <td><code>microsoft/wavlm-base</code></td>
+            <td>A general-purpose self-supervised speech encoder &mdash; trained to
+            reconstruct masked/overlapping speech, never on an emotion label. We pool its
+            hidden states (mean+std) and train <em>our own</em> logistic regression on top
+            (fit on CREMA-D). WavLM supplies the representation; the emotion mapping is
+            ours, not WavLM's.</td>
+            <td>Chen et al. 2022,
+            <a href="https://arxiv.org/abs/2110.13900">arXiv:2110.13900</a></td></tr>
+        <tr><td>Acoustic, <strong>research</strong> backend</td>
+            <td><code>audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</code></td>
+            <td>A wav2vec2-large-robust backbone <strong>fine-tuned end-to-end</strong> on
+            MSP-Podcast to directly regress valence/arousal/dominance (VAD). This is the
+            model that actually extracts prosody/emotion &mdash; no probe needed, it
+            outputs VAD directly, and is what the sample plot below uses.</td>
+            <td>Wagner et al. 2023, "Dawn of the Transformer Era in Speech Emotion
+            Recognition: Closing the Valence Gap",
+            <a href="https://arxiv.org/abs/2203.07378">arXiv:2203.07378</a></td></tr>
+      </tbody>
+    </table>
+    <p class="unmeasured">A caveat straight from the research-backend paper, stated
+    rather than glossed over (CLAUDE.md rule 6): its authors report that the model's
+    strong valence performance comes partly from <strong>implicit linguistic
+    information learned during fine-tuning</strong>, not from prosody alone. Even this
+    "acoustic" model may not be as prosody-pure as its name implies &mdash; it doesn't
+    undermine this project's core comparisons (Solution A genuinely never sees audio;
+    the D1-vs-E3 Cartesia finding holds regardless), but it belongs in the record.</p>
+    
+
 <h2>Method</h2>
 <p>Speaker-disjoint splits always (a parallel leaky split exists only to quantify the
 leakage gap, see below). <strong>UAR</strong> (unweighted average recall), not plain
@@ -142,6 +182,34 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
       Hover a point for its tag.
     </p>
     <p class="finding"><strong>Finding:</strong> Duration/RMS vary substantially by tag (confirmed manually -- Cartesia is responding to the emotion parameter), but the measured valence range across all 58 tags spans only 0.216 on a [0,1] scale, clustered near 0.5. This is read as a DOMAIN-GAP finding: the audeering VAD model (trained on real naturalistic speech, MSP-Podcast) does not reliably decode valence from synthetic TTS prosody, not as evidence Cartesia's tags are inert. Consequently, E2/E4 tag selection is NOT gated by this clustering (it was too degenerate to trust as a filter) -- instead it draws a deliberately diverse tag set directly from ssa.mapping.CARTESIA_MAP, with ground-truth prosody labels coming from TTS INTENT (the requested tag), following the EMIS precedent (arXiv 2510.25054), not from re-verifying with this or any other classifier. This finding is itself reported as a caveat on any acoustic-solution result measured on synthetic data, and strengthens the case for E3 (human recordings) as the necessary validity anchor for E2.</p>
+    
+
+<h2>Extracted prosody/emotion on real samples: CREMA-D + your recordings</h2>
+
+    <p>12 clips from CREMA-D (public dataset, circles) and 8
+    from your own E3 recordings (squares), extracted with the same instrument
+    (audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (Wagner et al. 2023, arXiv:2203.07378)). Color = mapped sentiment (blue=positive, gray=neutral, red=negative).</p>
+    <svg viewBox="0 0 560 360" class="scatter" role="img"
+         aria-label="Valence-arousal scatter of 20 sample clips from CREMA-D and E3">
+      <line x1="44" y1="316" x2="516" y2="316" class="axis"/>
+      <line x1="44" y1="44" x2="44" y2="316" class="axis"/>
+      <text x="280.0" y="352" class="axis-label" text-anchor="middle">Valence &rarr;</text>
+      <text x="12" y="180.0" class="axis-label" text-anchor="middle"
+            transform="rotate(-90 12 180.0)">Arousal &rarr;</text>
+      <circle cx="245.0" cy="147.1" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1067_ITH_ANG_XX &mdash; CREMA-D (public), label=ANG v=0.295 a=0.445 f0=165Hz</title></circle><circle cx="326.0" cy="98.0" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1010_IEO_ANG_MD &mdash; CREMA-D (public), label=ANG v=0.377 a=0.574 f0=278Hz</title></circle><circle cx="294.8" cy="166.6" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1082_IWW_DIS_XX &mdash; CREMA-D (public), label=DIS v=0.346 a=0.394 f0=178Hz</title></circle><circle cx="264.4" cy="282.9" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1034_WSI_DIS_XX &mdash; CREMA-D (public), label=DIS v=0.315 a=0.087 f0=128Hz</title></circle><circle cx="220.3" cy="119.3" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1042_TSI_FEA_XX &mdash; CREMA-D (public), label=FEA v=0.270 a=0.518 f0=218Hz</title></circle><circle cx="271.5" cy="157.4" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1012_IWW_FEA_XX &mdash; CREMA-D (public), label=FEA v=0.322 a=0.418 f0=207Hz</title></circle><circle cx="362.6" cy="231.8" r="6" fill="#2a78d6" fill-opacity="0.75"><title>cremad_1022_IWW_HAP_XX &mdash; CREMA-D (public), label=HAP v=0.415 a=0.222 f0=149Hz</title></circle><circle cx="447.2" cy="44.0" r="6" fill="#2a78d6" fill-opacity="0.75"><title>cremad_1001_IEO_HAP_HI &mdash; CREMA-D (public), label=HAP v=0.501 a=0.716 f0=214Hz</title></circle><circle cx="296.6" cy="234.5" r="6" fill="#8a897f" fill-opacity="0.75"><title>cremad_1057_MTI_NEU_XX &mdash; CREMA-D (public), label=NEU v=0.347 a=0.215 f0=146Hz</title></circle><circle cx="373.5" cy="254.0" r="6" fill="#8a897f" fill-opacity="0.75"><title>cremad_1081_IOM_NEU_XX &mdash; CREMA-D (public), label=NEU v=0.426 a=0.163 f0=113Hz</title></circle><circle cx="291.8" cy="173.5" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1082_IWW_SAD_XX &mdash; CREMA-D (public), label=SAD v=0.343 a=0.375 f0=185Hz</title></circle><circle cx="208.3" cy="316.0" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1090_ITS_SAD_XX &mdash; CREMA-D (public), label=SAD v=0.257 a=0.000 f0=91Hz</title></circle><rect x="217.4" y="130.2" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_negative_0_positive &mdash; E3 (mine, e3a), label=positive v=0.274 a=0.471 f0=142Hz</title></rect><rect x="37.0" y="243.6" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_negative_2_neutral &mdash; E3 (mine, e3a), label=neutral v=0.090 a=0.172 f0=104Hz</title></rect><rect x="279.4" y="227.1" width="14" height="14" fill="#e34948" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_neutral_1_negative &mdash; E3 (mine, e3a), label=negative v=0.337 a=0.216 f0=98Hz</title></rect><rect x="376.9" y="139.5" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_neutral_0_positive &mdash; E3 (mine, e3a), label=positive v=0.436 a=0.446 f0=151Hz</title></rect><rect x="95.8" y="127.1" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_negative_2_positive &mdash; E3 (mine, e3b), label=positive v=0.150 a=0.479 f0=135Hz</title></rect><rect x="509.0" y="206.6" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_positive_0_neutral &mdash; E3 (mine, e3b), label=neutral v=0.571 a=0.270 f0=110Hz</title></rect><rect x="483.8" y="209.2" width="14" height="14" fill="#e34948" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_positive_2_negative &mdash; E3 (mine, e3b), label=negative v=0.545 a=0.263 f0=98Hz</title></rect><rect x="368.8" y="164.9" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_neutral_1_neutral &mdash; E3 (mine, e3b), label=neutral v=0.428 a=0.379 f0=115Hz</title></rect>
+    </svg>
+    <p class="caption">Circle = CREMA-D (public), square = E3 (mine). Hover a point for its
+    clip id, label, exact VAD and F0. Full table, sorted by valence:</p>
+    <table>
+      <thead><tr><th>Clip</th><th>Source</th><th>Label</th><th>Valence</th><th>Arousal</th><th>F0 mean</th></tr></thead>
+      <tbody><tr><td>e3b_speaker1_positive_0_neutral</td><td>E3 (mine, e3b)</td><td>neutral</td><td class='num'>0.571</td><td class='num'>0.270</td><td class='num'>110 Hz</td></tr><tr><td>e3b_speaker1_positive_2_negative</td><td>E3 (mine, e3b)</td><td>negative</td><td class='num'>0.545</td><td class='num'>0.263</td><td class='num'>98 Hz</td></tr><tr><td>cremad_1001_IEO_HAP_HI</td><td>CREMA-D (public)</td><td>HAP</td><td class='num'>0.501</td><td class='num'>0.716</td><td class='num'>214 Hz</td></tr><tr><td>e3a_speaker1_neutral_0_positive</td><td>E3 (mine, e3a)</td><td>positive</td><td class='num'>0.436</td><td class='num'>0.446</td><td class='num'>151 Hz</td></tr><tr><td>e3b_speaker1_neutral_1_neutral</td><td>E3 (mine, e3b)</td><td>neutral</td><td class='num'>0.428</td><td class='num'>0.379</td><td class='num'>115 Hz</td></tr><tr><td>cremad_1081_IOM_NEU_XX</td><td>CREMA-D (public)</td><td>NEU</td><td class='num'>0.426</td><td class='num'>0.163</td><td class='num'>113 Hz</td></tr><tr><td>cremad_1022_IWW_HAP_XX</td><td>CREMA-D (public)</td><td>HAP</td><td class='num'>0.415</td><td class='num'>0.222</td><td class='num'>149 Hz</td></tr><tr><td>cremad_1010_IEO_ANG_MD</td><td>CREMA-D (public)</td><td>ANG</td><td class='num'>0.377</td><td class='num'>0.574</td><td class='num'>278 Hz</td></tr><tr><td>cremad_1057_MTI_NEU_XX</td><td>CREMA-D (public)</td><td>NEU</td><td class='num'>0.347</td><td class='num'>0.215</td><td class='num'>146 Hz</td></tr><tr><td>cremad_1082_IWW_DIS_XX</td><td>CREMA-D (public)</td><td>DIS</td><td class='num'>0.346</td><td class='num'>0.394</td><td class='num'>178 Hz</td></tr><tr><td>cremad_1082_IWW_SAD_XX</td><td>CREMA-D (public)</td><td>SAD</td><td class='num'>0.343</td><td class='num'>0.375</td><td class='num'>185 Hz</td></tr><tr><td>e3a_speaker1_neutral_1_negative</td><td>E3 (mine, e3a)</td><td>negative</td><td class='num'>0.337</td><td class='num'>0.216</td><td class='num'>98 Hz</td></tr><tr><td>cremad_1012_IWW_FEA_XX</td><td>CREMA-D (public)</td><td>FEA</td><td class='num'>0.322</td><td class='num'>0.418</td><td class='num'>207 Hz</td></tr><tr><td>cremad_1034_WSI_DIS_XX</td><td>CREMA-D (public)</td><td>DIS</td><td class='num'>0.315</td><td class='num'>0.087</td><td class='num'>128 Hz</td></tr><tr><td>cremad_1067_ITH_ANG_XX</td><td>CREMA-D (public)</td><td>ANG</td><td class='num'>0.295</td><td class='num'>0.445</td><td class='num'>165 Hz</td></tr><tr><td>e3a_speaker1_negative_0_positive</td><td>E3 (mine, e3a)</td><td>positive</td><td class='num'>0.274</td><td class='num'>0.471</td><td class='num'>142 Hz</td></tr><tr><td>cremad_1042_TSI_FEA_XX</td><td>CREMA-D (public)</td><td>FEA</td><td class='num'>0.270</td><td class='num'>0.518</td><td class='num'>218 Hz</td></tr><tr><td>cremad_1090_ITS_SAD_XX</td><td>CREMA-D (public)</td><td>SAD</td><td class='num'>0.257</td><td class='num'>0.000</td><td class='num'>91 Hz</td></tr><tr><td>e3b_speaker1_negative_2_positive</td><td>E3 (mine, e3b)</td><td>positive</td><td class='num'>0.150</td><td class='num'>0.479</td><td class='num'>135 Hz</td></tr><tr><td>e3a_speaker1_negative_2_neutral</td><td>E3 (mine, e3a)</td><td>neutral</td><td class='num'>0.090</td><td class='num'>0.172</td><td class='num'>104 Hz</td></tr></tbody>
+    </table>
+    <p class="caption">CREMA-D's HAP samples read highest-valence and SAD lowest in this
+    20-clip draw &mdash; a sane ordering on real acted speech from a model that has
+    actually seen emotion labels (contrast with D0/D1's scrambled ordering on Cartesia's
+    synthetic output, above). Regenerate with <code>make prosody-samples</code>; the
+    selection is seeded/deterministic but small (n=20) &mdash; illustrative, not a
+    benchmark.</p>
     
 
 <h2>D1: does Cartesia render these emotions audibly?</h2>

@@ -17,6 +17,7 @@ make train     # fit the acoustic probe(s). BACKEND=permissive (default) | resea
 make demo      # single real clip, end-to-end. No API key needed.
 make eval-e3   # A/B/C on the recorded human set (both takes) + the D1-vs-human control
 make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for spot-checking
+make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> results/prosody_samples.json
 make report    # regenerate report/index.html from results/*.json
 ```
 
