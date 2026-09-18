@@ -5,7 +5,8 @@ Sentiment (positive / neutral / negative) from **raw speech audio** — not from
 The interesting question isn't "what accuracy?" but **"does the model hear the tone, or
 is it just reading the words?"** — so the evaluation is built around deliberately
 incongruent speech, where what is said and how it is said disagree. See `DESIGN.md`
-for the full write-up.
+for the full write-up, or open **[`index.html`](index.html)** for a page that links to
+everything (architecture, results dashboard, listening pages, docs).
 
 ## Quick start
 
@@ -20,6 +21,7 @@ make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for
 make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> results/prosody_samples.json
 make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
 make report    # regenerate report/index.html from results/*.json
+make site      # regenerate /index.html and /architecture.html (the entry point + pipeline page)
 ```
 
 `make demo` downloads CREMA-D on first run if needed, then runs the recommended
@@ -104,6 +106,8 @@ has landed most recently.
 
 ## Documentation
 
+- `index.html` — top-level entry point, links to everything below, regenerate with `make site`
+- `architecture.html` — pipeline diagram + which model extracts prosody/emotion, `make site`
 - `DESIGN.md` — the design write-up: approach, trade-offs, evaluation, limitations, next steps
 - `CLAUDE.md` — project rules, invariants, pinned facts (for anyone extending this)
 - `docs/ARCHITECTURE.md` — module-by-module contracts and rationale

@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval eval-e3 listening-sorted prosody-samples probe-hume report demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 listening-sorted prosody-samples probe-hume report site demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -42,10 +42,13 @@ probe-hume:  ## [needs HUME_API_KEY + `pip install hume`] Falsification test of 
 report:  ## Regenerate report/index.html from results/*.json
 	uv run python -m ssa.report
 
+site:  ## Regenerate /index.html and /architecture.html -- the top-level nav pages
+	uv run python -m ssa.site
+
 demo: data  ## End-to-end demo on a CREMA-D clip (fetches it first if needed). No API key needed.
 	uv run python -m ssa.cli --audio data/cremad/AudioWAV/1001_DFA_ANG_XX.wav
 
-all: data train eval report  ## Full pipeline
+all: data train eval report site  ## Full pipeline
 
 record:  ## Teleprompter to record the E3 human set
 	uv run python scripts/record_prompts.py
@@ -60,4 +63,4 @@ gen-synthetic:  ## [needs CARTESIA_API_KEY + `pip install -e .[generate]`] E2 in
 	uv run python scripts/gen_synthetic.py
 
 clean:  ## Remove generated artifacts (keeps downloaded data)
-	rm -rf results/*.json report/index.html data/cache
+	rm -rf results/*.json report/index.html index.html architecture.html data/cache

@@ -107,6 +107,7 @@ are marked `@pytest.mark.network` and skipped by default.
 
 ## What "done" looks like
 
-`make all` downloads data, trains, evaluates, and regenerates `report/index.html` — the HTML
-dashboard — from the eval JSON. A reviewer clones, runs `make demo`, and it works with no
-API key and no contact with the author.
+`make all` downloads data, trains, evaluates, and regenerates `report/index.html` (the HTML
+dashboard) and `/index.html` + `/architecture.html` (the top-level entry point and pipeline
+page, `ssa/site.py`) from the eval JSON. A reviewer clones, opens `index.html`, and runs
+`make demo` — it works with no API key and no contact with the author.
