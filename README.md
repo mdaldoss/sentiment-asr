@@ -90,7 +90,20 @@ control that shows Solution B doesn't transfer cleanly to a new speaker either.
 
 ## Status
 
-Core pipeline complete and tested (267 tests). CREMA-D benchmark results are real,
+**Live demo**: `make demo-web` → record your own voice at `http://127.0.0.1:8000` and see
+both acoustic backends and the lexical control score it, plus where it lands on the
+valence–arousal plane. It opens on a bundled clip (positive words, flat delivery) where
+they already disagree.
+
+**E5, the sharpest result** (`make gen-hume-e5`, `make eval-e5`): 90 synthetic clips, 60
+with words and delivery deliberately contradicting. The lexical control scores PSI 0.000
+(follows the words every time — the floor behaving correctly). On *identical audio* the
+permissive backend follows the tone (PSI 0.682) while the research backend follows the
+**words** (0.211, below chance) despite never seeing a transcript — an empirical
+confirmation of the audeering paper's own caveat that its valence performance draws on
+implicit linguistic information. "Acoustic" does not automatically mean prosodic.
+
+Core pipeline complete and tested (368 tests). CREMA-D benchmark results are real,
 measured end-to-end. **E3 (human recordings) is recorded and evaluated** — two
 independent takes, 27 clips each, `make eval-e3` — and doubles as a control that rules
 the measuring instruments out as the explanation for a headline negative finding: **D1

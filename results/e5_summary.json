@@ -1,0 +1,45 @@
+{
+  "dataset": "e5_hume",
+  "n_clips": 90,
+  "n_incongruent": 60,
+  "n_voices": 2,
+  "clips_per_voice": {
+    "Ava Song": 45,
+    "Colton Rivers": 45
+  },
+  "solutions": {
+    "A_lexical": {
+      "solution": "A:lexical(small+twitter-roberta-base-sentiment-latest)",
+      "uar": 0.3333333333333333,
+      "macro_f1": 0.3333333333333333,
+      "accuracy": 0.3333333333333333,
+      "psi_contested": 0.0,
+      "psi_strict": 0.0
+    },
+    "B_permissive": {
+      "solution": "B:acoustic(permissive/logreg)",
+      "uar": 0.5111111111111112,
+      "macro_f1": 0.492523765348974,
+      "accuracy": 0.5111111111111111,
+      "psi_contested": 0.6818181818181818,
+      "psi_strict": 0.5
+    },
+    "B_research": {
+      "solution": "B:acoustic(research/audeering-vad)",
+      "uar": 0.39999999999999997,
+      "macro_f1": 0.3671283623302815,
+      "accuracy": 0.4,
+      "psi_contested": 0.21052631578947367,
+      "psi_strict": 0.2
+    },
+    "C_fusion": {
+      "solution": "C:fusion(A:lexical(small+twitter-roberta-base-sentiment-latest)+B:acoustic(permissive/logreg))",
+      "uar": 0.48888888888888893,
+      "macro_f1": 0.4672851303286086,
+      "accuracy": 0.4888888888888889,
+      "psi_contested": 0.6046511627906976,
+      "psi_strict": 0.43333333333333335
+    }
+  },
+  "interpretation": "E5 is the incongruence set E2 could not be: two thirds of clips have words and delivery deliberately disagreeing, with delivery set independently of the text via Hume Octave's `description` field (validated first at 40 clips in results/hume_probe.json: 0.5 vs 0.2 chance emotion recoverability with that field, exactly chance without it). PSI is the metric to read here, not UAR: the gold label is prosody_sentiment, so on a set built to contradict the transcript, a model that reads words scores near 0 by construction and a model that hears tone scores high. Solution A is the floor and exists to prove the labels behave. Synthetic and eval-only: one TTS vendor, a small number of voices, so this measures prosody sensitivity under controlled contradiction, not performance on real speech -- E3 remains the only real-speaker evidence in this repo."
+}

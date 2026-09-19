@@ -58,7 +58,7 @@ before changing.
 | CREMA-D emotions | ANG, DIS, FEA, HAP, NEU, SAD (6; **no surprise** — maps cleanly) |
 | CREMA-D speakers | 91 actors, speaker id is the filename prefix (e.g. `1001_DFA_ANG_XX.wav`) |
 | CREMA-D text | 12 fixed, emotionally **neutral** sentences → `text_sentiment = NEUTRAL` always |
-| Acoustic model (research) | `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` → valence/arousal/dominance in ~[0,1]. **CC-BY-NC-SA-4.0, research only** |
+| Acoustic model (research) | `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` → valence/arousal/dominance in ~[0,1]. **CC-BY-NC-SA-4.0, research only**. **Measured caveat (E5, `results/e5_summary.json`): it is not reliably prosodic.** On 60 clips where words and delivery disagree it follows the *words* (PSI 0.211, below 0.5 chance) while the permissive backend on the identical audio follows the tone (0.682). Confirms the audeering paper's own note that its valence performance draws partly on implicit linguistic information learned during fine-tuning. It is still the more accurate and far more self-consistent backend on a real voice (E3) — neither backend is simply better |
 | Acoustic model (permissive) | `microsoft/wavlm-base` frozen + our trained probe. MIT |
 | ASR | `faster-whisper`, small, int8. MIT. **CTranslate2 has NO Apple MPS support** — CPU or CUDA only |
 | TTS | Cartesia. `generation_config.emotion` or SSML `<emotion value="..."/>`. **English only.** No intensity levels |

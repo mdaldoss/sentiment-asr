@@ -202,7 +202,7 @@ class TestRenderImprovements:
 
     @pytest.mark.parametrize(
         "gap",
-        ["never evaluated", "one speaker", "cross-corpus", "elderly"],
+        ["unevaluated", "one speaker", "cross-corpus", "elderly"],
     )
     def test_names_each_known_evidence_gap(self, gap: str) -> None:
         assert gap in render_improvements().lower()

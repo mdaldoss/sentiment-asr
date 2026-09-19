@@ -305,7 +305,38 @@ tables alone would never have revealed this.</p>
 0.45; on a real voice they swap places. The benchmark number
 is a home-turf advantage &mdash; the permissive probe was trained on that exact corpus.</p>
 
-<h3>4. Synthetic emotional speech: one vendor failed, another worked</h3>
+<h3>4. The sharpest result: "acoustic" does not always mean prosodic</h3>
+<p>E5 is 90 synthetic clips in which <strong>60 have the words and the delivery
+deliberately disagreeing</strong> &mdash; the condition the whole project is built to
+measure, finally available at scale because one TTS vendor can set delivery independently
+of the text. Here PSI is the metric, not UAR: the gold label is the delivery, so a model
+reading words scores near zero by construction.</p>
+<div class="tw"><table>
+  <thead><tr><th>Solution</th><th class="num">UAR</th><th class="num">PSI</th><th>What it follows</th></tr></thead>
+  <tbody>
+    <tr><td>A &mdash; Lexical (words only)</td><td class="num">0.333</td><td class="num"><strong>0.000</strong></td><td>the words, every time</td></tr>
+    <tr><td>B &mdash; Acoustic, permissive</td><td class="num">0.511</td><td class="num"><strong>0.682</strong></td><td>mostly the tone</td></tr>
+    <tr><td>B &mdash; Acoustic, research</td><td class="num">0.400</td><td class="num"><strong>0.211</strong></td><td>mostly the <em>words</em></td></tr>
+    <tr><td>C &mdash; Fusion</td><td class="num">0.489</td><td class="num">0.605</td><td>between, as designed</td></tr>
+  </tbody>
+</table></div>
+<p class="caption">UAR chance 0.333; PSI chance 0.5. Solution A scoring exactly 0.000
+is the floor behaving perfectly &mdash; it is the proof that the labels are right and the
+contradiction is real.</p>
+<p class="finding"><strong>The finding:</strong> the two acoustic backends heard
+<em>identical audio</em> and went opposite ways. The permissive one followed the delivery
+68% of the time; the research one followed the <strong>words</strong> 79% of the time,
+below chance, despite never receiving a transcript. That is an empirical confirmation of a
+caveat the audeering authors published themselves &mdash; their model's valence
+performance draws partly on implicit linguistic information learned during fine-tuning.
+The "acoustic" model has substantially learned to read words out of audio, and only a set
+built to contradict itself could expose it.</p>
+<p>This also complicates the backend choice rather than settling it. On a real voice (E3)
+the research backend is more accurate and far more self-consistent; on prosody-versus-words
+it is much worse. Neither is simply better &mdash; which one to pick depends on whether the
+product needs a stable reading or one that is genuinely about delivery.</p>
+
+<h3>5. Synthetic emotional speech: one vendor failed, another worked</h3>
 <p>Building test data by asking a text-to-speech vendor for "say this sadly" seemed
 cheap. It wasn't: with the first vendor, a classifier could recover the requested emotion
 from the generated audio at 0.175 against
@@ -372,11 +403,11 @@ cheap and materially change how much the rest can be trusted.</p>
 <div class="tier">
 <h3>Tier 2 &mdash; evidence gaps <span class="pill">days to weeks</span></h3>
 <ol class="improve" start="5">
-  <li><strong>76 generated clips were never evaluated.</strong> The synthetic incongruence
-  set contains 52 clips where words and tone deliberately disagree &mdash; more than the
-  36 in the human set that carry the headline prosody metric. It was set aside once the
-  audio was found to be flat, but running it costs one command, and a poor score on
-  deliberately flat audio is itself a publishable control.</li>
+  <li><s><strong>No usable incongruence set at scale.</strong></s> <strong>Addressed by
+  E5</strong>: 90 clips on a vendor whose delivery control works independently of the
+  transcript, 60 of them contradictory &mdash; and it produced the sharpest result in the
+  project (see below). The older 76-clip Cartesia set is still unevaluated; it is now a
+  historical exhibit rather than a gap, since E5 supersedes what it was for.</li>
 
   <li><strong>Everything about real-world performance rests on one speaker.</strong> One
   person, two takes, 27 clips each. That is enough to demonstrate a transfer failure
@@ -397,26 +428,29 @@ cheap and materially change how much the rest can be trusted.</p>
 </div>
 
 <div class="tier">
-<h3>Tier 3 &mdash; making it a convincing demonstration <span class="pill">the visible gap</span></h3>
+<h3>Tier 3 &mdash; making it a convincing demonstration <span class="pill">mostly done</span></h3>
 <ol class="improve" start="9">
-  <li><strong>You cannot speak into it.</strong> There is a command-line entry point that
-  classifies a file, but no way to record and get an answer back. For demonstrating that a
-  model understands emotion, this is the most conspicuous absence &mdash; a reviewer's own
-  voice, scored live, is worth more than any table.</li>
+  <li><s><strong>You cannot speak into it.</strong></s> <strong>Built</strong>
+  (<code>make demo-web</code>): record in the browser, get both acoustic backends and the
+  lexical control scored on your own voice. Captures raw PCM via the Web Audio API and
+  routes it through the same resample/normalise path every evaluated clip takes, so the
+  demo cannot flatter the model with preprocessing evaluation never got. It opens already
+  showing a committed clip &mdash; positive words spoken flatly &mdash; rather than an
+  empty shell.</li>
 
-  <li><strong>Show the valence/arousal plane, not just a label.</strong> The system already
-  computes a two-dimensional emotional reading internally and collapses it to one of three
-  words. A live needle moving in that plane as someone speaks demonstrates "it is
-  listening" far better than a metric; the data is already there and unused in the interface.</li>
+  <li><s><strong>Show the valence/arousal plane.</strong></s> <strong>Built</strong>: the
+  demo plots where a clip lands on valence&times;arousal with the quadrants named, so
+  arousal stops being computed and discarded.</li>
 
-  <li><strong>Show both backends disagreeing, live.</strong> Given that they disagree on
-  real voices, letting a reviewer hear their own speech scored two ways turns the
-  project's central finding into something they can feel rather than read.</li>
+  <li><s><strong>Show both backends disagreeing, live.</strong></s> <strong>Built</strong>:
+  both are scored on every clip, side by side. On the bundled example they disagree
+  immediately.</li>
 
   <li><strong>Only three coarse classes are ever reported.</strong> The benchmark has six
   emotions; everything is collapsed to positive/neutral/negative before scoring. A six-way
   confusion matrix would show whether the model confuses anger with sadness or merely
-  smooths everything toward neutral &mdash; much more informative about <em>understanding</em>.</li>
+  smooths everything toward neutral &mdash; much more informative about <em>understanding</em>.
+  <em>Still open.</em></li>
 </ol>
 </div>
 

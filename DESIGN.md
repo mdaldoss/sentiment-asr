@@ -192,6 +192,61 @@ instrument check and a real transfer-failure measurement, not a claim about spee
 emotion recognition in general, and not yet a measurement of Ami's actual user
 population.
 
+## E5: words against delivery, and what it says about "acoustic"
+
+E5 (`data/hume_e5/`, `scripts/gen_hume_dataset.py`) is the incongruence set E2 was
+supposed to be. Cartesia's emotion parameter only works when the requested emotion
+already matches the transcript — precisely the case that is useless for measuring
+prosody sensitivity — and D1 measured that failure at 0.175 vs 0.200 chance. Hume
+Octave's `description` field sets delivery independently of the text, so E5 crosses
+15 lexically-polar sentences against 3 deliveries across 2 voices: **90 clips, 60 of
+them with words and tone deliberately disagreeing**. Eval-only; labels come from the
+requested delivery.
+
+**PSI, not UAR, is the metric here** (n=90, 60 incongruent; UAR chance 0.333, PSI
+chance 0.5):
+
+| | UAR | PSI<sub>contested</sub> | what it follows |
+|---|---|---|---|
+| A — Lexical (words only) | 0.333 | **0.000** | the words, always |
+| B — Acoustic, permissive (WavLM) | **0.511** | **0.682** | mostly the tone |
+| B — Acoustic, research (audeering) | 0.400 | **0.211** | mostly the *words* |
+| C — Fusion | 0.489 | 0.605 | between, as designed |
+
+**The dataset validates itself.** Solution A scored PSI exactly 0.000 — it followed the
+words on all 60 contradictory clips, which is the only thing a model that cannot hear
+tone can do, and lands it at exactly chance UAR against a prosody label. That is the
+floor behaving correctly, and it confirms both that the labels are right and that
+Hume really did render delivery against the transcript.
+
+**The finding is the gap between the two acoustic backends on identical audio.** The
+permissive backend follows the delivery 68% of the time. The research backend follows
+the *words* 79% of the time — below PSI chance — despite never receiving a transcript.
+Same clips, same generated prosody, so this is a property of the models, not of the
+audio.
+
+This is an empirical confirmation of a caveat this project already quotes from the
+audeering paper itself: its authors report that the model's valence performance draws
+partly on **implicit linguistic information learned during fine-tuning**. E5 turns that
+from a cited caveat into a measurement — the "acoustic" research model has substantially
+learned to read words out of audio.
+
+**It partly reverses the backend recommendation.** On E3 the research backend looked
+better: more accurate on a real voice (0.593 vs 0.519 on take1) and far more
+self-consistent (r=+0.92 vs −0.19). Both still hold. But on the question this project
+exists to ask — does it hear the tone or read the words? — the research backend sits
+closer to the pure lexical model than to the acoustic one. The honest summary is that
+neither backend is simply better: the research one is more accurate and more stable,
+the permissive one is more genuinely prosodic, and which matters depends on whether
+you need a reliable reading or a reading that is actually about delivery.
+
+**Limits.** Synthetic, one TTS vendor, two voices. It measures prosody sensitivity
+under controlled contradiction, not performance on real speech — E3 remains the only
+real-speaker evidence here. What E5 cannot separate on its own is how much of the
+permissive backend's 0.682 is limited by the model versus by Hume rendering
+contradictory delivery less strongly than congruent delivery; running D1's acoustic
+recoverability instruments over E5 would answer that and has not been done.
+
 ## Backend x training-data comparison
 
 Requested directly: does folding the user's own recordings (E3) and/or the Hume
