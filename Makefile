@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report site demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report overview site demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -45,13 +45,16 @@ eval-backend-combos:  ## WavLM+probe vs audeering across 4 dataset combos (crema
 report:  ## Regenerate report/index.html from results/*.json
 	uv run python -m ssa.report
 
+overview:  ## Regenerate report/overview.html -- the narrative "read this first" report
+	uv run python -m ssa.overview
+
 site:  ## Regenerate /index.html and /architecture.html -- the top-level nav pages
 	uv run python -m ssa.site
 
 demo: data  ## End-to-end demo on a CREMA-D clip (fetches it first if needed). No API key needed.
 	uv run python -m ssa.cli --audio data/cremad/AudioWAV/1001_DFA_ANG_XX.wav
 
-all: data train eval report site  ## Full pipeline
+all: data train eval report overview site  ## Full pipeline
 
 record:  ## Teleprompter to record the E3 human set
 	uv run python scripts/record_prompts.py

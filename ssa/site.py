@@ -167,6 +167,11 @@ def render_pipeline_diagram() -> str:
 def render_index_body() -> str:
     cards = [
         (
+            "Overview — start here",
+            "report/overview.html",
+            "The narrative read: state of the art, what we built, what we found, and the prioritised list of what would make it better.",
+        ),
+        (
             "Architecture",
             "architecture.html",
             "Pipeline diagram, the lexical↔acoustic axis, and which model actually extracts prosody/emotion (with papers).",

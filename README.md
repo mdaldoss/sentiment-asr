@@ -112,6 +112,8 @@ has landed most recently.
 
 ## Documentation
 
+- `report/overview.html` — **start here**: state of the art, what we built, what we found, and
+  the prioritised list of what would make it better. `make overview`
 - `index.html` — top-level entry point, links to everything below, regenerate with `make site`
 - `architecture.html` — pipeline diagram + which model extracts prosody/emotion, `make site`
 - `DESIGN.md` — the design write-up: approach, trade-offs, evaluation, limitations, next steps
