@@ -245,11 +245,11 @@ function render(data) {
     els.cards.appendChild(card);
   });
 
-  drawPlane(vad);
+  drawPlane(vad, data.is_example ? "example" : "you");
   els.transcript.textContent = transcript || "— (ASR not available)";
 }
 
-function drawPlane(vad) {
+function drawPlane(vad, label = "you") {
   const P = 34, S = 260 - P * 2;   // padding and drawing size
   const x = v => P + v * S;
   const y = a => P + (1 - a) * S;  // arousal up
@@ -267,7 +267,7 @@ function drawPlane(vad) {
   if (vad) {
     parts.push(`
       <circle cx="${x(vad.valence)}" cy="${y(vad.arousal)}" r="7" fill="var(--orange)"/>
-      <text class="axlabel" x="${x(vad.valence)}" y="${y(vad.arousal) - 12}" text-anchor="middle">you</text>`);
+      <text class="axlabel" x="${x(vad.valence)}" y="${y(vad.arousal) - 12}" text-anchor="middle">${label}</text>`);
   } else {
     parts.push(`<text class="axlabel" x="130" y="130" text-anchor="middle">research backend not loaded</text>`);
   }
