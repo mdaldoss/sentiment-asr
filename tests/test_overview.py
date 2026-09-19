@@ -14,10 +14,12 @@ import pytest
 from ssa.overview import (
     _fmt,
     _get,
+    build_artifact_page,
     render_improvements,
     render_results,
     render_state_of_the_art,
     render_what_is_possible,
+    wrap_tables,
 )
 
 
@@ -140,6 +142,48 @@ class TestStateOfTheArtIsFencedOff:
         html = render_state_of_the_art()
         for arxiv_id in ("2508.02448", "2510.25054", "2604.25776"):
             assert f"arxiv.org/abs/{arxiv_id}" in html
+
+
+class TestWrapTables:
+    """Tables are the only thing on the page wider than a phone; each needs
+    its own scroll container or the whole page scrolls sideways."""
+
+    def test_wraps_each_table_in_a_scroll_container(self) -> None:
+        out = wrap_tables("<p>x</p><table><tr><td>a</td></tr></table>")
+        assert out.count('<div class="tw">') == 1
+        assert out.endswith("</table></div>")
+
+    def test_open_and_close_stay_balanced(self) -> None:
+        out = wrap_tables("<table>1</table><table>2</table>")
+        assert out.count('<div class="tw">') == out.count("</table></div>") == 2
+
+    def test_leaves_table_free_html_untouched(self) -> None:
+        assert wrap_tables("<p>no tables</p>") == "<p>no tables</p>"
+
+
+class TestBuildArtifactPage:
+    """The published version must not carry its own document skeleton --
+    the Artifact host supplies one -- and must not link to sibling files
+    that exist only inside the repo."""
+
+    def test_omits_document_skeleton(self) -> None:
+        html = build_artifact_page()
+        for tag in ("<!DOCTYPE", "<html", "<head>", "<body>"):
+            assert tag not in html
+
+    def test_carries_its_own_title_and_style(self) -> None:
+        html = build_artifact_page()
+        assert html.startswith("<title>")
+        assert "<style>" in html
+
+    def test_no_repo_relative_links_when_no_url_given(self) -> None:
+        html = build_artifact_page()
+        assert "../index.html" not in html
+        assert 'href="index.html"' not in html
+
+    def test_uses_absolute_url_when_given(self) -> None:
+        html = build_artifact_page("https://example.com/repo")
+        assert "https://example.com/repo" in html
 
 
 class TestRenderImprovements:

@@ -67,15 +67,18 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 ol.improve > li { margin-bottom: 10px; }
 .pill { display: inline-block; font-size: 0.74rem; padding: 1px 7px; border-radius: 10px;
         border: 1px solid var(--border); color: var(--text-2); margin-left: 6px; }
+/* Tables are the only element here wider than a phone. Each gets its own
+   scroll container so the page body never scrolls sideways. */
+.tw { overflow-x: auto; }
+.tw > table { min-width: 460px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Speech Sentiment Analyzer &mdash; overview</h1>
+  <h1>Speech Sentiment Analyzer</h1>
   <p class="tagline">What the field can do, what we built, what we found, and what would
-  make it better. &mdash; <a href="../index.html">index</a> &middot;
-  <a href="index.html">full results dashboard</a></p>
+  make it better. &mdash; <a href="../index.html">index</a> &middot; <a href="index.html">full results dashboard</a></p>
 </header>
 
 <h2>The one question</h2>
@@ -95,7 +98,7 @@ words say one thing and the delivery says another.</p>
 <p class="caption">Everything in this section is <strong>other researchers' published
 results</strong>, not ours. Ours start in the next section.</p>
 
-<table>
+<div class="tw"><table>
   <thead><tr><th>Setting</th><th class="num">Best reported</th><th>What it means</th></tr></thead>
   <tbody>
     <tr><td><strong>Acted</strong> emotion, scripted (IEMOCAP)</td><td class="num">~0.78 UAR</td>
@@ -103,7 +106,7 @@ results</strong>, not ours. Ours start in the next section.</p>
     <tr><td><strong>Naturalistic</strong> speech (MSP-Podcast)</td><td class="num">~0.65 UAR</td>
         <td>Real, spontaneous speech. A large replication study found this is roughly where the field tops out.</td></tr>
   </tbody>
-</table>
+</table></div>
 
 <p>Three findings from the recent literature matter more than the leaderboard, because they
 shape what is worth building:</p>
@@ -174,7 +177,7 @@ sits.</p>
 <h2>What we built</h2>
 <p>Three systems spanning the <em>words &harr; tone</em> axis, behind one interface, so the
 evaluation harness scores them identically and the comparison is apples-to-apples:</p>
-<table>
+<div class="tw"><table>
   <thead><tr><th></th><th>Solution</th><th>What it can possibly know</th><th>Licence</th></tr></thead>
   <tbody>
     <tr><td><strong>A</strong></td><td>Lexical &mdash; speech recognition &rarr; text sentiment</td>
@@ -185,7 +188,7 @@ evaluation harness scores them identically and the comparison is apples-to-apple
     <tr><td><strong>C</strong></td><td>Fusion &mdash; calibrated combination of A and B, can abstain</td>
         <td>Both.</td><td>inherits</td></tr>
   </tbody>
-</table>
+</table></div>
 <p>Having A in the design is what makes the whole thing measurable: A is a model that
 provably only reads words, so its score on tone-vs-words tests is the "pure cheating"
 reference line that B and C are compared against.</p>
@@ -201,7 +204,7 @@ both turns a licensing question into a measured trade-off instead of an assertio
 
 
 <h2>The experiments, and what each one asked</h2>
-<table>
+<div class="tw"><table>
   <thead><tr><th>#</th><th>Experiment</th><th>Question it asks</th><th>Verdict</th></tr></thead>
   <tbody>
     <tr><td>E1</td><td>CREMA-D benchmark (91 actors)</td>
@@ -232,7 +235,7 @@ both turns a licensing question into a measured trade-off instead of an assertio
         <td>Does adding our own recordings or synthetic clips to training help?</td>
         <td>No measurable effect at this data scale.</td></tr>
   </tbody>
-</table>
+</table></div>
 
 
 <h2>Results</h2>
@@ -241,7 +244,7 @@ both turns a licensing question into a measured trade-off instead of an assertio
 <p class="caption">CREMA-D, 300 clips, speakers held out of training.
 PSI = of the clips where words and tone disagree, the fraction where the model followed the
 <em>tone</em>. 1.0 = listens; 0.0 = reads the transcript.</p>
-<table>
+<div class="tw"><table>
   <thead><tr><th>Solution</th><th class="num">UAR</th><th class="num">Macro-F1</th><th class="num">PSI</th></tr></thead>
   <tbody>
     <tr><td>A &mdash; Lexical (words only)</td><td class="num">0.360</td>
@@ -251,7 +254,7 @@ PSI = of the clips where words and tone disagree, the fraction where the model f
     <tr><td>C &mdash; Fusion (both)</td><td class="num">0.797</td>
         <td class="num">0.796</td><td class="num">0.891</td></tr>
   </tbody>
-</table>
+</table></div>
 <p>Exactly the shape the design predicts. The lexical model sits near chance and has a PSI
 of 0.09 &mdash; it follows the words almost every time,
 because that is all it has. The acoustic model reaches PSI 0.92:
@@ -260,7 +263,7 @@ it is genuinely listening.</p>
 <h3>2. Sloppy splitting would have inflated this</h3>
 <p>Same model, same data, only the split changed &mdash; speakers allowed to appear in both
 training and test:</p>
-<table>
+<div class="tw"><table>
   <thead><tr><th>Split</th><th class="num">n</th><th class="num">Speakers in both sides</th><th class="num">UAR</th></tr></thead>
   <tbody>
     <tr><td>Speaker-disjoint (honest)</td><td class="num">1470</td><td class="num">0</td>
@@ -269,14 +272,14 @@ training and test:</p>
         <td class="num">91</td>
         <td class="num">0.761</td></tr>
   </tbody>
-</table>
+</table></div>
 <p class="caption">A free <strong>+0.017 UAR</strong> for doing the evaluation wrong. Published as a
 warning, not hidden.</p>
 
 <h3>3. On a real, unseen voice, it mostly falls apart</h3>
 <p class="caption">27 clips per take, same speaker, same prompts, recorded twice on separate
 occasions. Chance = 0.333.</p>
-<table>
+<div class="tw"><table>
   <thead><tr><th>Solution</th><th class="num">Take 1</th><th class="num">Take 2</th><th class="num">Self-consistency (r)</th></tr></thead>
   <tbody>
     <tr><td>A &mdash; Lexical</td><td class="num">0.333</td>
@@ -288,7 +291,7 @@ occasions. Chance = 0.333.</p>
         <td class="num">0.593</td>
         <td class="num"><strong>0.92</strong></td></tr>
   </tbody>
-</table>
+</table></div>
 <p class="finding"><strong>The most important number in this project is that last column.</strong>
 It asks: given two recordings of the same person saying the same sentence the same way, does
 the model give the same reading? The research backend does
@@ -440,7 +443,7 @@ cheap and materially change how much the rest can be trusted.</p>
 
 
 <h2>Future development</h2>
-<table>
+<div class="tw"><table>
   <thead><tr><th>Direction</th><th>Why it matters</th><th>What it needs</th></tr></thead>
   <tbody>
     <tr><td><strong>Per-person baselining, over weeks</strong></td>
@@ -474,7 +477,7 @@ cheap and materially change how much the rest can be trusted.</p>
         business decision disguised as a technical one.</td>
         <td>A vendor conversation, or improvement #15.</td></tr>
   </tbody>
-</table>
+</table></div>
 
 <footer class="caption">
   <p>Generated by <code>ssa/overview.py</code> (<code>make overview</code>). Every number
