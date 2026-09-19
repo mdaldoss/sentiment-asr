@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report overview site demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report overview site demo-web gen-hume-e5 eval-e5 demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -47,6 +47,15 @@ report:  ## Regenerate report/index.html from results/*.json
 
 overview:  ## Regenerate report/overview.html -- the narrative "read this first" report
 	uv run python -m ssa.overview
+
+demo-web:  ## [needs `pip install -e .[demo]`] Live demo at http://127.0.0.1:8000 -- record and classify
+	uv run python -m demo.app
+
+gen-hume-e5:  ## [needs HUME_API_KEY] Generate E5: the Hume incongruence dataset (words vs delivery)
+	uv run python scripts/gen_hume_dataset.py --voices $${VOICES:-2}
+
+eval-e5:  ## Evaluate A/B/C on E5 -> results/*.json (no API key needed)
+	uv run python scripts/eval_e5.py
 
 site:  ## Regenerate /index.html and /architecture.html -- the top-level nav pages
 	uv run python -m ssa.site

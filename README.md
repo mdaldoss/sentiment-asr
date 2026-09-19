@@ -21,6 +21,8 @@ make listening-sorted  # report/listening_sorted.html -- D1+E3 clips ranked, for
 make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> results/prosody_samples.json
 make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
 make eval-backend-combos  # WavLM+probe vs audeering across 4 training-data combos (needs make data + make probe-hume first)
+make eval-e5   # A/B/C on E5, the Hume incongruence set (words vs delivery) -> results/*.json
+make demo-web  # [needs .[demo]] live demo at http://127.0.0.1:8000 -- record your own voice
 make report    # regenerate report/index.html from results/*.json
 make site      # regenerate /index.html and /architecture.html (the entry point + pipeline page)
 ```

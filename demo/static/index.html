@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Speech Sentiment Analyzer — live demo</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb; --surface-2: #f5f4f1; --text: #0b0b0b; --text-2: #52514e;
+  --border: #e2e0da; --blue: #2a78d6; --orange: #eb6834; --aqua: #1baf7a;
+  --red: #e34948; --gray: #8a897f; --warn: #fab219;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+    --border: #3a3936;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+  --border: #3a3936;
+}
+* { box-sizing: border-box; }
+body { background: var(--surface); color: var(--text); margin: 0 auto; max-width: 860px;
+       padding: 24px 16px 64px; line-height: 1.5;
+       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 1.5rem; margin-bottom: 4px; }
+h2 { font-size: 1.1rem; margin: 28px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.tagline { color: var(--text-2); margin-top: 0; font-size: 0.95rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 20px 0; }
+button { font: inherit; font-weight: 600; padding: 12px 22px; border-radius: 8px;
+         border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+         cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--blue); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.rec { background: var(--red); border-color: var(--red); color: #fff; }
+button.recording { background: var(--warn); border-color: var(--warn); color: #0b0b0b; }
+.status { color: var(--text-2); font-size: 0.9rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--surface-2); }
+.card h3 { margin: 0 0 2px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .03em;
+           color: var(--text-2); font-weight: 600; }
+.verdict { font-size: 1.7rem; font-weight: 600; line-height: 1.2; }
+.verdict.positive { color: var(--blue); } .verdict.negative { color: var(--red); }
+.verdict.neutral { color: var(--gray); }
+.meta { color: var(--text-2); font-size: 0.82rem; margin-top: 2px; }
+.bar { height: 7px; border-radius: 4px; background: var(--border); margin: 3px 0 7px; overflow: hidden; }
+.bar > span { display: block; height: 100%; border-radius: 4px; }
+.barlabel { display: flex; justify-content: space-between; font-size: 0.76rem; color: var(--text-2); }
+.plane { width: 100%; max-width: 320px; display: block; }
+.axis { stroke: var(--border); stroke-width: 1; }
+.axlabel { fill: var(--text-2); font-size: 10px; }
+.quad { fill: var(--text-2); font-size: 9px; opacity: .65; }
+.transcript { background: var(--surface-2); border-left: 3px solid var(--border); padding: 10px 14px;
+              border-radius: 4px; font-size: 0.92rem; }
+.note { color: var(--text-2); font-size: 0.85rem; }
+.err { border-left: 3px solid var(--red); padding: 10px 14px; background: var(--surface-2); border-radius: 4px; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<h1>Does it hear the tone?</h1>
+<p class="tagline">Record yourself, or load a clip. The two acoustic models below never see a
+transcript &mdash; they only hear how you said it. Try saying something cheerful in a flat
+voice, and watch them disagree with the words.</p>
+
+<div class="controls">
+  <button id="rec" class="rec">● Record</button>
+  <button id="file-btn">Load a file</button>
+  <input id="file" type="file" accept="audio/*" hidden/>
+  <span class="status" id="status">Ready.</span>
+</div>
+
+<div id="error" class="err" hidden></div>
+
+<section id="results" hidden>
+  <h2 id="results-heading">What the models heard</h2>
+  <div id="example-banner" class="transcript" hidden></div>
+  <div class="cards" id="cards"></div>
+
+  <h2>Where it landed on the valence&ndash;arousal plane</h2>
+  <p class="note">Sentiment is a threshold read-out of <em>valence</em> (left&ndash;right).
+  <em>Arousal</em> (down&ndash;up) is computed too and normally discarded &mdash; it is what
+  separates agitation from withdrawal, both of which read simply as "negative".</p>
+  <svg class="plane" id="plane" viewBox="0 0 260 260" role="img" aria-label="valence-arousal plane"></svg>
+
+  <h2>Transcript</h2>
+  <p class="note" id="transcript-note">The words are shown only so you can check them against
+  the tone &mdash; the acoustic models above never received them.</p>
+  <div class="transcript" id="transcript">&mdash;</div>
+</section>
+
+<script>
+const SR_TARGET_NOTE = "resampled server-side to 16 kHz, exactly like every evaluated clip";
+const els = {
+  rec: document.getElementById("rec"),
+  fileBtn: document.getElementById("file-btn"),
+  file: document.getElementById("file"),
+  status: document.getElementById("status"),
+  error: document.getElementById("error"),
+  results: document.getElementById("results"),
+  cards: document.getElementById("cards"),
+  plane: document.getElementById("plane"),
+  transcript: document.getElementById("transcript"),
+};
+
+let audioCtx = null, mediaStream = null, processor = null, source = null;
+let chunks = [], recording = false;
+
+function showError(msg) {
+  els.error.textContent = msg;
+  els.error.hidden = false;
+}
+function clearError() { els.error.hidden = true; }
+
+function setStatus(msg) { els.status.textContent = msg; }
+
+els.fileBtn.addEventListener("click", () => els.file.click());
+
+els.file.addEventListener("change", async (ev) => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  clearError();
+  setStatus(`Decoding ${f.name} …`);
+  try {
+    const buf = await f.arrayBuffer();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const decoded = await ctx.decodeAudioData(buf);
+    await classify(Array.from(decoded.getChannelData(0)), decoded.sampleRate);
+    ctx.close();
+  } catch (e) {
+    showError("Could not decode that file: " + e.message);
+    setStatus("Ready.");
+  }
+});
+
+els.rec.addEventListener("click", async () => {
+  if (recording) { stopRecording(); return; }
+  clearError();
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    showError("Microphone blocked or unavailable (" + e.name + "). You can still use “Load a file”.");
+    return;
+  }
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  source = audioCtx.createMediaStreamSource(mediaStream);
+  // ScriptProcessor is deprecated but universally available and gives us raw
+  // Float32 frames directly. MediaRecorder would hand back webm/opus, which the
+  // server's audio stack cannot decode without pulling in ffmpeg.
+  processor = audioCtx.createScriptProcessor(4096, 1, 1);
+  chunks = [];
+  processor.onaudioprocess = (e) => chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  source.connect(processor);
+  processor.connect(audioCtx.destination);
+  recording = true;
+  els.rec.textContent = "■ Stop";
+  els.rec.classList.add("recording");
+  setStatus("Recording … say something, then press Stop.");
+});
+
+async function stopRecording() {
+  recording = false;
+  els.rec.textContent = "● Record";
+  els.rec.classList.remove("recording");
+  const sr = audioCtx.sampleRate;
+  processor.disconnect(); source.disconnect();
+  mediaStream.getTracks().forEach(t => t.stop());
+  await audioCtx.close();
+
+  let total = 0;
+  chunks.forEach(c => total += c.length);
+  if (total === 0) { showError("No audio captured."); setStatus("Ready."); return; }
+  const pcm = new Float32Array(total);
+  let off = 0;
+  chunks.forEach(c => { pcm.set(c, off); off += c.length; });
+  await classify(Array.from(pcm), sr);
+}
+
+async function classify(pcm, sampleRate) {
+  setStatus(`Classifying ${(pcm.length / sampleRate).toFixed(1)}s of audio …`);
+  els.rec.disabled = true; els.fileBtn.disabled = true;
+  try {
+    const res = await fetch("/classify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pcm, sample_rate: sampleRate, with_transcript: true }),
+    });
+    if (!res.ok) {
+      const detail = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(detail.detail || res.statusText);
+    }
+    render(await res.json());
+    setStatus(`Done — ${(pcm.length / sampleRate).toFixed(1)}s, ${SR_TARGET_NOTE}.`);
+  } catch (e) {
+    showError("Classification failed: " + e.message);
+    setStatus("Ready.");
+  } finally {
+    els.rec.disabled = false; els.fileBtn.disabled = false;
+  }
+}
+
+const LABEL = {
+  permissive: "Acoustic — permissive (WavLM, MIT)",
+  research: "Acoustic — research (audeering, non-commercial)",
+  lexical: "Lexical — reads the words only",
+};
+const COLOR = { positive: "var(--blue)", neutral: "var(--gray)", negative: "var(--red)" };
+
+function render(data) {
+  els.results.hidden = false;
+  els.cards.innerHTML = "";
+  const banner = document.getElementById("example-banner");
+  if (data.is_example) {
+    document.getElementById("results-heading").textContent = "Example — a recording that already ships with the repo";
+    banner.innerHTML = `The words are <strong>positive</strong> (&ldquo;${data.text}&rdquo;)
+      but it was spoken <strong>flatly</strong>. The gold label is the delivery:
+      <strong>${data.prosody_sentiment}</strong>. Watch the lexical model follow the words and
+      the acoustic models follow the tone. Record your own to replace this.`;
+    banner.hidden = false;
+  } else {
+    document.getElementById("results-heading").textContent = "What the models heard";
+    banner.hidden = true;
+  }
+  let transcript = null, vad = null;
+
+  data.predictions.forEach(p => {
+    if (p.transcript) transcript = p.transcript;
+    if (p.vad) vad = p.vad;
+    const bars = ["negative", "neutral", "positive"].map(s => `
+      <div class="barlabel"><span>${s}</span><span>${(p.probs[s] * 100).toFixed(0)}%</span></div>
+      <div class="bar"><span style="width:${(p.probs[s] * 100).toFixed(1)}%;background:${COLOR[s]}"></span></div>
+    `).join("");
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${LABEL[p.backend] || p.backend}</h3>
+      <div class="verdict ${p.sentiment}">${p.sentiment}</div>
+      <div class="meta">confidence ${(p.confidence * 100).toFixed(0)}%
+        · ${p.latency_ms.toFixed(0)} ms${p.abstained ? " · abstained" : ""}</div>
+      <div style="margin-top:10px">${bars}</div>`;
+    els.cards.appendChild(card);
+  });
+
+  drawPlane(vad);
+  els.transcript.textContent = transcript || "— (ASR not available)";
+}
+
+function drawPlane(vad) {
+  const P = 34, S = 260 - P * 2;   // padding and drawing size
+  const x = v => P + v * S;
+  const y = a => P + (1 - a) * S;  // arousal up
+  const parts = [`
+    <rect x="${P}" y="${P}" width="${S}" height="${S}" fill="none" class="axis"/>
+    <line x1="${P}" y1="${y(0.5)}" x2="${P + S}" y2="${y(0.5)}" class="axis" stroke-dasharray="3 3"/>
+    <line x1="${x(0.5)}" y1="${P}" x2="${x(0.5)}" y2="${P + S}" class="axis" stroke-dasharray="3 3"/>
+    <text class="axlabel" x="${P}" y="${P + S + 16}">unpleasant</text>
+    <text class="axlabel" x="${P + S}" y="${P + S + 16}" text-anchor="end">pleasant</text>
+    <text class="axlabel" x="${P - 6}" y="${P + 4}" text-anchor="end" transform="rotate(-90 ${P - 6} ${P + 4})">calm → activated</text>
+    <text class="quad" x="${P + 6}" y="${P + 14}">agitated</text>
+    <text class="quad" x="${P + S - 6}" y="${P + 14}" text-anchor="end">excited</text>
+    <text class="quad" x="${P + 6}" y="${P + S - 6}">withdrawn</text>
+    <text class="quad" x="${P + S - 6}" y="${P + S - 6}" text-anchor="end">content</text>`];
+  if (vad) {
+    parts.push(`
+      <circle cx="${x(vad.valence)}" cy="${y(vad.arousal)}" r="7" fill="var(--orange)"/>
+      <text class="axlabel" x="${x(vad.valence)}" y="${y(vad.arousal) - 12}" text-anchor="middle">you</text>`);
+  } else {
+    parts.push(`<text class="axlabel" x="130" y="130" text-anchor="middle">research backend not loaded</text>`);
+  }
+  els.plane.innerHTML = parts.join("");
+}
+
+fetch("/health").then(r => r.json()).then(h => {
+  const missing = Object.entries(h).filter(([, ok]) => !ok).map(([k]) => k);
+  if (missing.length) setStatus("Ready. Not loaded: " + missing.join(", ") + ".");
+}).catch(() => {});
+
+// Open in a working state rather than as an empty shell: classify a clip
+// that ships with the repo so the page shows what it does before anyone
+// has pressed Record.
+fetch("/example").then(r => r.ok ? r.json() : null).then(d => {
+  if (d) render(d);
+}).catch(() => {});
+</script>
+</body>
+</html>

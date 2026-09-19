@@ -64,6 +64,27 @@ def load_clip(path: Path, clip_id: str | None = None) -> AudioClip:
     )
 
 
+def clip_from_samples(samples: np.ndarray, sr: int, clip_id: str = "live") -> AudioClip:
+    """Build a clip from raw in-memory samples -- browser-captured PCM, a
+    test signal -- through the *same* mono/resample/peak-normalise path as
+    `load_clip`.
+
+    The demo exists to show what the evaluated system does, so its audio
+    must not take a different route into the model than evaluation audio
+    does. Sharing this function is what guarantees that; duplicating the
+    three steps in the demo server is how the two silently diverge.
+    """
+    if samples.size == 0:
+        raise AudioLoadError(f"{clip_id}: empty audio")
+    if sr <= 0:
+        raise AudioLoadError(f"{clip_id}: invalid sample rate {sr}")
+
+    samples = _to_mono(np.asarray(samples, dtype=np.float32))
+    samples = _resample(samples, sr, SAMPLE_RATE, path=Path(clip_id))
+    samples = _peak_normalise(samples)
+    return AudioClip(clip_id=clip_id, samples=samples, sr=SAMPLE_RATE)
+
+
 def load_many(paths: Sequence[Path]) -> list[AudioClip]:
     """Load several clips, failing loudly (not silently dropping) on any error."""
     clips: list[AudioClip] = []
