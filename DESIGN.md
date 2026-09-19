@@ -242,10 +242,49 @@ you need a reliable reading or a reading that is actually about delivery.
 
 **Limits.** Synthetic, one TTS vendor, two voices. It measures prosody sensitivity
 under controlled contradiction, not performance on real speech — E3 remains the only
-real-speaker evidence here. What E5 cannot separate on its own is how much of the
-permissive backend's 0.682 is limited by the model versus by Hume rendering
-contradictory delivery less strongly than congruent delivery; running D1's acoustic
-recoverability instruments over E5 would answer that and has not been done.
+real-speaker evidence here.
+
+### The diagnostic: the audio is fine, the models are the bottleneck
+
+E5's PSI alone could not say whether the models were failing to read the delivery or
+whether Hume had softened it when it contradicted the words. `scripts/diagnose_e5.py`
+settles it by removing the models entirely: can a plain logistic regression on **nine
+raw acoustic descriptors** (F0 mean/std/range, loudness, HNR, jitter, shimmer, RMS,
+speech rate) recover the *requested* delivery, leave-one-carrier-out?
+
+| Cut | n | Recoverability | F0 span |
+|---|--:|--:|--:|
+| All E5 clips | 90 | **0.811** | 89.2 Hz |
+| Congruent (delivery agrees with words) | 30 | 0.700 | 93.1 Hz |
+| **Incongruent (delivery contradicts words)** | 60 | **0.783** | 87.3 Hz |
+
+Chance is 0.333. Same instruments on Cartesia scored 0.175 (vs 0.200 chance — delivery
+genuinely absent) and on real human speech 0.667 / 0.741.
+
+Three things follow, and none of them are kind to the models:
+
+1. **The delivery is strongly present.** 0.811 is *higher* than real human speech
+   scored on the same instruments. Mean F0 separates the classes by 89 Hz
+   (positive 204.5, neutral 126.2, negative 115.3) against Cartesia's ~8 Hz.
+2. **The contradiction did not weaken it.** Incongruent clips are *more* recoverable
+   than congruent ones (0.783 vs 0.700), so Hume did not quietly defer to the
+   transcript. The confound this diagnostic existed to rule out is ruled out.
+3. **It is not one lucky voice.** Both score well (Ava Song 0.889, Colton Rivers 0.800).
+
+So on audio where nine hand-crafted features recover the delivery 81% of the time, our
+WavLM probe reaches UAR 0.511 and the audeering model 0.400. **A logistic regression on
+simple prosodic descriptors substantially outperforms both deep acoustic models at the
+task those models exist to do** — and the same pattern holds on E3 (features 0.667/0.741
+vs the probe's 0.444/0.519), so it is not an artefact of synthetic audio.
+
+**Why** is not measured, and the candidates are worth separating (all *reasoned*, per
+CLAUDE.md rule 6): the probe is trained on CREMA-D, which is acted, US-studio, and
+always-neutral-text, so both E5 and E3 are out of domain for it; mean+std pooling over
+a WavLM sequence may discard the temporal contour that carries prosody; and a linear
+readout of embeddings dominated by phonetic and speaker identity may simply not surface
+the prosodic subspace. The cheap, obvious next experiment is to **use these nine
+features directly** — alone as a baseline, and concatenated with the WavLM embedding —
+which this result now strongly motivates and which has not been tried.
 
 ## Backend x training-data comparison
 
