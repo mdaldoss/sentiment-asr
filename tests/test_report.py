@@ -12,6 +12,7 @@ from ssa.report import (
     render_backend_combo_section,
     render_d1_section,
     render_e3_control_section,
+    render_e5_section,
     render_hume_section,
     render_leakage_table,
     render_main_table,
@@ -419,3 +420,55 @@ class TestRenderHumeSection:
     def test_renders_interpretation(self) -> None:
         html = render_hume_section(_fake_hume())
         assert "falsification test" in html
+
+
+def _fake_e5() -> dict:
+    def sol(uar: float, psi: float) -> dict:
+        return {
+            "solution": "x",
+            "uar": uar,
+            "macro_f1": uar - 0.01,
+            "accuracy": uar,
+            "psi_contested": psi,
+            "psi_strict": psi - 0.05,
+        }
+
+    return {
+        "dataset": "e5_hume",
+        "n_clips": 90,
+        "n_incongruent": 60,
+        "n_voices": 2,
+        "clips_per_voice": {"Ava Song": 45, "Colton Rivers": 45},
+        "solutions": {
+            "A_lexical": sol(0.33, 0.05),
+            "B_permissive": sol(0.61, 0.78),
+            "B_research": sol(0.58, 0.71),
+            "C_fusion": sol(0.55, 0.60),
+        },
+        "interpretation": "PSI is the metric to read here",
+    }
+
+
+class TestRenderE5Section:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_e5_section(None)
+
+    def test_renders_every_solution(self) -> None:
+        html = render_e5_section(_fake_e5())
+        for value in ("0.330", "0.610", "0.580", "0.550"):
+            assert value in html
+
+    def test_leads_with_psi_not_uar(self) -> None:
+        """On a set built to contradict its transcript, PSI is the point."""
+        html = render_e5_section(_fake_e5())
+        assert "PSI is the metric here" in html
+        assert "0.780" in html  # permissive PSI rendered
+
+    def test_states_incongruent_share(self) -> None:
+        html = render_e5_section(_fake_e5())
+        assert "60" in html and "67%" in html
+
+    def test_flags_synthetic_and_eval_only(self) -> None:
+        html = render_e5_section(_fake_e5())
+        assert "eval-only" in html
+        assert "E3 remains the only real-speaker evidence" in html

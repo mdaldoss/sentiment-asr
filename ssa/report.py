@@ -434,6 +434,53 @@ def render_hume_section(data: dict | None) -> str:
     """
 
 
+def render_e5_section(data: dict | None) -> str:
+    """E5: the Hume incongruence set. Two thirds of its clips have words
+    and delivery deliberately disagreeing, with delivery set independently
+    of the text -- the condition E2/Cartesia could never produce. PSI, not
+    UAR, is the number to read here (see scripts/eval_e5.py)."""
+    if data is None:
+        return "<p class='pending'>E5 not yet generated/evaluated (<code>make gen-hume-e5</code>, then <code>make eval-e5</code>).</p>"
+
+    order = ("A_lexical", "B_permissive", "B_research", "C_fusion")
+    label = {
+        "A_lexical": "A &mdash; Lexical (words only)",
+        "B_permissive": "B &mdash; Acoustic, permissive",
+        "B_research": "B &mdash; Acoustic, research",
+        "C_fusion": "C &mdash; Fusion",
+    }
+    rows = "".join(
+        f"<tr><td>{label.get(key, key)}</td>"
+        f"<td class='num'>{_fmt(data['solutions'][key]['uar'])}</td>"
+        f"<td class='num'>{_fmt(data['solutions'][key]['macro_f1'])}</td>"
+        f"<td class='num'><strong>{_fmt(data['solutions'][key]['psi_contested'])}</strong></td>"
+        f"<td class='num'>{_fmt(data['solutions'][key]['psi_strict'])}</td></tr>"
+        for key in order
+        if key in data.get("solutions", {})
+    )
+    voices = ", ".join(f"{v} ({n})" for v, n in data.get("clips_per_voice", {}).items())
+
+    return f"""
+    <p>{data["n_clips"]} clips across {data["n_voices"]} synthetic voice(s) &mdash;
+    {data["n_incongruent"]} of them ({100 * data["n_incongruent"] / max(data["n_clips"], 1):.0f}%)
+    with the words and the delivery deliberately disagreeing. Delivery was set through Hume
+    Octave's <code>description</code> field, which acts independently of the transcript; that
+    independence is what E2 (Cartesia) could not provide and is why this set exists.
+    <strong>PSI is the metric here, not UAR</strong>: the gold label is the delivery, so on a
+    set built to contradict its own transcript, a model that reads words scores near 0 by
+    construction and a model that hears tone scores high.</p>
+    <table>
+      <thead><tr><th>Solution</th><th>UAR</th><th>Macro-F1</th>
+      <th>PSI<sub>contested</sub></th><th>PSI<sub>strict</sub></th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+    <p class="caption">Voices: {voices or "&mdash;"}. Synthetic and eval-only &mdash; E5
+    measures prosody sensitivity under controlled contradiction, not performance on real
+    speech; E3 remains the only real-speaker evidence in this repo.</p>
+    <p class="finding"><strong>Reading it:</strong> {data.get("interpretation", "")}</p>
+    """
+
+
 def render_backend_combo_section(data: dict | None) -> str:
     """WavLM+probe (permissive) vs audeering/wav2vec2 (research), each
     trained/evaluated across the 4 dataset combinations the user asked
@@ -620,6 +667,7 @@ def build_report() -> str:
     e3_control = load_json_if_exists(RESULTS_DIR / "d1_vs_e3_control.json")
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
     backend_combos = load_json_if_exists(RESULTS_DIR / "backend_combo_comparison.json")
+    e5 = load_json_if_exists(RESULTS_DIR / "e5_summary.json")
     disjoint_permissive = next(
         (
             r
@@ -748,6 +796,9 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>E3: human recordings, and a control on the D1 finding</h2>
 {render_e3_control_section(e3_control)}
+
+<h2>E5: words vs delivery, on a set built to disagree</h2>
+{render_e5_section(e5)}
 
 <h2>Backend x training-data comparison: WavLM+probe vs audeering/wav2vec2</h2>
 {render_backend_combo_section(backend_combos)}
