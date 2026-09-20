@@ -2,7 +2,7 @@
 # Evaluation targets need NO API key -- fixtures are committed.
 # Only the `gen-*` targets require CARTESIA_API_KEY.
 
-.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report overview site demo-web gen-hume-e5 eval-e5 train-prosodic eval-prosodic demo all record gen-probe gen-probe-d1 gen-synthetic clean
+.PHONY: help setup test lint data train eval eval-e3 eval-backend-combos listening-sorted prosody-samples probe-hume report overview site demo-web gen-hume-e5 eval-e5 train-prosodic eval-prosodic compare-representations normalise-speaker demo all record gen-probe gen-probe-d1 gen-synthetic clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -62,6 +62,12 @@ train-prosodic:  ## Fit Solution D: eGeMAPS+contour features -> transparent clas
 
 eval-prosodic:  ## Score Solution D on CREMA-D, both E3 takes and E5 -> results/*.json
 	uv run python scripts/eval_prosodic.py
+
+compare-representations:  ## Prosodic features vs WavLM with the training domain held constant
+	uv run python scripts/compare_representations.py
+
+normalise-speaker:  ## Does per-speaker feature normalisation rescue cross-domain transfer?
+	uv run python scripts/normalise_speaker.py
 
 site:  ## Regenerate /index.html and /architecture.html -- the top-level nav pages
 	uv run python -m ssa.site
