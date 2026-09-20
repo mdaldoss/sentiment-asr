@@ -82,6 +82,7 @@ def load_key_numbers() -> dict[str, Any]:
     control = _load("d1_vs_e3_control.json")
     d1 = _load("d1_emotion_probe.json")
     hume = _load("hume_probe.json")
+    e6 = _load("e6_summary.json")
 
     e3: dict[str, Any] = {}
     for label, fname in (
@@ -110,6 +111,7 @@ def load_key_numbers() -> dict[str, Any]:
         "d1": d1,
         "hume": hume,
         "e3": e3,
+        "e6": e6,
     }
 
 
@@ -434,6 +436,104 @@ emotional speech is impossible."</p>
 """
 
 
+def _solution_label(name: str) -> str:
+    """Harness solution name -> the short label used in this report's prose."""
+    if name.startswith("A:"):
+        return "A &mdash; lexical"
+    if name.startswith("B:") and "permissive" in name:
+        return "B &mdash; acoustic (permissive)"
+    if name.startswith("B:"):
+        return "B &mdash; acoustic (research)"
+    if name.startswith("C:"):
+        return "C &mdash; fusion"
+    if name.startswith("D:"):
+        return "D &mdash; prosodic"
+    return name
+
+
+def render_e6(n: dict[str, Any]) -> str:
+    """The cross-speaker result. Placed immediately after the benchmark
+    numbers because it is what those numbers do not survive."""
+    e6 = n.get("e6")
+    if not e6:
+        return """
+<h2>E6 &mdash; eight real speakers</h2>
+<p class="pending">Not built yet. Run <code>make data-zurich &amp;&amp; make
+eval-zurich</code>.</p>
+"""
+
+    order = ["A:lexical", "B:acoustic(permissive", "B:acoustic(research", "C:fusion", "D:prosodic"]
+    rows = []
+    for prefix in order:
+        for name, sets in e6["zero_shot"].items():
+            if not name.startswith(prefix):
+                continue
+            s_all = sets.get("e6_all")
+            if not s_all:
+                continue
+            u, psi = s_all["uar_ci95"], s_all["psi_contested_ci95"]
+            above = "yes" if u["lo"] > 1 / 3 else "&mdash;"
+            reads = "follows words" if psi["hi"] < 0.5 else "&mdash;"
+            rows.append(
+                f"<tr><td>{_solution_label(name)}</td>"
+                f"<td class='num'>{_fmt(s_all['uar'])}</td>"
+                f"<td class='num'>[{u['lo']:.2f}, {u['hi']:.2f}]</td>"
+                f"<td class='num'>{above}</td>"
+                f"<td class='num'>{_fmt(s_all['psi_contested'])}</td>"
+                f"<td class='num'>[{psi['lo']:.2f}, {psi['hi']:.2f}]</td>"
+                f"<td class='num'>{reads}</td></tr>"
+            )
+            break
+
+    return f"""
+<h2>E6 &mdash; eight real speakers, and what the benchmark numbers do not survive</h2>
+
+<p>Every human result above this point rests on <strong>one</strong> speaker recorded
+twice; E5's incongruence is synthetic. E6 is {e6["n_clips"]} clips from
+<strong>{e6["n_speakers"]} speakers</strong>, {e6["n_incongruent"]} of them incongruent
+&mdash; laptop-microphone audio from mostly non-native English speakers, which is a far
+harder condition than CREMA-D's acted studio recordings. It is the first real
+cross-speaker evaluation this project has had, and the first human multi-speaker set on
+which PSI means anything.</p>
+
+<p>Everything below is zero-shot: fitted on CREMA-D, never having heard these voices.
+Intervals are a 95% percentile bootstrap over clips. Chance is 0.333 for UAR, 0.500 for
+PSI.</p>
+
+<table>
+  <thead><tr><th>Solution</th><th>UAR</th><th>95% CI</th><th>beats chance?</th>
+  <th>PSI</th><th>95% CI</th><th>verdict</th></tr></thead>
+  <tbody>{"".join(rows)}</tbody>
+</table>
+
+<p><strong>This is the most important result in the project, and it is a negative
+one.</strong> Of five systems, one has a UAR interval clearing chance, and it clears it
+by 0.003. The acoustic backend that reaches 0.797 on the CREMA-D subset lands in the
+0.33&ndash;0.46 range here. Nothing fitted on CREMA-D transfers to real multi-speaker
+audio, and the earlier one-speaker and synthetic transfer numbers were flattering.</p>
+
+<p>Two things survive. The <strong>lexical floor holds</strong>: a transcript-only model
+follows the transcript, with its whole PSI interval below chance &mdash; which also
+checks the one column of E6 that was labelled by hand. And <strong>the research backend
+follows the words too</strong>, from audio alone with no transcript in its path, its
+entire interval below chance. E5 measured that on two synthetic voices; E6 replicates it
+on eight real ones with an interval behind it. Calling a model &ldquo;acoustic&rdquo;
+does not make it prosodic.</p>
+
+<p class="caption">Not claimed: that the permissive backend <em>is</em> prosody-sensitive.
+Its own PSI interval contains 0.5. The direction is consistent across E5 and E6, but only
+the research backend's failure is statistically clean &mdash; on an earlier six-speaker
+build this looked like a clear win for the permissive backend, and the intervals on the
+full set say the two merely touch.</p>
+
+<p class="caption">A claim withdrawn: on that six-speaker build, training on E6's clips
+alone beat CREMA-D 0.452 to 0.278, and it nearly went into this report as evidence that
+matched data beats more data. On eight speakers the same configuration gives 0.222 and
+the effect reversed. It was noise on a 20-clip test split, and the bootstrap interval is
+the only reason it was not written up as a finding.</p>
+"""
+
+
 def render_didnt_work() -> str:
     return """
 <h2>What didn't work</h2>
@@ -634,6 +734,7 @@ def build_body(nav: str) -> str:
 {render_what_we_built()}
 {render_experiments(n)}
 {render_results(n)}
+{render_e6(n)}
 {render_didnt_work()}
 {render_improvements()}
 {render_future()}

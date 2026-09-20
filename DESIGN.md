@@ -130,83 +130,101 @@ genuinely-competing-signals version of this test) were not available at submissi
 time — see the live dashboard (`report/index.html`, regenerate with `make report`)
 for whatever has landed since.
 
-## E6: six real speakers, and the cross-corpus number that undoes the headline
+## E6: eight real speakers, and the cross-corpus number that undoes the headline
 
 E6 (`data/zurich/`, `scripts/build_zurich.py`, `scripts/eval_zurich.py`) is the set this
 project was missing on two axes at once. Every human result before it came from **one**
-speaker recorded twice; E5's incongruence was synthetic. E6 has **120 clips, six
-speakers, 34 sentences, and 70% of its clips incongruent** — each sentence recorded with
-two or three different intended deliveries. Its train/val/test split is speaker-disjoint
-by construction: four speakers train, Silvia validates, Matteo tests.
+speaker recorded twice; E5's incongruence was synthetic. E6 has **160 clips, eight
+speakers, 35 sentences, and 111 incongruent clips (69%)** — each sentence recorded with
+two or three different intended deliveries. Its split is speaker-disjoint by
+construction: five speakers train, two validate, Matteo tests. The audio is
+laptop-microphone recordings from mostly non-native English speakers, which is a far
+harder and more realistic condition than CREMA-D's acted American studio speech.
 
-**Zero-shot: every CREMA-D-trained solution is indistinguishable from chance.** 95%
-intervals are a percentile bootstrap over clips; chance is 0.333 for UAR and 0.500 for
-PSI.
+**Zero-shot, everything fitted on CREMA-D, on `e6_all` (n=160).** 95% intervals are a
+percentile bootstrap over clips; chance is 0.333 for UAR and 0.500 for PSI.
 
-| Solution | UAR on e6_all (n=120) | PSI on e6_all |
-|---|---|---|
-| A — lexical | 0.321 [0.24, 0.40] | **0.123 [0.05, 0.20]** |
-| B — permissive | 0.384 [0.31, 0.46] | **0.579 [0.44, 0.70]** |
-| B — research | 0.359 [0.28, 0.44] | 0.397 [0.27, 0.51] |
-| C — fusion | 0.383 [0.32, 0.45] | 0.552 [0.42, 0.67] |
-| D — prosodic | 0.333 [0.33, 0.33] ⚠ | 0.545 [0.41, 0.68] |
+| Solution | UAR [95% CI] | | PSI [95% CI] | |
+|---|---|---|---|---|
+| A — lexical | 0.314 [0.246, 0.386] | chance | **0.104 [0.047, 0.170]** | **follows words** |
+| B — permissive | 0.396 [0.330, 0.464] | chance | 0.584 [0.472, 0.697] | contains 0.5 |
+| B — research | 0.356 [0.287, 0.428] | chance | **0.366 [0.265, 0.472]** | **follows words** |
+| C — fusion | **0.402 [0.336, 0.467]** | *just* above | 0.557 [0.443, 0.667] | contains 0.5 |
+| D — prosodic | 0.333 [0.333, 0.333] ⚠ | degenerate | 0.521 [0.405, 0.639] | contains 0.5 |
 
 ⚠ Solution D predicts a single class for every E6 clip — the degenerate failure its own
-evaluation script was built to name, here at full width.
+evaluation script was written to name, here at full width.
 
-**This is the most important result in the project, and it is a negative one.** The
-permissive backend scores 0.797 on CREMA-D's test split and **0.384 [0.31, 0.46]** here —
-an interval that contains chance. On the held-out speaker alone it is 0.278 [0.17, 0.33],
-*below* chance. Nothing that was fitted on CREMA-D survives contact with six people
-recording on laptop microphones. Every earlier transfer result in this document (E3 at
-0.44–0.59, E5 at 0.51) was measured on one voice or on synthesised audio and was, it
-turns out, flattering.
+**This is the most important result in the project, and it is a negative one.** Of five
+systems, exactly one — the fusion — has a UAR interval clearing chance, and it clears it
+by 0.003. The permissive backend scores 0.797 on CREMA-D's test subset and
+0.396 [0.330, 0.464] here. Nothing fitted on CREMA-D survives contact with eight people
+recording on laptop microphones, and every earlier transfer result in this document
+(E3 at 0.44–0.59, E5 at 0.51) was measured on one voice or on synthesised audio and was,
+it turns out, flattering.
 
-**Three things survive, and they are the interesting part.**
+**Two things survive, and the second is the sharpest finding here.**
 
-1. **The lexical floor confirms the labels.** A scores PSI 0.123 [0.05, 0.20] — a
-   transcript-only model follows the transcript, exactly as on E5. Since E6's text
-   valence is the one column assigned by hand (see below), this is the check that the
-   labelling is not nonsense, and it passes.
+1. **The lexical floor confirms the labels.** A scores PSI 0.104 [0.047, 0.170] — an
+   interval entirely below chance, i.e. a transcript-only model follows the transcript,
+   exactly as on E5. Since E6's text valence is the one column assigned by hand, this is
+   the check that the labelling is sound, and it passes.
 
-2. **The research backend fails the prosody test again, on real human speech.** PSI
-   0.397 [0.27, 0.51] — an interval sitting on chance — against the permissive backend's
-   0.579 [0.44, 0.70] on identical audio. E5 measured this on synthetic voices (0.211 vs
-   0.682); E6 replicates the ordering on six real ones. That the audeering model tracks
-   words rather than tone is now a finding with two independent datasets behind it.
+2. **The research backend follows the *words*, on real human speech, with the interval to
+   prove it.** PSI 0.366 [0.265, 0.472] — the whole interval sits below chance, from
+   audio alone, with no transcript anywhere in its path. E5 measured this on two
+   synthetic voices (0.211); E6 replicates it on eight real ones with statistical
+   support. That an "acoustic" model tracks wording rather than delivery is now a finding
+   with two independent datasets and a confidence interval behind it.
 
-3. **PSI and UAR come apart.** The permissive backend is at chance on *which* sentiment a
-   clip carries while still beating chance on *whether it follows tone or words*. Hearing
-   that a delivery contradicts the wording is an easier problem than naming the emotion,
-   and for a companion device that wants to ask rather than assume, it may be the more
-   useful one.
+**A claim from the 6-speaker build that does not survive.** On the earlier, smaller
+version of E6 the permissive backend looked clearly more prosody-sensitive than the
+research backend (0.579 vs 0.397 as point estimates). With intervals on the full set the
+two are [0.472, 0.697] and [0.265, 0.472] — they touch. The *direction* holds across E5
+and E6, but the permissive backend's own interval contains 0.5, so it is not established
+as prosody-following either. Only the research backend's failure is statistically clean.
+
+**PSI and UAR come apart.** The permissive backend is at chance on *which* sentiment a
+clip carries while its PSI point estimate sits above chance. Detecting that a delivery
+contradicts the wording is an easier problem than naming the emotion, and for a companion
+device whose correct response to ambiguity is to ask rather than assume, it may be the
+more useful signal — and the more attainable one.
 
 ### Does training on these speakers help?
 
-Refitting on E6's 80 training clips, scored on Matteo (held out from every combo):
+Refitting on E6's 100 training clips. `e6_val` (40 clips, two speakers) is the more
+trustworthy column; `e6_test` is 20 clips from one person.
 
-| Training set | fit clips | B permissive | D best |
-|---|--:|---|---|
-| CREMA-D only | 5,235 | 0.278 [0.17, 0.33] / PSI 0.444 | 0.333 ⚠ / 0.500 |
-| CREMA-D + E6 train | 5,315 | 0.319 [0.11, 0.57] / PSI 0.444 | svm_rbf 0.437 [0.23, 0.66] / **0.800** |
-| **E6 train only** | **80** | **0.452 [0.25, 0.65] / PSI 0.700** | logreg 0.400 [0.19, 0.62] / 0.500 |
+| Training set | fit clips | B permissive, val | D logreg, val | D svm_rbf, val |
+|---|--:|---|---|---|
+| CREMA-D only | 5,235 | 0.330 [0.19, 0.47] | 0.332 [0.26, 0.40] | 0.333 ⚠ |
+| CREMA-D + E6 train | 5,335 | 0.375 [0.22, 0.53] | 0.372 [0.23, 0.53] | 0.370 [0.23, 0.51] |
+| E6 train only | 100 | — (val is its selection set) | — | — |
 
-**Directionally, 80 matched clips beat 5,235 acted ones** — 0.452 against 0.278, with PSI
-0.700 against 0.444. That is what the "training corpus is the bottleneck" argument
-predicts, now on real held-out speech rather than in an argument.
+**The honest summary is that nothing here is resolved, and one earlier claim is
+withdrawn.** On the 6-speaker build, training on E6's clips alone gave the permissive
+backend 0.452 against CREMA-D's 0.278, and this document came close to reporting that
+80 matched clips beat 5,235 acted ones. On the 8-speaker build the same configuration
+gives **0.222 [0.06, 0.40]** — the effect reversed. It was noise on a 20-clip test split,
+exactly as the interval warned, and the bootstrap is the only reason it was not written
+up as a result.
 
-**It is not established, and the intervals say so.** [0.25, 0.65] and [0.17, 0.33]
-overlap. The test split is 20 clips from one person, so each class's recall rests on five
-to nine of them; at that size a 0.174 gap is suggestive and nothing more. Reporting it
-as a result would be exactly the error the bootstrap was added to prevent. The honest
-statement is: the direction is consistent across both retrained combos and both
-solution families, and the sample cannot resolve it.
+What does hold, weakly: adding E6's training clips to CREMA-D moves every model in the
+same direction on the validation speakers (0.330 → 0.375, 0.332 → 0.372, 0.333 → 0.370)
+and, more tellingly, **un-degenerates Solution D** — `svm_rbf` goes from predicting one
+class for every clip to producing real predictions. Every interval overlaps, so the UAR
+gain is not established; the qualitative change from "collapsed" to "not collapsed" does
+not depend on an interval.
+
+The one eye-catching number, `svm_rbf` at 0.530 [0.32, 0.74] with PSI 0.909 on `e6_test`,
+is 20 clips wide and its own validation score is 0.370. It is reported for completeness
+and should not be believed.
 
 ### What E6 costs in caveats
 
 - **`text_sentiment` is assigned by hand.** The dataset labels intended *delivery* only
   — which is how we know it is prosody and not wording, since one sentence appears with
-  two or three emotions. PSI also needs a lexical valence, so all 34 sentences were
+  two or three emotions. PSI also needs a lexical valence, so all 35 sentences were
   labelled from the words alone (`TEXT_SENTIMENT` in `scripts/build_zurich.py`, written
   out row by row to be disagreed with), leaving genuinely two-sided wordings NEUTRAL.
   Forcing a side on *"Whatever, it's fine"* would manufacture incongruence the text does
@@ -219,10 +237,11 @@ solution families, and the sample cannot resolve it.
   manifest row regardless of split, so `e6train_only` trained on the validation speaker
   and scored **UAR 1.000** on her. That is above the 0.90 ceiling this document names as
   the signature of leakage, and it was. The fix restricts fitting to `split == "train"`
-  and drops the validation speaker from that combo's evaluation entirely, since a
-  selection set is not a held-out set. The numbers above are post-fix.
+  and drops the validation speaker from that combo's evaluation, since a selection set is
+  not a held-out set.
 - **20 clips per held-out speaker.** No difference of a few points on `e6_test` is
-  resolvable, which is why every figure carries an interval.
+  resolvable, which is why every figure carries an interval — and why the one claim that
+  ignored that warning reversed when more data arrived.
 
 ## E3: human recordings, and a control on the Cartesia finding
 
@@ -573,6 +592,49 @@ is precisely the condition that lets a boundary fitted on another corpus land co
 A user who is mostly low-mood would have that mood partly normalised away, because the
 baseline and the signal are the same quantity. That is measured directly below rather
 than left as an argument.
+
+### E6 shrinks this result by a factor of three or four
+
+The numbers above were measured on **one** real speaker (E3, twice) and two synthetic
+voices (E5). E6 supplies eight real speakers at 20 clips each, which is the first honest
+test of a method whose entire premise is per-speaker statistics. It does not hold up at
+the size reported above.
+
+| Model | E6 raw | E6 speaker_z | **E6 gain** | E5 gain | E3b gain |
+|---|--:|--:|--:|--:|--:|
+| prosodic logreg | 0.320 | 0.367 | **+0.047** | +0.333 | +0.223 |
+| prosodic linear_svm | 0.333 ⚠ | 0.398 | **+0.065** | +0.100 | +0.111 |
+| prosodic svm_rbf | 0.340 ⚠ | 0.430 | **+0.091** | +0.278 | +0.260 |
+| prosodic hist_gbdt | 0.333 ⚠ | 0.410 | **+0.077** | +0.267 | +0.334 |
+| wavlm logreg | 0.396 | 0.441 | **+0.045** | −0.056 | −0.038 |
+
+⚠ degenerate under `raw` — predicting one class for every clip.
+
+**Two corrections follow, and both matter.**
+
+1. **The size of the effect was inflated by having almost no speakers.** On eight real
+   voices the gain is +0.045 to +0.091, not the +0.19 to +0.33 measured on one speaker
+   and two synthetic voices. Per-speaker normalisation is a modest intervention on real
+   multi-speaker data, not "the largest single intervention measured" — that description
+   was true of the data available when it was written and is not true now.
+
+2. **The asymmetry claim does not survive.** The headline finding above was that
+   normalisation rescues the explicit prosodic features *specifically* while doing
+   nothing for the learned representation, and that this confirmed the domain-fragility
+   diagnosis. On E6 WavLM gains +0.045, squarely inside the prosodic range of +0.047 to
+   +0.091. On E3 and E5 the learned representation gained nothing; on eight real speakers
+   it gains about as much as the hand-built features do. The diagnosis may still be
+   right, but E6 does not support it, and the evidence that did came from one voice.
+
+**What does replicate, cleanly, is the anti-collapse property.** Under `raw`, three of the
+four prosodic models predict a single class for all 160 E6 clips. Under `speaker_z`, none
+do. That is the same qualitative rescue seen on E3 and E5, it does not depend on an
+interval, and it is the part of this result worth keeping.
+
+**What none of it fixes is the absolute level.** The best normalised score on E6 is 0.441
+against 0.333 chance. Normalisation moves models from "collapsed" to "weak"; it does not
+make anything here work on real multi-speaker audio. The training corpus, again, is the
+binding constraint.
 
 ### What the balance assumption is worth (measured)
 

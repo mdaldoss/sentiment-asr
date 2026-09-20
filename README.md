@@ -81,39 +81,42 @@ disagree, the fraction of predictions that follow the *tone*. 1.0 = listens, 0.0
 the transcript. See `ssa/eval/metrics.py` for the exact definition.
 
 **Measured headline result — read both halves of this table.** Left: the 300-clip
-stratified CREMA-D test subset. Right: E6, 120 clips from **six real speakers** the
+stratified CREMA-D test subset. Right: E6, 160 clips from **eight real speakers** the
 models have never heard (`make data-zurich && make eval-zurich`), with 95% bootstrap
-intervals. Chance is 0.333.
+intervals. Chance is 0.333 for UAR, 0.500 for PSI.
 
-| | CREMA-D UAR | CREMA-D PSI | **E6 UAR** | **E6 PSI** |
+| | CREMA-D UAR | CREMA-D PSI | **E6 UAR [95% CI]** | **E6 PSI [95% CI]** |
 |---|---|---|---|---|
-| A — Lexical | 0.360 | 0.090 | 0.321 [0.24, 0.40] | **0.123 [0.05, 0.20]** |
-| B — Acoustic (permissive) | **0.797** | 0.920 | 0.384 [0.31, 0.46] | **0.579 [0.44, 0.70]** |
-| B — Acoustic (research) | — | — | 0.359 [0.28, 0.44] | 0.397 [0.27, 0.51] |
-| C — Fusion | 0.797 | 0.891 | 0.383 [0.32, 0.45] | 0.552 [0.42, 0.67] |
-| D — Prosodic | 0.566 | 0.982 | 0.333 [0.33, 0.33] ⚠ | 0.545 [0.41, 0.68] |
+| A — Lexical | 0.360 | 0.090 | 0.314 [0.25, 0.39] | **0.104 [0.05, 0.17]** |
+| B — Acoustic (permissive) | **0.797** | 0.920 | 0.396 [0.33, 0.46] | 0.584 [0.47, 0.70] |
+| B — Acoustic (research) | — | — | 0.356 [0.29, 0.43] | **0.366 [0.27, 0.47]** |
+| C — Fusion | 0.797 | 0.891 | **0.402 [0.34, 0.47]** | 0.557 [0.44, 0.67] |
+| D — Prosodic | 0.566 | 0.982 | 0.333 [0.33, 0.33] ⚠ | 0.521 [0.41, 0.64] |
 
 On CREMA-D the result has exactly the shape the design predicts: lexical-only is barely
 above chance and structurally can't sense tone (CREMA-D's text is always neutral), and
 acoustic-only wins by a wide margin.
 
-**On six real speakers, every UAR interval contains chance.** The backend that scores
-0.797 on the benchmark scores 0.384 [0.31, 0.46] on real laptop-microphone audio.
+**On eight real speakers, only the fusion clears chance on UAR — by 0.003.** The backend
+that scores 0.797 on the benchmark scores 0.396 [0.33, 0.46] on laptop-microphone audio.
 ⚠ Solution D predicts a single class for every E6 clip. This is the project's most
 important result and it is a negative one: **nothing fitted on CREMA-D transfers**, and
 the earlier one-speaker and synthetic transfer numbers were flattering.
 
-Two things do survive. The lexical floor holds (PSI 0.123 — a transcript-only model
-follows the transcript, which is also the check that E6's hand-assigned text labels are
-sound). And the permissive backend still beats the research backend on *prosody
-sensitivity* (0.579 vs 0.397) on identical audio, replicating on six real voices what E5
-found on synthetic ones. Notably PSI and UAR come apart here: the model is at chance on
-*which* sentiment a clip carries while still beating chance on *whether it follows tone
-or words*.
+What does survive is sharper than the accuracy numbers. The lexical floor holds — PSI
+0.104, an interval entirely below chance, meaning a transcript-only model follows the
+transcript (also the check that E6's hand-assigned text labels are sound). And **the
+research backend's PSI interval sits entirely below chance too (0.366 [0.27, 0.47])**: an
+"acoustic" model that follows the *words*, from audio alone, with no transcript in its
+path — replicating on eight real voices what E5 found on synthetic ones, now with a
+confidence interval behind it. Note the permissive backend's own PSI interval contains
+0.5, so it is not established as prosody-following either; only the research backend's
+failure is statistically clean.
 
-See `DESIGN.md` → **E6** for the full account, including a leakage bug caught and fixed
-mid-analysis (a combo trained on its own validation speaker and returned UAR 1.000), plus
-a real leakage measurement, the D0/D1 Cartesia domain-gap finding, and the E3 control.
+See `DESIGN.md` → **E6** for the full account, including a leakage bug caught mid-analysis
+(a combo trained on its own validation speaker and returned UAR 1.000) and a claim that
+reversed when the dataset grew — training on 80 matched clips appeared to beat 5,235
+acted ones on the 6-speaker build and did not survive the 8-speaker one.
 
 ## Status
 

@@ -2,28 +2,28 @@
   "solution": "C:fusion(A:lexical(small+twitter-roberta-base-sentiment-latest)+B:acoustic(permissive/logreg))",
   "dataset": "e6_val",
   "split_type": "all",
-  "n_clips": 20,
-  "n_incongruent": 14,
-  "uar": 0.4444444444444444,
-  "macro_f1": 0.436026936026936,
-  "accuracy": 0.45,
-  "ece": 0.3650895982087355,
-  "psi_contested": 0.6363636363636364,
-  "psi_strict": 0.5,
+  "n_clips": 40,
+  "n_incongruent": 30,
+  "uar": 0.3553113553113553,
+  "macro_f1": 0.3154704944178628,
+  "accuracy": 0.35,
+  "ece": 0.43997279945670126,
+  "psi_contested": 0.5,
+  "psi_strict": 0.36666666666666664,
   "confusion_matrix": [
     [
-      5,
-      0,
+      9,
+      2,
       2
     ],
     [
-      4,
-      2,
-      1
+      8,
+      3,
+      2
     ],
     [
+      8,
       4,
-      0,
       2
     ]
   ],
@@ -32,12 +32,232 @@
     "neutral",
     "positive"
   ],
-  "abstention_rate": 0.05,
-  "latency_p50_ms": 1834.8776774998896,
-  "latency_p95_ms": 1935.5890646499802,
-  "git_sha": "c2c4203b1961bfbf222ae54617d843cab0a3f4a9",
-  "timestamp": "2026-09-20T20:31:49.177610+00:00",
+  "abstention_rate": 0.075,
+  "latency_p50_ms": 1797.53966699991,
+  "latency_p95_ms": 1927.927300050078,
+  "git_sha": "6b756f27350fd1672837cbe6cfa42719d7a4ff24",
+  "timestamp": "2026-09-20T20:51:30.318432+00:00",
   "predictions": [
+    {
+      "clip_id": "e6_zurich_egi_4a3c20c6",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.6464414276903842,
+      "abstained": false,
+      "latency_ms": 1867.8196810001282,
+      "transcript": "and let me know when you're ready"
+    },
+    {
+      "clip_id": "e6_zurich_egi_89302068",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9206213560279379,
+      "abstained": false,
+      "latency_ms": 1927.4061020000772,
+      "transcript": "Yeah, I'll be there in 10 minutes."
+    },
+    {
+      "clip_id": "e6_zurich_egi_36c90a16",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.931458050411854,
+      "abstained": false,
+      "latency_ms": 1937.8300630000922,
+      "transcript": "Yeah, that works out better than I hoped."
+    },
+    {
+      "clip_id": "e6_zurich_egi_b69173aa",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.899200124147173,
+      "abstained": false,
+      "latency_ms": 1767.3971140002322,
+      "transcript": "Honestly, I expected more."
+    },
+    {
+      "clip_id": "e6_zurich_egi_c2a847cd",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.42811565259505485,
+      "abstained": true,
+      "latency_ms": 1741.5774900000542,
+      "transcript": "Could you repeat that please?"
+    },
+    {
+      "clip_id": "e6_zurich_egi_58505e6c",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7556766314187852,
+      "abstained": false,
+      "latency_ms": 1764.248019000206,
+      "transcript": "Nothing ever goes as planned."
+    },
+    {
+      "clip_id": "e6_zurich_egi_2bd08ae7",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.5250557192232677,
+      "abstained": true,
+      "latency_ms": 1722.1548749998874,
+      "transcript": "Thanks for helping me."
+    },
+    {
+      "clip_id": "e6_zurich_egi_39390553",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7025060097985776,
+      "abstained": false,
+      "latency_ms": 1947.5422379996417,
+      "transcript": "Do you mind if I ask you something?"
+    },
+    {
+      "clip_id": "e6_zurich_egi_999a0526",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8280747815209744,
+      "abstained": false,
+      "latency_ms": 1738.5432050000418,
+      "transcript": "I didn't expect that."
+    },
+    {
+      "clip_id": "e6_zurich_egi_73b9ca1d",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9000897658027004,
+      "abstained": false,
+      "latency_ms": 1901.073498000187,
+      "transcript": "Why did nobody tell me?"
+    },
+    {
+      "clip_id": "e6_zurich_egi_6dfc8162",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8186764836995635,
+      "abstained": false,
+      "latency_ms": 1793.1579950000014,
+      "transcript": "I'm so glad you called."
+    },
+    {
+      "clip_id": "e6_zurich_egi_59be7957",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9673830734786653,
+      "abstained": false,
+      "latency_ms": 1894.9168540002574,
+      "transcript": "I have no idea what you mean."
+    },
+    {
+      "clip_id": "e6_zurich_egi_d8e20c55",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.9637230116115095,
+      "abstained": false,
+      "latency_ms": 1833.5653079998337,
+      "transcript": "I'm not sure about this plan."
+    },
+    {
+      "clip_id": "e6_zurich_egi_936486a9",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9420538283706731,
+      "abstained": false,
+      "latency_ms": 1875.9530920001453,
+      "transcript": "please send me the file again"
+    },
+    {
+      "clip_id": "e6_zurich_egi_7aab39c3",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9366324220740083,
+      "abstained": false,
+      "latency_ms": 1695.2204159997564,
+      "transcript": "Okay I'll do it"
+    },
+    {
+      "clip_id": "e6_zurich_egi_293d6ce6",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8978613855418227,
+      "abstained": false,
+      "latency_ms": 1888.953164999748,
+      "transcript": "That is completely unacceptable."
+    },
+    {
+      "clip_id": "e6_zurich_egi_caafa91c",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.760121454193654,
+      "abstained": false,
+      "latency_ms": 1786.476916999618,
+      "transcript": "We need to talk about this."
+    },
+    {
+      "clip_id": "e6_zurich_egi_3145faa1",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9226317645411134,
+      "abstained": false,
+      "latency_ms": 1851.1775649999436,
+      "transcript": "I finished everything on the list."
+    },
+    {
+      "clip_id": "e6_zurich_egi_de1e90ba",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.7787032793823249,
+      "abstained": false,
+      "latency_ms": 1853.0605800001467,
+      "transcript": "It looks like the meeting was moved."
+    },
+    {
+      "clip_id": "e6_zurich_egi_2ae155f8",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6283250977534062,
+      "abstained": false,
+      "latency_ms": 1869.5832519997566,
+      "transcript": "That explains a lot, actually."
+    },
     {
       "clip_id": "e6_zurich_silvia_61e76305",
       "prosody_sentiment": "neutral",
@@ -46,7 +266,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.8539459941791212,
       "abstained": false,
-      "latency_ms": 1756.5510600002199,
+      "latency_ms": 1826.1871509998855,
       "transcript": "Okay, I'll do it."
     },
     {
@@ -57,7 +277,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.6023959929498295,
       "abstained": false,
-      "latency_ms": 1854.1539689999809,
+      "latency_ms": 1843.3194280000862,
       "transcript": "You did a great job today."
     },
     {
@@ -68,7 +288,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.5448631164899752,
       "abstained": false,
-      "latency_ms": 1874.914353999884,
+      "latency_ms": 1846.3710360001642,
       "transcript": "I'm so glad you called!"
     },
     {
@@ -79,7 +299,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9687674908066392,
       "abstained": false,
-      "latency_ms": 1934.999308999977,
+      "latency_ms": 1840.6615000003512,
       "transcript": "I would rather not talk about it."
     },
     {
@@ -90,7 +310,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.4529133917499825,
       "abstained": true,
-      "latency_ms": 1875.4946039998686,
+      "latency_ms": 1780.3598079999574,
       "transcript": "I can't believe this happened."
     },
     {
@@ -101,7 +321,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.7040925069855715,
       "abstained": false,
-      "latency_ms": 1946.794422000039,
+      "latency_ms": 1754.9048899995796,
       "transcript": "We need to talk about this."
     },
     {
@@ -112,7 +332,7 @@
       "predicted_sentiment": "neutral",
       "confidence": 0.5615625336979398,
       "abstained": false,
-      "latency_ms": 1725.910842000303,
+      "latency_ms": 1789.4336499998644,
       "transcript": "Honestly, I expected more."
     },
     {
@@ -123,7 +343,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9683979869251226,
       "abstained": false,
-      "latency_ms": 1698.7609850002627,
+      "latency_ms": 1755.6201369998234,
       "transcript": "Nothing ever goes as planned."
     },
     {
@@ -134,7 +354,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.7574384474036927,
       "abstained": false,
-      "latency_ms": 1857.6805859997876,
+      "latency_ms": 1851.3981279998006,
       "transcript": "I'm not sure about this plan."
     },
     {
@@ -145,7 +365,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9306926731519394,
       "abstained": false,
-      "latency_ms": 1731.8248390001827,
+      "latency_ms": 1756.627041000229,
       "transcript": "Why did nobody tell me?"
     },
     {
@@ -156,7 +376,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.6459177100440364,
       "abstained": false,
-      "latency_ms": 1661.4931079998314,
+      "latency_ms": 1694.7857209997892,
       "transcript": "I really appreciate your time."
     },
     {
@@ -167,7 +387,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.7228319850843294,
       "abstained": false,
-      "latency_ms": 1725.787305999802,
+      "latency_ms": 1753.464871000233,
       "transcript": "It's just another normal day"
     },
     {
@@ -178,7 +398,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9258764142229994,
       "abstained": false,
-      "latency_ms": 1675.1919289999933,
+      "latency_ms": 1671.8886120002026,
       "transcript": "Thanks for helping me."
     },
     {
@@ -189,7 +409,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9124029088748505,
       "abstained": false,
-      "latency_ms": 1845.8319289998144,
+      "latency_ms": 1761.8461750003007,
       "transcript": "Could you repeat that please?"
     },
     {
@@ -200,7 +420,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9113867396039487,
       "abstained": false,
-      "latency_ms": 1804.049877000125,
+      "latency_ms": 1759.6428580000065,
       "transcript": "I didn't expect that."
     },
     {
@@ -211,7 +431,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.6478375777293989,
       "abstained": false,
-      "latency_ms": 1828.829598000084,
+      "latency_ms": 1737.3996889996306,
       "transcript": "I finished everything on the list."
     },
     {
@@ -222,7 +442,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.893933750171445,
       "abstained": false,
-      "latency_ms": 1882.2679519998928,
+      "latency_ms": 1801.9213389998185,
       "transcript": "This is going to take a while."
     },
     {
@@ -233,7 +453,7 @@
       "predicted_sentiment": "neutral",
       "confidence": 0.7975941886721762,
       "abstained": false,
-      "latency_ms": 1791.6742789998352,
+      "latency_ms": 1740.2292349997879,
       "transcript": "This has been a long week."
     },
     {
@@ -244,7 +464,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.7790233253748342,
       "abstained": false,
-      "latency_ms": 1874.7695780002687,
+      "latency_ms": 1828.9292439999372,
       "transcript": "Do you mind if I ask something?"
     },
     {
@@ -255,7 +475,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.6257440135568408,
       "abstained": false,
-      "latency_ms": 1840.9257569996953,
+      "latency_ms": 1815.944927000146,
       "transcript": "Let us try a different approach."
     }
   ]

@@ -33,10 +33,10 @@
     "positive"
   ],
   "abstention_rate": 0.0,
-  "latency_p50_ms": 231.81105250000655,
-  "latency_p95_ms": 309.7965312500037,
-  "git_sha": "c2c4203b1961bfbf222ae54617d843cab0a3f4a9",
-  "timestamp": "2026-09-20T20:29:19.303496+00:00",
+  "latency_p50_ms": 223.87575600009768,
+  "latency_p95_ms": 298.5131825000508,
+  "git_sha": "6b756f27350fd1672837cbe6cfa42719d7a4ff24",
+  "timestamp": "2026-09-20T20:47:54.237777+00:00",
   "predictions": [
     {
       "clip_id": "e6_zurich_matteo_c7974cb0",
@@ -46,7 +46,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999998807907104,
       "abstained": false,
-      "latency_ms": 338.60291100018003,
+      "latency_ms": 314.5273609998185,
       "transcript": null
     },
     {
@@ -57,7 +57,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.7669183611869812,
       "abstained": false,
-      "latency_ms": 308.2804059999944,
+      "latency_ms": 289.35055199963244,
       "transcript": null
     },
     {
@@ -68,7 +68,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 225.0766899996961,
+      "latency_ms": 218.27620500016565,
       "transcript": null
     },
     {
@@ -79,7 +79,7 @@
       "predicted_sentiment": "positive",
       "confidence": 0.8190209269523621,
       "abstained": false,
-      "latency_ms": 201.82139000007737,
+      "latency_ms": 201.62436700002218,
       "transcript": null
     },
     {
@@ -90,7 +90,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999991655349731,
       "abstained": false,
-      "latency_ms": 237.4723430002632,
+      "latency_ms": 223.27664500016908,
       "transcript": null
     },
     {
@@ -101,7 +101,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9988088607788086,
       "abstained": false,
-      "latency_ms": 254.50452600034623,
+      "latency_ms": 212.2212499998568,
       "transcript": null
     },
     {
@@ -112,7 +112,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999997615814209,
       "abstained": false,
-      "latency_ms": 231.86605199998667,
+      "latency_ms": 224.53509700017094,
       "transcript": null
     },
     {
@@ -123,7 +123,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 242.72368299989466,
+      "latency_ms": 245.7726160000675,
       "transcript": null
     },
     {
@@ -134,7 +134,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9115815758705139,
       "abstained": false,
-      "latency_ms": 237.93092799996884,
+      "latency_ms": 233.47958000022118,
       "transcript": null
     },
     {
@@ -145,7 +145,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.999916672706604,
       "abstained": false,
-      "latency_ms": 198.5404289998769,
+      "latency_ms": 195.94853699982195,
       "transcript": null
     },
     {
@@ -156,7 +156,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999889135360718,
       "abstained": false,
-      "latency_ms": 268.6892550000266,
+      "latency_ms": 297.670331000063,
       "transcript": null
     },
     {
@@ -167,7 +167,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.999976396560669,
       "abstained": false,
-      "latency_ms": 222.95692200032136,
+      "latency_ms": 237.79688800004806,
       "transcript": null
     },
     {
@@ -178,7 +178,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 223.14929799995298,
+      "latency_ms": 212.17860500019015,
       "transcript": null
     },
     {
@@ -189,7 +189,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 231.75605300002644,
+      "latency_ms": 215.63739400016857,
       "transcript": null
     },
     {
@@ -200,7 +200,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999996423721313,
       "abstained": false,
-      "latency_ms": 227.15363399993294,
+      "latency_ms": 222.41685100016184,
       "transcript": null
     },
     {
@@ -211,7 +211,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999990463256836,
       "abstained": false,
-      "latency_ms": 248.74142899989238,
+      "latency_ms": 255.5010620003486,
       "transcript": null
     },
     {
@@ -222,7 +222,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 238.28268899978866,
+      "latency_ms": 240.75372499964942,
       "transcript": null
     },
     {
@@ -233,7 +233,7 @@
       "predicted_sentiment": "negative",
       "confidence": 1.0,
       "abstained": false,
-      "latency_ms": 214.6627880001688,
+      "latency_ms": 209.14167299997644,
       "transcript": null
     },
     {
@@ -244,7 +244,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.999996542930603,
       "abstained": false,
-      "latency_ms": 197.41653800019776,
+      "latency_ms": 208.38877899996078,
       "transcript": null
     },
     {
@@ -255,7 +255,7 @@
       "predicted_sentiment": "negative",
       "confidence": 0.9999972581863403,
       "abstained": false,
-      "latency_ms": 206.03611799970167,
+      "latency_ms": 224.47486700002628,
       "transcript": null
     }
   ]

@@ -19,13 +19,40 @@ The pipeline includes speaker-disjoint evaluation, calibration metrics, robustne
 
 The main findings were:
 
-1. **Acoustic information contains useful sentiment signal**, but performance drops substantially when moving from CREMA-D to independently recorded/generated speech.
-2. **The training corpus appears to be a larger bottleneck than the choice between the tested acoustic representations.**
-3. **Per-speaker normalization substantially improved cross-speaker performance in the experiments**, although this result is not yet sufficient to claim generalization because the external evaluation currently contains only three speakers/voice identities.
-4. The distinction between an **acoustic representation** and a genuinely **prosodic representation** matters: one of the tested pretrained models showed strong sensitivity to lexical content despite receiving only audio.
-5. Synthetic emotional speech is useful as a diagnostic tool, but I would not treat it as a substitute for diverse real conversational speech.
+1. **Nothing trained on CREMA-D generalizes to real multi-speaker audio.** On 160 clips
+   from eight speakers recording through laptop microphones, only one of five systems has
+   a UAR confidence interval clearing chance, and it clears it by 0.003. The acoustic
+   system that reaches 0.797 on the benchmark reaches 0.396 [0.33, 0.46] there. This is
+   the central result and it is a negative one.
+2. **The training corpus is a far larger bottleneck than the choice of model,
+   representation or feature set.** Fitting within a dataset reaches 0.76–0.87;
+   transferring from CREMA-D costs 0.24–0.52 UAR — more than any architectural difference
+   measured here.
+3. **An "acoustic" model is not necessarily a prosodic one.** One pretrained speech
+   representation follows the *words* rather than the delivery on deliberately
+   contradictory clips, from audio alone with no transcript in its path. On the
+   eight-speaker set its entire confidence interval sits below chance. This replicates
+   across two independent datasets and is the sharpest diagnostic finding in the project.
+4. **Detecting a tone/words mismatch is easier than naming the sentiment**, and the two
+   come apart in the results. For an assistant that should ask rather than assume under
+   ambiguity, the mismatch detector may be the more useful and more attainable component.
+5. **Per-speaker feature normalization reliably stops models collapsing to a single
+   class, but its accuracy benefit shrank by a factor of three to four once eight real
+   speakers were available** (+0.05 to +0.09 UAR, against +0.19 to +0.33 measured on one
+   speaker and two synthetic voices). It is also transductive, requiring a pool of the
+   speaker's audio that a single-clip classifier does not have. It is reported as an
+   experiment, not a shipped feature.
+6. Synthetic emotional speech is useful as a diagnostic, but not as a substitute for
+   diverse real conversational speech — one vendor's emotion tags proved not to be
+   reliably audible at all.
 
-The current implementation runs locally and contains 407 automated tests, a command-line evaluation pipeline, and a browser-based FastAPI demo with microphone capture.
+Two results in this report were **withdrawn or narrowed when more data arrived**, and
+both are described where they occur rather than quietly dropped. Small held-out sets
+produce confident-looking numbers that do not survive, which is why every figure on the
+multi-speaker set carries a confidence interval.
+
+The current implementation runs locally, with an automated test suite, a command-line
+evaluation pipeline, and a browser-based FastAPI demo with microphone capture.
 
 ---
 
@@ -205,23 +232,64 @@ true interval is if anything wider.
 
 ## 5.1 Main model comparison
 
-The main results were:
+Values are UAR. CREMA-D is the 300-clip stratified test subset; E3 is one speaker
+(two takes); E5 is synthetic; **E6 is 160 clips from eight real speakers**.
 
-| Model                |   CREMA-D |   E3a |       E3b |        E5 |
-| -------------------- | --------: | ----: | --------: | --------: |
-| Lexical              |     0.360 | 0.333 |     0.370 |     0.333 |
-| Acoustic — WavLM     | **0.797** | 0.444 |     0.519 | **0.511** |
-| Acoustic — audeering |         — | 0.444 | **0.593** |     0.400 |
-| Late fusion          | **0.797** | 0.444 |     0.556 |     0.489 |
-| Explicit prosody     |     0.566 | 0.333 |     0.333 |     0.333 |
+| Model                |   CREMA-D |   E3a |       E3b |        E5 | **E6 (n=160)** |
+| -------------------- | --------: | ----: | --------: | --------: | -------------: |
+| Lexical              |     0.360 | 0.333 |     0.370 |     0.333 | 0.314 [0.25, 0.39] |
+| Acoustic — WavLM     | **0.797** | 0.444 |     0.519 | **0.511** | 0.396 [0.33, 0.46] |
+| Acoustic — audeering |         — | 0.444 | **0.593** |     0.400 | 0.356 [0.29, 0.43] |
+| Late fusion          | **0.797** | 0.444 |     0.556 |     0.489 | **0.402 [0.34, 0.47]** |
+| Explicit prosody     |     0.566 | 0.333 |     0.333 |     0.333 | 0.333 [0.33, 0.33] |
 
-Values are UAR.
+On the full CREMA-D speaker-disjoint test split the WavLM-based acoustic system achieved
+**0.744 UAR**. The difference from 0.797 is that the latter is measured on the 300-clip
+subset used by the comparison harness; the full split is the headline CREMA-D result.
 
-On the full CREMA-D speaker-disjoint test split, the WavLM-based acoustic system achieved **0.744 UAR**.
+The important observation is not the absolute CREMA-D number. It is what happens on E6.
 
-The difference between the 0.797 result and 0.744 is due to the former being measured on a smaller 300-clip subset used in the comparison harness. The full split is the headline CREMA-D result.
+## 5.2 The cross-corpus result
 
-The important observation is not the absolute CREMA-D number. It is the substantial reduction when evaluating independently recorded/generated speech.
+E6 is the only evaluation here with enough real speakers to support a generalization
+claim, and it does not support a positive one. With 95% bootstrap intervals, **only the
+fusion model clears chance on UAR, and it clears it by 0.003** (0.402, interval lower
+bound 0.336 against chance 0.333). The system that reaches 0.797 on the benchmark reaches
+0.396 [0.33, 0.46] on eight people recording through laptop microphones.
+
+Explicit prosody (Solution D) is worse than weak on E6: it predicts a single class for
+every clip. A collapsed model of this kind produces UAR of exactly 0.333 and PSI of
+exactly 0.500, which look like ordinary mediocre scores rather than a failure, so the
+evaluation flags the collapse explicitly rather than letting those numbers stand.
+
+I take this as the central empirical result of the project. Acted studio speech with
+fixed neutral sentences does not prepare a model for spontaneous, accented, consumer
+microphone audio, and every earlier transfer number in this report — measured on one
+speaker or on synthesized audio — was more optimistic than reality.
+
+## 5.3 Does training on the new speakers help?
+
+Refitting on E6's 100 training clips, scored on the two held-out validation speakers
+(40 clips; the 20-clip test split is too small to separate anything):
+
+| Training set | fit clips | WavLM probe | Prosody (logreg) | Prosody (SVM-RBF) |
+| --- | ---: | --- | --- | --- |
+| CREMA-D only | 5,235 | 0.330 [0.19, 0.47] | 0.332 [0.26, 0.40] | 0.333 (collapsed) |
+| CREMA-D + E6 train | 5,335 | 0.375 [0.22, 0.53] | 0.372 [0.23, 0.53] | 0.370 [0.23, 0.51] |
+
+Every interval overlaps, so **the UAR improvement is not established**. What does not
+depend on an interval is that adding E6's training clips stops Solution D collapsing: the
+SVM goes from predicting one class for every clip to producing real predictions. That is
+a qualitative change, and it points the same way as everything else in this project — the
+training corpus, not the model, is the binding constraint.
+
+**A claim I withdraw.** On an earlier six-speaker version of E6, training on the new
+clips *alone* gave the WavLM probe 0.452 against CREMA-D's 0.278, and I came close to
+reporting that 80 matched clips beat 5,235 acted ones. On the eight-speaker version the
+same configuration gives **0.222 [0.06, 0.40]** — the effect reversed. It was noise on a
+20-clip test split, and the only reason it was not written up as a finding is that the
+bootstrap interval already said it could not be resolved. I record it because it is a
+concrete example of the failure mode this report keeps returning to.
 
 ---
 
@@ -229,27 +297,53 @@ The important observation is not the absolute CREMA-D number. It is the substant
 
 ## 6.1 Acoustic representations are not necessarily purely prosodic
 
-The strongest diagnostic result came from the E5 incongruence set.
+This is the strongest diagnostic result in the project, and it now holds on two
+independent datasets.
 
-On the 60 contradictory clips:
+On E5's 60 contradictory synthetic clips:
 
-* WavLM achieved PSI = **0.682**.
-* The audeering representation achieved PSI = **0.211**.
-* The lexical baseline achieved PSI = **0.000**.
+* WavLM achieved PSI = **0.682**
+* the audeering representation achieved PSI = **0.211**
+* the lexical baseline achieved PSI = **0.000**
 
-The lexical baseline is an important sanity check: on intentionally contradictory examples, it follows the words rather than the vocal delivery.
+On E6's 111 contradictory clips from eight real speakers, with 95% intervals:
 
-More surprisingly, the audeering representation also showed strong sensitivity to lexical content despite receiving audio rather than a transcript.
+* lexical baseline: PSI = **0.104 [0.047, 0.170]** — entirely below chance
+* audeering: PSI = **0.366 [0.265, 0.472]** — **entirely below chance**
+* WavLM: PSI = 0.584 [0.472, 0.697] — contains chance
+* late fusion: PSI = 0.557 [0.443, 0.667] — contains chance
 
-This suggests that pretrained speech representations can encode linguistic information implicitly. Therefore, simply calling a model "acoustic" does not establish that it is solving the desired prosodic problem.
+The lexical baseline is the sanity check: on deliberately contradictory examples it
+follows the words, as it must. Because E6's lexical labels are the one column I assigned
+by hand, this also validates that labelling.
 
-This distinction would matter in a production system where the objective is specifically to detect changes in vocal affect.
+The finding is that **the audeering representation also follows the words**, from audio
+alone, with no transcript anywhere in its path — and on E6 its entire confidence interval
+sits below chance. Pretrained speech representations can encode linguistic information
+implicitly, and calling a model "acoustic" does not establish that it solves the prosodic
+problem. For a product whose purpose is detecting vocal affect, this distinction is the
+difference between a system that works and one that appears to.
 
----
+**What I am careful not to claim:** that WavLM is prosody-sensitive. Its E6 interval
+contains chance. The *direction* is consistent across E5 and E6, but only the audeering
+failure is statistically clean. On the smaller six-speaker build I briefly had this as a
+clear WavLM win; the intervals on the full set say the two representations merely touch.
 
-## 6.2 Stability and generalization are different properties
+## 6.2 PSI and UAR measure different things, and come apart
 
-The audeering representation produced highly correlated predictions across the two E3 recordings of the same prompts:
+On E6 the WavLM probe is at chance on *which* sentiment a clip carries while its PSI
+point estimate sits above chance. Recognising that a delivery contradicts the wording is
+an easier problem than naming the emotion.
+
+This has a product consequence. For an assistant whose correct behaviour under ambiguity
+is to *ask* rather than assume, a reliable "the tone doesn't match the words" detector may
+be both more useful and more attainable than a sentiment classifier — and it is the part
+of the signal that survives here.
+
+## 6.3 Stability and generalization are different properties
+
+The audeering representation produced highly correlated predictions across the two E3
+recordings of the same prompts:
 
 $$
 r = 0.921
@@ -261,11 +355,20 @@ $$
 r = -0.191
 $$
 
-This suggests that the two representations have different behavior under repeated recording conditions.
+The two representations behave very differently under repeated recording conditions. This
+should not be read as audeering being generally superior: the experiment contains one
+human speaker, and E5 and E6 both show the same model following words rather than tone. A
+model can be highly self-consistent and consistently wrong about the thing you care
+about, which is the useful lesson here.
 
-However, this should not be interpreted as evidence that the audeering model is generally superior: the experiment contains only one human speaker, and its cross-domain E5 performance was lower than WavLM.
+## 6.4 The training corpus dominates everything else
 
-The result instead motivated further investigation into **representation stability versus cross-domain sentiment accuracy**.
+Across the representation comparison, the backend comparison, the four-way prosodic model
+comparison and now E6, the same pattern recurs: differences between architectures,
+representations and feature sets are small next to the difference between training
+corpora. Fitting within a dataset reaches 0.76–0.87; transferring from CREMA-D to
+anything else costs 0.24–0.52 UAR. That gap is larger than any modelling choice measured
+in this project.
 
 ---
 
