@@ -2,9 +2,9 @@
 """E6: the Zurich multi-speaker recordings -> decoded audio + a manifest.
 
 This is the dataset the project has been missing. Every human result so far
-rests on **one** speaker (E3, recorded twice); E5 is synthetic. E6 has six
-speakers reading 34 sentences, each sentence delivered with two or three
-different intended emotions, and **70% of its clips are incongruent** -- so
+rests on **one** speaker (E3, recorded twice); E5 is synthetic. E6 has eight
+speakers reading 35 sentences, each sentence delivered with two or three
+different intended emotions, and most of its clips are incongruent -- so
 it is simultaneously the first real cross-speaker evaluation set and the
 first *human, multi-speaker* incongruence set, which is what PSI was
 designed for and has never had.
@@ -18,11 +18,13 @@ corrupt results if it got them wrong:
    project's 16 kHz mono, written as PCM WAV. Everything downstream then
    uses the ordinary `load_clip` path with no special case.
 
-2. **Counting what was built.** All 120 metadata rows currently resolve to
-   a file. The existence check stays anyway, and reports any row it cannot
-   resolve rather than skipping it: CLAUDE.md forbids silently dropping
-   clips, and a mixed-extension dataset is exactly where a glob that
-   assumes one container quietly loses a whole session.
+2. **Counting what was built.** Every metadata row currently resolves to a
+   file, across both the .webm and .m4a sessions. The existence check stays
+   anyway, and reports any row it cannot resolve rather than skipping it:
+   CLAUDE.md forbids silently dropping clips, and a mixed-extension dataset
+   is exactly where a glob that assumes one container quietly loses a whole
+   session -- which is precisely what an early pass through this data did,
+   reporting 20 files missing that were simply in the other container.
 
 3. **The speaker who is already in the project.** The `marco` folder is the
    same person as E3's `speaker1` -- the repository owner, who recorded E3
@@ -67,7 +69,7 @@ from ssa.types import Sentiment  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-SOURCE_DIR = REPO_ROOT / "data" / "mutiple_zurich_people_recorded_dataset"
+SOURCE_DIR = REPO_ROOT / "data" / "zurich_speech_sentiment_dataset"
 OUT_DIR = REPO_ROOT / "data" / "zurich"
 MANIFEST_PATH = OUT_DIR / "manifest.csv"
 SUMMARY_PATH = REPO_ROOT / "results" / "e6_build_summary.json"
@@ -82,6 +84,8 @@ SPEAKER_IDS: dict[str, str] = {
     "Silvia": "zurich_silvia",
     "Matteo": "zurich_matteo",
     "Isinsu_Yurdunusever": "zurich_isinsu",
+    "Bonzus": "zurich_bonzus",
+    "Egi": "zurich_egi",
 }
 
 # Lexical valence of each sentence, assigned by hand from the words alone.
@@ -119,6 +123,7 @@ TEXT_SENTIMENT: dict[str, Sentiment] = {
     "Okay, I'll do it.": Sentiment.NEUTRAL,
     "Please send me the file again.": Sentiment.NEUTRAL,
     "Thanks for helping me.": Sentiment.POSITIVE,
+    "That explains a lot, actually.": Sentiment.NEUTRAL,
     "That is completely unacceptable.": Sentiment.NEGATIVE,
     "That worked out better than I hoped.": Sentiment.POSITIVE,
     "That's exactly what I wanted.": Sentiment.POSITIVE,

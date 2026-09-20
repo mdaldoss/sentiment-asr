@@ -22,6 +22,8 @@ make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> re
 make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
 make eval-backend-combos  # WavLM+probe vs audeering across 4 training-data combos (needs make data + make probe-hume first)
 make eval-e5   # A/B/C on E5, the Hume incongruence set (words vs delivery) -> results/*.json
+make data-zurich  # E6: decode the 6-speaker Zurich recordings -> data/zurich/ + manifest
+make eval-zurich  # E6: zero-shot cross-corpus eval + retrain B/D on the new speakers
 make demo-web  # [needs .[demo]] live demo at http://127.0.0.1:8000 -- record your own voice
 make report    # regenerate report/index.html from results/*.json
 make site      # regenerate /index.html and /architecture.html (the entry point + pipeline page)
@@ -65,28 +67,53 @@ evaluation harness compares them directly:
 | **B** | Acoustic — frozen encoder + trained probe | the tone | permissive (WavLM, MIT) or research (audeering, CC-BY-NC-SA-4.0) |
 | **C** | Fusion — calibrated late fusion + abstention | both | recommended default |
 
+A fourth solution, **D — prosodic**, uses no network at all: 96 named measurements of
+the waveform (eGeMAPS + Praat pitch/energy contour) into a transparent classifier.
+Nothing in its path can represent a word.
+
 Evaluated on CREMA-D (public benchmark, speaker-disjoint **and** random splits to
-quantify leakage), a synthetic incongruence set generated via Cartesia TTS, human
-recordings, and an unsupervised probe of Cartesia's emotion-tag space.
+quantify leakage), a synthetic incongruence set generated via Cartesia TTS, a Hume
+Octave incongruence set (E5), **six-speaker human recordings (E6)**, single-speaker
+human recordings (E3), and an unsupervised probe of Cartesia's emotion-tag space.
 
 **Headline metric — Prosody Sensitivity Index (PSI):** on clips where words and tone
 disagree, the fraction of predictions that follow the *tone*. 1.0 = listens, 0.0 = reads
 the transcript. See `ssa/eval/metrics.py` for the exact definition.
 
-**Real, measured headline result** (300-clip stratified CREMA-D test subset):
+**Measured headline result — read both halves of this table.** Left: the 300-clip
+stratified CREMA-D test subset. Right: E6, 120 clips from **six real speakers** the
+models have never heard (`make data-zurich && make eval-zurich`), with 95% bootstrap
+intervals. Chance is 0.333.
 
-| | UAR | PSI<sub>contested</sub> |
-|---|---|---|
-| A — Lexical | 0.360 | 0.090 |
-| B — Acoustic | **0.797** | 0.920 |
-| C — Fusion | 0.797 | 0.891 |
+| | CREMA-D UAR | CREMA-D PSI | **E6 UAR** | **E6 PSI** |
+|---|---|---|---|---|
+| A — Lexical | 0.360 | 0.090 | 0.321 [0.24, 0.40] | **0.123 [0.05, 0.20]** |
+| B — Acoustic (permissive) | **0.797** | 0.920 | 0.384 [0.31, 0.46] | **0.579 [0.44, 0.70]** |
+| B — Acoustic (research) | — | — | 0.359 [0.28, 0.44] | 0.397 [0.27, 0.51] |
+| C — Fusion | 0.797 | 0.891 | 0.383 [0.32, 0.45] | 0.552 [0.42, 0.67] |
+| D — Prosodic | 0.566 | 0.982 | 0.333 [0.33, 0.33] ⚠ | 0.545 [0.41, 0.68] |
 
-Exactly the shape the design predicts: lexical-only is barely above chance and
-structurally can't sense tone (CREMA-D's text is always neutral); acoustic-only, the
-only one that can actually hear the emotion, wins by a wide margin. See `DESIGN.md`
-and `report/index.html` for the full results, including a real leakage measurement,
-a domain-gap finding from the D0/D1 Cartesia probes, and the E3 human-recording
-control that shows Solution B doesn't transfer cleanly to a new speaker either.
+On CREMA-D the result has exactly the shape the design predicts: lexical-only is barely
+above chance and structurally can't sense tone (CREMA-D's text is always neutral), and
+acoustic-only wins by a wide margin.
+
+**On six real speakers, every UAR interval contains chance.** The backend that scores
+0.797 on the benchmark scores 0.384 [0.31, 0.46] on real laptop-microphone audio.
+⚠ Solution D predicts a single class for every E6 clip. This is the project's most
+important result and it is a negative one: **nothing fitted on CREMA-D transfers**, and
+the earlier one-speaker and synthetic transfer numbers were flattering.
+
+Two things do survive. The lexical floor holds (PSI 0.123 — a transcript-only model
+follows the transcript, which is also the check that E6's hand-assigned text labels are
+sound). And the permissive backend still beats the research backend on *prosody
+sensitivity* (0.579 vs 0.397) on identical audio, replicating on six real voices what E5
+found on synthetic ones. Notably PSI and UAR come apart here: the model is at chance on
+*which* sentiment a clip carries while still beating chance on *whether it follows tone
+or words*.
+
+See `DESIGN.md` → **E6** for the full account, including a leakage bug caught and fixed
+mid-analysis (a combo trained on its own validation speaker and returned UAR 1.000), plus
+a real leakage measurement, the D0/D1 Cartesia domain-gap finding, and the E3 control.
 
 ## Status
 
@@ -144,6 +171,7 @@ has landed most recently.
 | CREMA-D | ODbL v1.0 | No — `make data` fetches it |
 | Synthetic (Cartesia) | generated | Yes — 76/90 E2 clips + 45 D1 clips committed |
 | Recordings (E3) | authors' own | Yes — 2 takes, 30 clips each, committed |
+| Recordings (E6, Zurich) | participants' own | Yes — 120 clips, 6 speakers, committed (source WebM/m4a + decoded 16 kHz WAV) |
 | `audeering` VAD model | **CC-BY-NC-SA-4.0, research only** | No — flagged at runtime, in the CLI, and in the report |
 | WavLM, faster-whisper, text classifier | MIT / Apache-2.0 | No — downloaded, cached locally |
 

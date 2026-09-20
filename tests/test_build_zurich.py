@@ -47,7 +47,7 @@ class TestSpeakerIdentity:
 
 class TestTextSentimentTable:
     def test_every_sentence_has_a_valence(self) -> None:
-        assert len(TEXT_SENTIMENT) == 34
+        assert len(TEXT_SENTIMENT) == 35
 
     def test_values_are_real_sentiments(self) -> None:
         for sentence, value in TEXT_SENTIMENT.items():

@@ -130,6 +130,100 @@ genuinely-competing-signals version of this test) were not available at submissi
 time — see the live dashboard (`report/index.html`, regenerate with `make report`)
 for whatever has landed since.
 
+## E6: six real speakers, and the cross-corpus number that undoes the headline
+
+E6 (`data/zurich/`, `scripts/build_zurich.py`, `scripts/eval_zurich.py`) is the set this
+project was missing on two axes at once. Every human result before it came from **one**
+speaker recorded twice; E5's incongruence was synthetic. E6 has **120 clips, six
+speakers, 34 sentences, and 70% of its clips incongruent** — each sentence recorded with
+two or three different intended deliveries. Its train/val/test split is speaker-disjoint
+by construction: four speakers train, Silvia validates, Matteo tests.
+
+**Zero-shot: every CREMA-D-trained solution is indistinguishable from chance.** 95%
+intervals are a percentile bootstrap over clips; chance is 0.333 for UAR and 0.500 for
+PSI.
+
+| Solution | UAR on e6_all (n=120) | PSI on e6_all |
+|---|---|---|
+| A — lexical | 0.321 [0.24, 0.40] | **0.123 [0.05, 0.20]** |
+| B — permissive | 0.384 [0.31, 0.46] | **0.579 [0.44, 0.70]** |
+| B — research | 0.359 [0.28, 0.44] | 0.397 [0.27, 0.51] |
+| C — fusion | 0.383 [0.32, 0.45] | 0.552 [0.42, 0.67] |
+| D — prosodic | 0.333 [0.33, 0.33] ⚠ | 0.545 [0.41, 0.68] |
+
+⚠ Solution D predicts a single class for every E6 clip — the degenerate failure its own
+evaluation script was built to name, here at full width.
+
+**This is the most important result in the project, and it is a negative one.** The
+permissive backend scores 0.797 on CREMA-D's test split and **0.384 [0.31, 0.46]** here —
+an interval that contains chance. On the held-out speaker alone it is 0.278 [0.17, 0.33],
+*below* chance. Nothing that was fitted on CREMA-D survives contact with six people
+recording on laptop microphones. Every earlier transfer result in this document (E3 at
+0.44–0.59, E5 at 0.51) was measured on one voice or on synthesised audio and was, it
+turns out, flattering.
+
+**Three things survive, and they are the interesting part.**
+
+1. **The lexical floor confirms the labels.** A scores PSI 0.123 [0.05, 0.20] — a
+   transcript-only model follows the transcript, exactly as on E5. Since E6's text
+   valence is the one column assigned by hand (see below), this is the check that the
+   labelling is not nonsense, and it passes.
+
+2. **The research backend fails the prosody test again, on real human speech.** PSI
+   0.397 [0.27, 0.51] — an interval sitting on chance — against the permissive backend's
+   0.579 [0.44, 0.70] on identical audio. E5 measured this on synthetic voices (0.211 vs
+   0.682); E6 replicates the ordering on six real ones. That the audeering model tracks
+   words rather than tone is now a finding with two independent datasets behind it.
+
+3. **PSI and UAR come apart.** The permissive backend is at chance on *which* sentiment a
+   clip carries while still beating chance on *whether it follows tone or words*. Hearing
+   that a delivery contradicts the wording is an easier problem than naming the emotion,
+   and for a companion device that wants to ask rather than assume, it may be the more
+   useful one.
+
+### Does training on these speakers help?
+
+Refitting on E6's 80 training clips, scored on Matteo (held out from every combo):
+
+| Training set | fit clips | B permissive | D best |
+|---|--:|---|---|
+| CREMA-D only | 5,235 | 0.278 [0.17, 0.33] / PSI 0.444 | 0.333 ⚠ / 0.500 |
+| CREMA-D + E6 train | 5,315 | 0.319 [0.11, 0.57] / PSI 0.444 | svm_rbf 0.437 [0.23, 0.66] / **0.800** |
+| **E6 train only** | **80** | **0.452 [0.25, 0.65] / PSI 0.700** | logreg 0.400 [0.19, 0.62] / 0.500 |
+
+**Directionally, 80 matched clips beat 5,235 acted ones** — 0.452 against 0.278, with PSI
+0.700 against 0.444. That is what the "training corpus is the bottleneck" argument
+predicts, now on real held-out speech rather than in an argument.
+
+**It is not established, and the intervals say so.** [0.25, 0.65] and [0.17, 0.33]
+overlap. The test split is 20 clips from one person, so each class's recall rests on five
+to nine of them; at that size a 0.174 gap is suggestive and nothing more. Reporting it
+as a result would be exactly the error the bootstrap was added to prevent. The honest
+statement is: the direction is consistent across both retrained combos and both
+solution families, and the sample cannot resolve it.
+
+### What E6 costs in caveats
+
+- **`text_sentiment` is assigned by hand.** The dataset labels intended *delivery* only
+  — which is how we know it is prosody and not wording, since one sentence appears with
+  two or three emotions. PSI also needs a lexical valence, so all 34 sentences were
+  labelled from the words alone (`TEXT_SENTIMENT` in `scripts/build_zurich.py`, written
+  out row by row to be disagreed with), leaving genuinely two-sided wordings NEUTRAL.
+  Forcing a side on *"Whatever, it's fine"* would manufacture incongruence the text does
+  not contain, and PSI would then score the labelling. This is the analyst's judgment,
+  not the dataset's, and it is the one derived column here.
+- **One E6 training speaker recorded E3.** He carries E3's `speaker1` id so
+  `assert_speaker_disjoint` can see the overlap; no combo that trains on E6 is scored on
+  E3 anywhere.
+- **A leak was caught and fixed during this work.** The first retraining pass fitted every
+  manifest row regardless of split, so `e6train_only` trained on the validation speaker
+  and scored **UAR 1.000** on her. That is above the 0.90 ceiling this document names as
+  the signature of leakage, and it was. The fix restricts fitting to `split == "train"`
+  and drops the validation speaker from that combo's evaluation entirely, since a
+  selection set is not a held-out set. The numbers above are post-fix.
+- **20 clips per held-out speaker.** No difference of a few points on `e6_test` is
+  resolvable, which is why every figure carries an interval.
+
 ## E3: human recordings, and a control on the Cartesia finding
 
 E3 (`data/recorded{0,}/`, `scripts/eval_e3.py`) is now recorded and evaluated: 27
