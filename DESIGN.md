@@ -286,6 +286,64 @@ the prosodic subspace. The cheap, obvious next experiment is to **use these nine
 features directly** — alone as a baseline, and concatenated with the WavLM embedding —
 which this result now strongly motivates and which has not been tried.
 
+## Solution D: explicit prosodic features — built, and it does not transfer
+
+The E5 diagnostic showed a logistic regression over nine acoustic descriptors
+recovering the intended delivery at 0.811 vs 0.333 chance, beating both deep backends
+on the same audio. Solution D turns that into a real solution: eGeMAPS v02 (88
+functionals) plus eight Praat contour descriptors — global F0 and energy slope,
+dynamic ranges in semitones, voiced fraction, pause ratio, CPPS — into a classifier,
+with no network anywhere in the path. Four classifiers were fitted on CREMA-D's
+speaker-disjoint train split and **all four scored on every dataset**, because
+selecting one on CREMA-D validation turned out to be exactly the wrong move.
+
+| Candidate | CREMA-D UAR | CREMA-D PSI | E3b UAR | E3b PSI | E5 UAR | E5 PSI |
+|---|--:|--:|--:|--:|--:|--:|
+| logreg | 0.646 | 0.738 | **0.407** | 0.583 | **0.278** | 0.378 |
+| linear_svm | 0.422 | 0.987 | 0.333\* | 0.500\* | 0.333\* | 0.500\* |
+| svm_rbf *(selected on val)* | 0.557 | 0.965 | 0.333\* | 0.500\* | 0.333\* | 0.500\* |
+| hist_gbdt | 0.638 | 0.861 | 0.333\* | 0.545\* | 0.333\* | 0.500\* |
+
+\* **degenerate** — predicts one class for ≥95% of the set (always "negative").
+
+**Three of four candidates collapse completely** on out-of-domain audio, answering
+"negative" for 100% of E3 and E5 clips at ~0.88 confidence. Only `logreg` keeps
+predicting more than one class, and it is still 78–79% negative with poor numbers.
+
+**Why it is not the features.** Distribution shift between CREMA-D and E5 is
+ordinary — median |z| 0.47, nothing beyond 10 SD, 9 of 96 features beyond 3 SD. The
+kernel is the mechanism: in 96 dimensions, once a test point sits far from every
+support vector, RBF kernel values decay toward zero and the decision falls back to
+the bias, which is the majority class. Selecting on CREMA-D validation is selecting
+*in-domain*, so it crowned `svm_rbf` (0.703) over `logreg` (0.646) on evidence that
+structurally could not see this failure.
+
+### The correction this forces
+
+Against the deep backends, trained the same way and met cold:
+
+| Model | E3b UAR | E3b PSI | E5 UAR | E5 PSI |
+|---|--:|--:|--:|--:|
+| B — permissive (WavLM) | **0.519** | **0.615** | **0.511** | **0.682** |
+| B — research (audeering) | 0.593 | 0.444 | 0.400 | 0.211 |
+| D — prosodic (best: logreg) | 0.407 | 0.583 | 0.278 | 0.378 |
+
+**The WavLM probe beats Solution D out of domain on both sets.** So the earlier
+framing — that simple features outperform deep models — was too strong, and the
+distinction matters: the diagnostic's 0.811 came from fitting *within* E5 with
+leave-one-carrier-out, which is a far easier problem than training on CREMA-D and
+meeting E5 cold. It established that the delivery **is present and linearly
+recoverable** in that audio; it did not establish that a CREMA-D-trained
+feature classifier would generalise, and the two claims were run together.
+
+What survives is narrower and, if anything, more useful: **the common factor in every
+out-of-domain failure is CREMA-D as the training source.** Acted, US studio, 68%
+negative, always-neutral text — everything fitted on it transfers badly, the WavLM
+probe included (0.744 there, 0.511 on E5). The information the diagnostic found is
+real; extracting it with a model trained on this corpus is what fails. That makes
+training data, not feature engineering and not architecture, the thing to fix next —
+and it is the same conclusion the presbyphonia and elderly-voice gaps already point at.
+
 ## Backend x training-data comparison
 
 Requested directly: does folding the user's own recordings (E3) and/or the Hume

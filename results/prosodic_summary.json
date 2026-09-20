@@ -1,0 +1,416 @@
+{
+  "selected_by_training": "D:prosodic(egemaps+contour/svm_rbf)",
+  "selection_caveat": "Training selects on CREMA-D's validation split, which is in-domain. Every candidate is scored on every dataset here because that selection is not self-evidently the right one -- the first run showed the in-domain winner collapsing to a single class on both out-of-domain sets.",
+  "candidates": {
+    "logreg": {
+      "cremad": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.6463556626208344,
+        "macro_f1": 0.5636403199438417,
+        "accuracy": 0.6074829931972789,
+        "psi_contested": 0.7379518072289156,
+        "psi_strict": 0.5856573705179283,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.46122448979591835,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 678,
+            "neutral": 419,
+            "positive": 373
+          }
+        }
+      },
+      "cremad_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.6055338173702592,
+        "macro_f1": 0.541563406724697,
+        "accuracy": 0.6,
+        "psi_contested": 0.7427184466019418,
+        "psi_strict": 0.59765625,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.48333333333333334,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 145,
+            "neutral": 80,
+            "positive": 75
+          }
+        }
+      },
+      "e3a": {
+        "dataset": "e3a",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3703703703703704,
+        "macro_f1": 0.23809523809523805,
+        "accuracy": 0.37037037037037035,
+        "psi_contested": 0.5833333333333334,
+        "psi_strict": 0.3888888888888889,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.9629629629629629,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 26,
+            "neutral": 1
+          }
+        }
+      },
+      "e3b": {
+        "dataset": "e3b",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.40740740740740744,
+        "macro_f1": 0.34603174603174597,
+        "accuracy": 0.4074074074074074,
+        "psi_contested": 0.5833333333333334,
+        "psi_strict": 0.3888888888888889,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.7777777777777778,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 21,
+            "neutral": 5,
+            "positive": 1
+          }
+        }
+      },
+      "e5_hume": {
+        "dataset": "e5_hume",
+        "split_type": "all",
+        "n_clips": 90,
+        "n_incongruent": 60,
+        "uar": 0.27777777777777773,
+        "macro_f1": 0.21404997642621404,
+        "accuracy": 0.2777777777777778,
+        "psi_contested": 0.3783783783783784,
+        "psi_strict": 0.23333333333333334,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.7888888888888889,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 71,
+            "neutral": 19
+          }
+        }
+      }
+    },
+    "linear_svm": {
+      "cremad": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.42177800426202167,
+        "macro_f1": 0.43208135957876226,
+        "accuracy": 0.7142857142857143,
+        "psi_contested": 0.9865900383141762,
+        "psi_strict": 0.8207171314741036,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.9319727891156463,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 1370,
+            "positive": 66,
+            "neutral": 34
+          }
+        }
+      },
+      "cremad_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.44375751778908157,
+        "macro_f1": 0.46036284512923054,
+        "accuracy": 0.72,
+        "psi_contested": 0.9906542056074766,
+        "psi_strict": 0.828125,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.9133333333333333,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 274,
+            "neutral": 6,
+            "positive": 20
+          }
+        }
+      },
+      "e3a": {
+        "dataset": "e3a",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 27
+          }
+        }
+      },
+      "e3b": {
+        "dataset": "e3b",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 27
+          }
+        }
+      },
+      "e5_hume": {
+        "dataset": "e5_hume",
+        "split_type": "all",
+        "n_clips": 90,
+        "n_incongruent": 60,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 90
+          }
+        }
+      }
+    },
+    "svm_rbf": {
+      "cremad": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.5571913894808364,
+        "macro_f1": 0.6012714255900987,
+        "accuracy": 0.7585034013605442,
+        "psi_contested": 0.9653558052434457,
+        "psi_strict": 0.8215139442231075,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.8346938775510204,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 1227,
+            "positive": 122,
+            "neutral": 121
+          }
+        }
+      },
+      "cremad_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.5657522136718693,
+        "macro_f1": 0.6140596029484918,
+        "accuracy": 0.7633333333333333,
+        "psi_contested": 0.9815668202764977,
+        "psi_strict": 0.83203125,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.8333333333333334,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 250,
+            "neutral": 20,
+            "positive": 30
+          }
+        }
+      },
+      "e3a": {
+        "dataset": "e3a",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 27
+          }
+        }
+      },
+      "e3b": {
+        "dataset": "e3b",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 27
+          }
+        }
+      },
+      "e5_hume": {
+        "dataset": "e5_hume",
+        "split_type": "all",
+        "n_clips": 90,
+        "n_incongruent": 60,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 90
+          }
+        }
+      }
+    },
+    "hist_gbdt": {
+      "cremad": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.6383535624942093,
+        "macro_f1": 0.6224299021949017,
+        "accuracy": 0.7142857142857143,
+        "psi_contested": 0.861266294227188,
+        "psi_strict": 0.7370517928286853,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.6414965986394557,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 943,
+            "positive": 253,
+            "neutral": 274
+          }
+        }
+      },
+      "cremad_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.6065200063765344,
+        "macro_f1": 0.6009703270521984,
+        "accuracy": 0.7133333333333334,
+        "psi_contested": 0.8687782805429864,
+        "psi_strict": 0.75,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.6666666666666666,
+          "is_degenerate": false,
+          "predicted_class_counts": {
+            "negative": 200,
+            "neutral": 51,
+            "positive": 49
+          }
+        }
+      },
+      "e3a": {
+        "dataset": "e3a",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 27
+          }
+        }
+      },
+      "e3b": {
+        "dataset": "e3b",
+        "split_type": "all",
+        "n_clips": 27,
+        "n_incongruent": 18,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.1714285714285714,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5454545454545454,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 0.9629629629629629,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 26,
+            "positive": 1
+          }
+        }
+      },
+      "e5_hume": {
+        "dataset": "e5_hume",
+        "split_type": "all",
+        "n_clips": 90,
+        "n_incongruent": 60,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5,
+        "psi_strict": 0.3333333333333333,
+        "degeneracy": {
+          "top_class": "negative",
+          "top_class_share": 1.0,
+          "is_degenerate": true,
+          "predicted_class_counts": {
+            "negative": 90
+          }
+        }
+      }
+    }
+  },
+  "interpretation": "Solution D uses no pretrained network: eGeMAPS functionals plus pitch/energy contour descriptors, fed to a classifier fitted on speaker-disjoint CREMA-D. Nothing in the path can represent a word, so it cannot fail the way the audeering backend does on E5 (PSI 0.211 -- following the transcript from audio alone). Read PSI on e5_hume and the two E3 takes rather than CREMA-D UAR: CREMA-D's text is always neutral, so its PSI does not test genuine word-versus-tone conflict. top_features lists what the fitted model actually leans on -- an explanation no embedding-based solution in this repo can offer."
+}
