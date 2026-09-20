@@ -477,8 +477,63 @@ emotion). Mean removal uses no labels, but it implicitly assumes a label *distri
 under balance, a speaker's mean sits near the average of the three class centroids, which
 is precisely the condition that lets a boundary fitted on another corpus land correctly.
 A user who is mostly low-mood would have that mood partly normalised away, because the
-baseline and the signal are the same quantity. The next section measures what that
-assumption is worth instead of leaving it as an argument.
+baseline and the signal are the same quantity. That is measured directly below rather
+than left as an argument.
+
+### What the balance assumption is worth (measured)
+
+`scripts/normalise_skew.py` draws class-imbalanced subsamples **within each speaker** at
+three skew levels — 20 seeds × 3 choices of majority class = 60 draws per level — and
+scores `raw` and `speaker_z` on the *same* draw, so clip difficulty is held constant
+(`results/speaker_normalisation_skew.json`).
+
+**speaker_z − raw, in UAR** (majority class share in brackets; ± is a 95% interval over
+draws):
+
+| Set | Model | balanced (0.33) | moderate (0.53) | strong (~0.70) |
+|---|---|--:|--:|--:|
+| e3a | logreg | +0.185 | +0.218 ±0.022 | +0.174 ±0.046 |
+| | svm_rbf | +0.259 | +0.247 ±0.022 | +0.257 ±0.040 |
+| | hist_gbdt | +0.259 | +0.267 ±0.021 | +0.241 ±0.041 |
+| e3b | logreg | +0.222 | +0.134 ±0.032 | **+0.051 ±0.046** |
+| | svm_rbf | +0.259 | +0.259 ±0.034 | +0.260 ±0.058 |
+| | hist_gbdt | +0.333 | +0.273 ±0.023 | +0.187 ±0.038 |
+| E5 | logreg | +0.333 | +0.329 ±0.014 | +0.269 ±0.025 |
+| | svm_rbf | +0.278 | +0.254 ±0.021 | +0.190 ±0.032 |
+| | hist_gbdt | +0.267 | +0.264 ±0.012 | +0.222 ±0.017 |
+
+The `balanced` column carries no interval because at that level there is only one possible
+draw — the whole set. It is therefore not a precision claim; it is the full-set number, and
+it reproduces `results/speaker_normalisation.json` exactly, which is the consistency check
+that the two scripts agree.
+
+**The assumption costs something real, and less than feared.** Averaged over the nine
+cells the gain falls from **+0.266 balanced to +0.206 at ~70% majority share** — about
+three quarters of it survives, and it stays positive in 9 of 9 cells. The decay is not
+uniform: `svm_rbf` is essentially flat (+0.259 → +0.257/+0.260 on both E3 takes),
+`hist_gbdt` decays gently, and **logreg on e3b is the one casualty** (+0.222 → +0.051
+±0.046, no longer distinguishable from nothing). Part of even that closing gap is `raw`
+improving (0.407 → 0.450) rather than `speaker_z` collapsing (0.630 → 0.501).
+
+**The anti-collapse property does not decay at all.** Across all 540 `speaker_z` draws —
+every set, every skew level, every model — the degenerate rate is **0.00**, while `raw`
+runs from 0.00 to 1.00 depending on the cell. Whatever the balance assumption buys in
+accuracy, keeping the model from answering one class for everything is not part of the
+bargain. PSI holds up similarly: on E5 it goes 0.750/0.745/0.729 balanced →
+0.649/0.641/0.699 at strong skew, still well above the 0.5 chance line and above `raw`
+throughout.
+
+**Named plainly: this result is favourable to a method I had just argued for**, and it
+came from an experiment designed to kill it. What it does *not* establish:
+
+- Skew was tested to ~70% majority, not to 90%. The set sizes here cannot support a draw
+  that leaves a class with fewer than two clips, so the extreme case is untested.
+- E3 is **one speaker**; only E5 contributes more than one, and only two. A per-speaker
+  method evaluated on three speakers total is a demonstration, not a generalisation.
+- Real users are **non-stationary** — a baseline drifts across weeks, illness and time of
+  day. Subsampling a fixed recording session holds everything else constant and so tests
+  only the composition, which is the easy half of the problem.
+- It remains transductive. None of this makes the method a per-clip classifier.
 
 ## Backend x training-data comparison
 
