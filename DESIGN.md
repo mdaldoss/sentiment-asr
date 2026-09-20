@@ -95,11 +95,53 @@ collapsing toward A's.
 
 **Full A/B/C numbers on E1's held-out speaker-disjoint test set:**
 
-| | UAR | Notes |
+| | UAR [95% CI] | Notes |
 |---|---|---|
-| B, permissive, speaker-disjoint test (n=1,470) | **0.744** | held out, never touched during training |
-| B, research (zero-shot), val (n=737) | **0.454** | no CREMA-D fine-tuning at all — the honest cost of the permissive license |
+| B, permissive, speaker-disjoint test (n=1,470) | **0.744** [0.714, 0.774] | held out, never touched during training |
+| B, research (zero-shot), speaker-disjoint test (n=1,470) | **0.435** [0.407, 0.464] | the held-out number, measured the same way |
+| B, research (zero-shot), val (n=737) | 0.454 [0.41, 0.50] | the split its two thresholds were fitted on |
 | B, permissive, **leaky** random-split test (n=1,488) | 0.761 | trained/evaluated with 91/91 speakers overlapping train↔test |
+
+**The research backend's held-out CREMA-D number did not exist until now**
+(`scripts/eval_research_cremad.py`, `make eval-research-cremad`). `train_research` runs
+the encoder over the *validation* split to fit its two valence thresholds and stopped
+there, so the only CREMA-D score this backend ever had was on the split its own
+parameters came from — while the permissive probe had a held-out one. Every comparison
+between the two, the licensing trade-off included, was therefore a fitted score against
+a held-out one.
+
+Two things came out of closing that gap.
+
+**The old number was fine; the old comparison was not.** val minus test is **+0.019**.
+Two parameters over 737 clips do not overfit, exactly as expected, so 0.454 was always a
+reasonable estimate of this backend's CREMA-D performance. What was wrong was putting it
+beside 0.744 as though the two were measured alike.
+
+**The gap is larger than "the honest cost of the permissive licence" suggested: 0.744 vs
+0.435, non-overlapping intervals.** But read what the comparison actually is. The
+permissive probe is *trained on CREMA-D's own training split*; the audeering model is
+**zero-shot**, trained on MSP-Podcast's spontaneous speech and never shown a CREMA-D
+clip. This is a cross-corpus measurement for one side and an in-domain one for the other,
+so it does not say the audeering model is worse — it says a model trained on this corpus
+beats one that was not, on this corpus. On E5 and E6, where neither backend is in domain,
+they land much closer (E6: 0.396 vs 0.356).
+
+**Where the research backend actually loses is the minority classes.** Its accuracy on
+CREMA-D test is 0.599 against a UAR of 0.435 — the two diverge because it predicts
+negative for 67% of clips and CREMA-D is 68% negative, so accuracy flatters it by almost
+17 points. This is precisely the failure CLAUDE.md rule 7 exists to catch.
+
+| Backend | negative recall | neutral recall | positive recall |
+|---|--:|--:|--:|
+| permissive | 0.882 | 0.693 | 0.657 |
+| research (zero-shot) | 0.747 | **0.247** | **0.311** |
+
+Of 251 truly positive clips the research backend calls 99 *negative* and only 78
+positive — it is more likely to invert a positive clip than to get it right. *Inference,
+not measurement:* its valence output looks compressed on this material, and the fitted
+thresholds carve a neutral band only 0.075 wide (0.400–0.475) out of a [0,1] range, which
+is what you would expect if the valence axis separates acted studio speech poorly. That
+is consistent with a domain gap from MSP-Podcast but is not directly tested here.
 
 **The leakage gap on this setup is +0.017 UAR points** — real, confirmed (91 speakers
 genuinely overlap on the leaky split), but far smaller than the 10–40 point swings

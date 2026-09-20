@@ -22,7 +22,8 @@ make prosody-samples   # extract VAD/F0 for 20 real samples (CREMA-D + E3) -> re
 make probe-hume        # [needs HUME_API_KEY] falsification test of the D1 Cartesia finding
 make eval-backend-combos  # WavLM+probe vs audeering across 4 training-data combos (needs make data + make probe-hume first)
 make eval-e5   # A/B/C on E5, the Hume incongruence set (words vs delivery) -> results/*.json
-make data-zurich  # E6: decode the 6-speaker Zurich recordings -> data/zurich/ + manifest
+make eval-research-cremad  # audeering on CREMA-D's held-out test split, beside the permissive probe
+make data-zurich  # E6: decode the 8-speaker Zurich recordings -> data/zurich/ + manifest
 make eval-zurich  # E6: zero-shot cross-corpus eval + retrain B/D on the new speakers
 make demo-web  # [needs .[demo]] live demo at http://127.0.0.1:8000 -- record your own voice
 make report    # regenerate report/index.html from results/*.json
@@ -73,7 +74,7 @@ Nothing in its path can represent a word.
 
 Evaluated on CREMA-D (public benchmark, speaker-disjoint **and** random splits to
 quantify leakage), a synthetic incongruence set generated via Cartesia TTS, a Hume
-Octave incongruence set (E5), **six-speaker human recordings (E6)**, single-speaker
+Octave incongruence set (E5), **eight-speaker human recordings (E6)**, single-speaker
 human recordings (E3), and an unsupervised probe of Cartesia's emotion-tag space.
 
 **Headline metric — Prosody Sensitivity Index (PSI):** on clips where words and tone
@@ -89,7 +90,7 @@ intervals. Chance is 0.333 for UAR, 0.500 for PSI.
 |---|---|---|---|---|
 | A — Lexical | 0.360 | 0.090 | 0.314 [0.25, 0.39] | **0.104 [0.05, 0.17]** |
 | B — Acoustic (permissive) | **0.797** | 0.920 | 0.396 [0.33, 0.46] | 0.584 [0.47, 0.70] |
-| B — Acoustic (research) | — | — | 0.356 [0.29, 0.43] | **0.366 [0.27, 0.47]** |
+| B — Acoustic (research) | 0.450 | 0.743 | 0.356 [0.29, 0.43] | **0.366 [0.27, 0.47]** |
 | C — Fusion | 0.797 | 0.891 | **0.402 [0.34, 0.47]** | 0.557 [0.44, 0.67] |
 | D — Prosodic | 0.566 | 0.982 | 0.333 [0.33, 0.33] ⚠ | 0.521 [0.41, 0.64] |
 
@@ -112,6 +113,16 @@ path — replicating on eight real voices what E5 found on synthetic ones, now w
 confidence interval behind it. Note the permissive backend's own PSI interval contains
 0.5, so it is not established as prosody-following either; only the research backend's
 failure is statistically clean.
+
+**On the research backend's CREMA-D column**, which used to be a dash: it scores
+**0.435 [0.41, 0.46]** on the full 1,470-clip held-out test split (`make
+eval-research-cremad`) against the permissive probe's 0.744 [0.71, 0.77]. That gap is
+real but it is not a like-for-like comparison — the permissive probe is *trained on
+CREMA-D*, the audeering model is **zero-shot** and was trained on spontaneous podcast
+speech. Where neither is in domain (E5, E6) the two land close together. Note also that
+the research backend's *accuracy* on that split is 0.599 against a UAR of 0.435: it
+predicts negative for 67% of clips on a corpus that is 68% negative, so accuracy flatters
+it by 17 points. That divergence is exactly why UAR is the headline metric here.
 
 See `DESIGN.md` → **E6** for the full account, including a leakage bug caught mid-analysis
 (a combo trained on its own validation speaker and returned UAR 1.000) and a claim that

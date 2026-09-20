@@ -239,13 +239,39 @@ Values are UAR. CREMA-D is the 300-clip stratified test subset; E3 is one speake
 | -------------------- | --------: | ----: | --------: | --------: | -------------: |
 | Lexical              |     0.360 | 0.333 |     0.370 |     0.333 | 0.314 [0.25, 0.39] |
 | Acoustic — WavLM     | **0.797** | 0.444 |     0.519 | **0.511** | 0.396 [0.33, 0.46] |
-| Acoustic — audeering |         — | 0.444 | **0.593** |     0.400 | 0.356 [0.29, 0.43] |
+| Acoustic — audeering |     0.450 | 0.444 | **0.593** |     0.400 | 0.356 [0.29, 0.43] |
 | Late fusion          | **0.797** | 0.444 |     0.556 |     0.489 | **0.402 [0.34, 0.47]** |
 | Explicit prosody     |     0.566 | 0.333 |     0.333 |     0.333 | 0.333 [0.33, 0.33] |
 
 On the full CREMA-D speaker-disjoint test split the WavLM-based acoustic system achieved
-**0.744 UAR**. The difference from 0.797 is that the latter is measured on the 300-clip
-subset used by the comparison harness; the full split is the headline CREMA-D result.
+**0.744 UAR** [0.71, 0.77]. The difference from 0.797 is that the latter is measured on
+the 300-clip subset used by the comparison harness; the full split is the headline
+CREMA-D result.
+
+The audeering column was previously blank because that backend had only ever been run on
+CREMA-D's *validation* split — the split its two valence thresholds were fitted on. It now
+has a held-out number: **0.435 [0.41, 0.46]** on the full test split. Two points about it:
+
+* **The two thresholds did not overfit.** Validation minus test is +0.019, so the older
+  0.454 figure was always a reasonable estimate. What was wrong was presenting it beside
+  the permissive backend's held-out 0.744 as though both were measured the same way.
+* **The 0.744-vs-0.435 gap is not a fair model comparison.** The WavLM probe is trained
+  on CREMA-D's own training split; the audeering model is zero-shot and was trained on
+  spontaneous podcast speech. On this corpus that is in-domain versus cross-domain. Where
+  neither is in domain — E5 and E6 — the two land close together.
+
+The audeering backend's failure on CREMA-D is concentrated in the minority classes, and
+it is a good illustration of why this report uses UAR rather than accuracy:
+
+| Backend | accuracy | UAR | negative recall | neutral recall | positive recall |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| WavLM probe | 0.816 | 0.744 | 0.882 | 0.693 | 0.657 |
+| audeering (zero-shot) | 0.599 | 0.435 | 0.747 | 0.247 | 0.311 |
+
+The audeering model predicts negative for 67% of clips on a corpus that is 68% negative,
+so its accuracy sits 17 points above its UAR. Of 251 genuinely positive clips it labels 99
+as negative and only 78 correctly — it inverts a positive clip more often than it
+identifies one.
 
 The important observation is not the absolute CREMA-D number. It is what happens on E6.
 

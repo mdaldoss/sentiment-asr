@@ -157,7 +157,7 @@ test them. Reinforcement-learning approaches to generalised emotion recognition
 below is the single most important thing this project measured:</p>
 <div class="tiles">
   <div class="tile"><div class="lbl">On the benchmark</div>
-    <div class="big">0.80</div>
+    <div class="big">0.78</div>
     <div class="sub">UAR, acted speech, speakers held out. What a demo shows.</div></div>
   <div class="tile"><div class="lbl">On one real, unseen voice</div>
     <div class="big">0.44&ndash;0.59</div>
@@ -249,15 +249,15 @@ PSI = of the clips where words and tone disagree, the fraction where the model f
   <tbody>
     <tr><td>A &mdash; Lexical (words only)</td><td class="num">0.360</td>
         <td class="num">0.264</td><td class="num">0.090</td></tr>
-    <tr><td><strong>B &mdash; Acoustic (tone only)</strong></td><td class="num"><strong>0.797</strong></td>
-        <td class="num">0.796</td><td class="num"><strong>0.920</strong></td></tr>
+    <tr><td><strong>B &mdash; Acoustic (tone only)</strong></td><td class="num"><strong>0.782</strong></td>
+        <td class="num">0.774</td><td class="num"><strong>0.939</strong></td></tr>
     <tr><td>C &mdash; Fusion (both)</td><td class="num">0.797</td>
         <td class="num">0.796</td><td class="num">0.891</td></tr>
   </tbody>
 </table></div>
 <p>Exactly the shape the design predicts. The lexical model sits near chance and has a PSI
 of 0.09 &mdash; it follows the words almost every time,
-because that is all it has. The acoustic model reaches PSI 0.92:
+because that is all it has. The acoustic model reaches PSI 0.94:
 it is genuinely listening.</p>
 
 <h3>2. Sloppy splitting would have inflated this</h3>
@@ -301,7 +301,7 @@ backend does <em>not</em> (r&nbsp;=&nbsp;-0.19)
 accurate as it is repeatable, and on this voice that one is not repeatable at all. Accuracy
 tables alone would never have revealed this.</p>
 <p>Note the reversal: on the benchmark the permissive backend scores
-0.80 against the research backend's
+0.78 against the research backend's
 0.45; on a real voice they swap places. The benchmark number
 is a home-turf advantage &mdash; the permissive probe was trained on that exact corpus.</p>
 
