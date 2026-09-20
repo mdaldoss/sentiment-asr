@@ -1,0 +1,31 @@
+{
+  "n_metadata_rows": 120,
+  "n_clips_built": 120,
+  "n_missing_files": 0,
+  "missing_files": [],
+  "missing_note": "These metadata rows point at .m4a paths that are not in the repository -- one speaker's entire session. They are reported rather than dropped silently (CLAUDE.md: never silently drop clips). Nothing downstream sees them.",
+  "n_speakers": 6,
+  "speakers_by_split": {
+    "test/zurich_matteo": 20,
+    "train/speaker1": 20,
+    "train/zurich_cate": 20,
+    "train/zurich_isinsu": 20,
+    "train/zurich_paoli": 20,
+    "val/zurich_silvia": 20
+  },
+  "n_incongruent": 84,
+  "incongruent_share": 0.7,
+  "class_balance": {
+    "neutral": 44,
+    "negative": 40,
+    "positive": 36
+  },
+  "duration_seconds": {
+    "total": 415.31812499999984,
+    "mean": 3.4609843750000002,
+    "min": 2.16,
+    "max": 5.52
+  },
+  "shared_speaker_note": "The 'marco' folder is recorded by the same person as E3's speaker1, so it carries the id 'speaker1'. Any combination of E6-train and an E3 evaluation therefore trips assert_speaker_disjoint rather than passing quietly with the same voice on both sides.",
+  "text_sentiment_note": "text_sentiment is assigned by hand from the sentence text (see TEXT_SENTIMENT in scripts/build_zurich.py); the dataset itself labels intended DELIVERY only. Ambiguous wordings are left NEUTRAL rather than forced to a side, so PSI here measures the model and not the labelling. It remains the analyst's judgment and is the one derived column in this manifest."
+}

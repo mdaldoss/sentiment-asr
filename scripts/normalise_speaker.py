@@ -89,6 +89,13 @@ EVAL_MANIFESTS: dict[str, Path] = {
     "e3a": REPO_ROOT / "data" / "recorded0" / "manifest_speaker1.csv",
     "e3b": REPO_ROOT / "data" / "recorded" / "manifest_speaker1.csv",
     "e5_hume": REPO_ROOT / "data" / "hume_e5" / "manifest.csv",
+    # E6 is the set this experiment was missing. Its predecessors offered
+    # one real speaker (E3, twice) and two synthetic voices (E5), which is
+    # thin evidence for a method whose whole premise is per-SPEAKER
+    # statistics. E6 brings six real speakers, ~20 clips each -- enough for
+    # a per-speaker mean to mean something, and enough for the method to
+    # fail visibly if it only ever worked on one voice.
+    "e6_zurich": REPO_ROOT / "data" / "zurich" / "manifest.csv",
 }
 
 PROSODIC_CACHE = REPO_ROOT / "data" / "cache" / "features_prosodic.npz"
