@@ -104,7 +104,35 @@ I additionally created a small controlled recording set (E3) containing two take
 
 This was intended as a test of whether conclusions from CREMA-D transfer to independently recorded speech and whether predictions are stable across repeated takes.
 
-The current limitation is that E3 contains only one human speaker.
+The current limitation is that E3 contains only one human speaker. Every conclusion
+drawn from it is therefore about one voice, and this was the single largest gap in the
+evaluation until E6 closed it.
+
+### Zurich multi-speaker recordings (E6)
+
+E6 is the evaluation set that makes cross-speaker claims possible at all. It contains
+**160 clips from 8 speakers** reading 35 short sentences, where each sentence was
+recorded with two or three *different intended deliveries*. Because the same wording
+appears under conflicting deliveries, **111 of the 160 clips (69%) are incongruent** —
+making this the first *human, multi-speaker* incongruence set in the project. E5 provided
+incongruence but synthetically; E3 provided real speech but from one person.
+
+The split is speaker-disjoint by construction: five speakers train, two validate, one
+tests. The recordings are laptop-microphone audio from mostly non-native English
+speakers, which is a substantially harder and more realistic condition than CREMA-D's
+acted American studio speech.
+
+Two properties of E6 require disclosure:
+
+* **The lexical valence is assigned by hand.** The dataset labels intended *delivery*
+  only. PSI additionally needs to know what the words say, so all 35 sentences were
+  labelled from the text alone, with genuinely two-sided wordings (*"Whatever, it's
+  fine."*) left neutral rather than forced to a side. Forcing a side would manufacture
+  incongruence the text does not contain, and PSI would then measure the labelling rather
+  than the model. This is the one derived column in the dataset.
+* **One E6 speaker also recorded E3.** He carries the same speaker identifier in both, so
+  the speaker-disjointness assertion can detect the overlap rather than relying on anyone
+  remembering it. No model trained on E6 is evaluated on E3.
 
 ### Hume recordings
 
@@ -150,13 +178,26 @@ This matters because a conversational system may use sentiment probabilities to 
 
 ### Prosody-vs-language diagnostic
 
-For the incongruent E5 set I introduced a simple **Prosodic Signal Index (PSI)**:
+For the incongruent sets (E5 and E6) I introduced a simple **Prosody Sensitivity Index
+(PSI)**:
 
 * 1.0 = prediction follows the intended vocal delivery;
 * 0.0 = prediction follows the linguistic sentiment;
 * approximately 0.5 = no systematic preference.
 
 This is not intended as a standard ML metric. It is a diagnostic specifically designed to answer the product question of whether a model is actually sensitive to vocal delivery.
+
+### Uncertainty
+
+Held-out speaker sets here are small — E6's test split is 20 clips from one person, so
+each class's recall rests on five to nine clips. Every E6 figure therefore carries a 95%
+percentile bootstrap interval over clips. Where two intervals overlap, I report the
+comparison as unresolved rather than as a result; several comparisons below fall into
+that category, and saying so is the point.
+
+The interval is a floor on the uncertainty, not a full account of it: resampling clips
+treats them as exchangeable when the same speaker and the same 35 sentences recur, so the
+true interval is if anything wider.
 
 ---
 
@@ -228,4 +269,83 @@ The result instead motivated further investigation into **representation stabili
 
 ---
 
-# 7.
+# 7. Limitations
+
+I would rather state these precisely than gesture at them, because several of them bound
+the conclusions above more tightly than the numbers suggest.
+
+### Sample sizes are small where it matters most
+
+CREMA-D is large (7,442 clips, 91 speakers) and is the only set where a result is
+statistically comfortable. Every set that tests the interesting question is small: E3 is
+one speaker, E5 is two synthetic voices, and E6 — the largest real-speaker set — has 160
+clips with only 20 in the held-out test split. Comparisons between retrained models on
+that split cannot be resolved, and I report them as unresolved rather than ranking them.
+
+### One derived label
+
+E6's lexical valence is my own judgment, not the dataset's (see §3). PSI on E6 therefore
+depends on that labelling in a way it does not for E5, where the text valence was fixed
+by design before any audio was generated. The lexical baseline's PSI acts as a check on
+it: a transcript-only model should follow the transcript, and it does.
+
+### The population the product targets is still unmeasured
+
+The intended deployment is a voice companion for seniors. CREMA-D's actors are not
+elderly, and E3/E6 are working-age adults, mostly non-native English speakers. The
+presbyphonia argument in the design document — that age-related voice changes will shift
+the acoustic baseline — remains **reasoned from literature, not measured on our data**.
+Nothing here tests it, and I have deliberately not presented it as though it does.
+
+### A leakage bug, and what it says about the rest
+
+During the E6 work, one retraining combination reported UAR 1.000 on its validation
+speaker. The cause was that the feature-fitting path ignored the split column and trained
+on the evaluation speaker. It was caught only because the project fixes a plausibility
+ceiling — speaker-independent results above 0.90 are treated as bugs, since published
+state of the art sits below it — and shouts when a number exceeds it.
+
+I record this because it is the honest lesson of the whole exercise: **the failure mode
+of this kind of work is a number that looks like good news.** Every other guard in the
+repository exists for the same reason, and the leak surfaced as an unusually good result
+rather than as an error.
+
+### Synthetic speech is a diagnostic, not a substitute
+
+One TTS vendor's emotion tags proved not to be reliably audible on this content
+(below-chance recoverability), while another's produced real differentiation. Generated
+audio was therefore used to construct controlled contradictions, never as a stand-in for
+diverse real conversational speech. E6 exists precisely because that substitution would
+not have been sound.
+
+---
+
+# 8. What I would do next
+
+In the order I would actually do them:
+
+1. **Change the training corpus, not the model.** Every experiment points the same way:
+   the gap between corpora dwarfs the gap between architectures, representations and
+   feature sets. I would train on spontaneous in-the-wild speech (MSP-Podcast is the
+   obvious candidate; it requires an access request) rather than acted studio speech, and
+   expect that to move the numbers more than any modelling change tried here.
+
+2. **Collect more held-out speakers, not more clips per speaker.** The binding constraint
+   on every cross-speaker claim is the number of *people*, not the number of recordings.
+   Twenty speakers with ten clips each would be worth more than the reverse.
+
+3. **Record the actual target population.** Nothing in this project measures elderly
+   voices. Until it does, the presbyphonia argument stays a hypothesis, and a system
+   shipped to seniors would be extrapolating.
+
+4. **Make per-speaker baselining longitudinal.** Per-speaker feature normalisation was
+   the largest single intervention measured, but it is transductive — it needs a pool of
+   that speaker's audio, which a single-clip classifier does not have. For a companion
+   device used daily by one person, a running baseline accumulated over weeks is the
+   natural form of it, and is also the version the design document argues for.
+
+5. **Treat "does the delivery contradict the words?" as its own product signal.** PSI and
+   UAR come apart in the results: a model can be at chance on naming the sentiment while
+   still beating chance on detecting a mismatch between tone and wording. For an
+   assistant whose correct response to ambiguity is to *ask* rather than assume, the
+   mismatch detector may be the more useful and more attainable component.
