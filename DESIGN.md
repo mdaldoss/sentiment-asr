@@ -344,6 +344,55 @@ real; extracting it with a model trained on this corpus is what fails. That make
 training data, not feature engineering and not architecture, the thing to fix next —
 and it is the same conclusion the presbyphonia and elderly-voice gaps already point at.
 
+## The decisive comparison: it is the training corpus, not the representation
+
+The fair test — same classifier, same leave-one-carrier-out CV, both representations
+fitted *within* the same dataset, so neither gets a domain advantage
+(`scripts/compare_representations.py`):
+
+| Dataset | Representation | dims | Ceiling (fitted in-domain) | CREMA-D-trained | Cost of CREMA-D |
+|---|---|--:|--:|--:|--:|
+| E3 (your voice, 54 clips) | **prosodic** | 96 | **0.870** | 0.407 | **−0.463** |
+| | wavlm | 1536 | 0.759 | 0.519 | −0.240 |
+| | combined | 1632 | 0.796 | — | — |
+| E5 (90 clips) | **prosodic** | 96 | 0.800 | 0.278 | **−0.522** |
+| | wavlm | 1536 | 0.789 | 0.511 | −0.278 |
+| | **combined** | 1632 | **0.856** | — | — |
+
+Chance is 0.333.
+
+**Three findings.**
+
+1. **Both representations reach the signal.** Fitted in-domain, everything lands at
+   0.76–0.87 against 0.333 chance. The prosodic information is genuinely there and
+   genuinely learnable — from 96 hand-built numbers *or* from a 1536-dimension
+   embedding.
+
+2. **Training on CREMA-D costs 0.24 to 0.52 UAR.** That is the gap between what these
+   representations can do on this audio and what they actually do once fitted on acted
+   studio speech and transferred. It dwarfs every difference between models, backends
+   and feature sets measured anywhere else in this project. **The training corpus is
+   the bottleneck.**
+
+3. **Prosodic features have the higher ceiling but are more domain-fragile.** They beat
+   WavLM outright on the real human voice (0.870 vs 0.759) with sixteen times fewer
+   dimensions, yet they lose *more* when trained cross-domain (−0.46/−0.52 against
+   −0.24/−0.28). That is coherent: absolute pitch, loudness and harmonicity move with
+   microphone, room and recording level, while a learned representation is partly
+   invariant to them. Hand-built descriptors are the better *representation* and the
+   worse *transfer* — which argues for per-domain or per-speaker normalisation of those
+   features, not for abandoning them.
+
+Combining the two helps on E5 (0.856, above either alone) and hurts on E3 (0.796, below
+prosodic alone) — consistent with 1,632 dimensions overfitting 54 clips rather than with
+any real property of the combination. At these sample sizes that difference is not
+worth interpreting.
+
+**This corrects the earlier claim properly.** "Simple features beat the deep models" was
+drawn from comparing an in-domain fit against a cross-domain transfer. Measured fairly,
+prosodic features *do* win on the real voice — but the headline is that both
+representations lose far more to the training corpus than they differ from each other.
+
 ## Backend x training-data comparison
 
 Requested directly: does folding the user's own recordings (E3) and/or the Hume
