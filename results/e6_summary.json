@@ -161,6 +161,11 @@
   "retrained": {
     "cremad_only": {
       "n_train_rows": 7442,
+      "n_fit_rows": 5235,
+      "scored_on": [
+        "e6_test",
+        "e6_val"
+      ],
       "permissive": {
         "fit": {
           "val_uar": 0.784428620877219,
@@ -185,76 +190,84 @@
         }
       },
       "prosodic": {
-        "logreg": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.15384615384615385,
-            "psi_contested": 0.5,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
+        "n_fit_rows": 5235,
+        "models": {
+          "logreg": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.15384615384615385,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.1728395061728395,
+              "psi_contested": 0.5555555555555556,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.1728395061728395,
-            "psi_contested": 0.5555555555555556,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
-          }
-        },
-        "svm_rbf": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.15384615384615385,
-            "psi_contested": 0.5,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
+          "svm_rbf": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.15384615384615385,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.1728395061728395,
+              "psi_contested": 0.5555555555555556,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.1728395061728395,
-            "psi_contested": 0.5555555555555556,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
-          }
-        },
-        "hist_gbdt": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.15384615384615385,
-            "psi_contested": 0.5,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
-          },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.3333333333333333,
-            "macro_f1": 0.1728395061728395,
-            "psi_contested": 0.5555555555555556,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 1.0,
-            "is_degenerate": true
+          "hist_gbdt": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.15384615384615385,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.3333333333333333,
+              "macro_f1": 0.1728395061728395,
+              "psi_contested": 0.5555555555555556,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 1.0,
+              "is_degenerate": true
+            }
           }
         }
       }
     },
     "cremad_plus_e6train": {
       "n_train_rows": 7522,
+      "n_fit_rows": 5315,
+      "scored_on": [
+        "e6_test",
+        "e6_val"
+      ],
       "permissive": {
         "fit": {
           "val_uar": 0.7973779854620977,
@@ -279,76 +292,84 @@
         }
       },
       "prosodic": {
-        "logreg": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3444444444444444,
-            "macro_f1": 0.3427350427350428,
-            "psi_contested": 0.5555555555555556,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 0.35,
-            "is_degenerate": false
+        "n_fit_rows": 5315,
+        "models": {
+          "logreg": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.3444444444444444,
+              "macro_f1": 0.3512820512820513,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "positive",
+              "top_class_share": 0.4,
+              "is_degenerate": false
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.3412698412698412,
+              "macro_f1": 0.32822966507177037,
+              "psi_contested": 0.4444444444444444,
+              "psi_strict": 0.2857142857142857,
+              "top_class": "negative",
+              "top_class_share": 0.6,
+              "is_degenerate": false
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.34126984126984133,
-            "macro_f1": 0.29947089947089944,
-            "psi_contested": 0.5555555555555556,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 0.7,
-            "is_degenerate": false
-          }
-        },
-        "svm_rbf": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.4925925925925925,
-            "macro_f1": 0.4579831932773109,
-            "psi_contested": 0.8181818181818182,
-            "psi_strict": 0.6428571428571429,
-            "top_class": "negative",
-            "top_class_share": 0.55,
-            "is_degenerate": false
+          "svm_rbf": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.43703703703703706,
+              "macro_f1": 0.4185185185185185,
+              "psi_contested": 0.8,
+              "psi_strict": 0.5714285714285714,
+              "top_class": "negative",
+              "top_class_share": 0.45,
+              "is_degenerate": false
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.31746031746031744,
+              "macro_f1": 0.25210084033613445,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "positive",
+              "top_class_share": 0.55,
+              "is_degenerate": false
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.373015873015873,
-            "macro_f1": 0.2920634920634921,
-            "psi_contested": 0.6666666666666666,
-            "psi_strict": 0.42857142857142855,
-            "top_class": "positive",
-            "top_class_share": 0.75,
-            "is_degenerate": false
-          }
-        },
-        "hist_gbdt": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3259259259259259,
-            "macro_f1": 0.337037037037037,
-            "psi_contested": 0.5,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "neutral",
-            "top_class_share": 0.45,
-            "is_degenerate": false
-          },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.21428571428571427,
-            "macro_f1": 0.17777777777777778,
-            "psi_contested": 0.4,
-            "psi_strict": 0.2857142857142857,
-            "top_class": "positive",
-            "top_class_share": 0.6,
-            "is_degenerate": false
+          "hist_gbdt": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.35555555555555557,
+              "macro_f1": 0.34877622377622375,
+              "psi_contested": 0.5,
+              "psi_strict": 0.35714285714285715,
+              "top_class": "negative",
+              "top_class_share": 0.35,
+              "is_degenerate": false
+            },
+            "e6_val": {
+              "n_clips": 20,
+              "uar": 0.2698412698412698,
+              "macro_f1": 0.18260869565217389,
+              "psi_contested": 0.5,
+              "psi_strict": 0.2857142857142857,
+              "top_class": "positive",
+              "top_class_share": 0.85,
+              "is_degenerate": false
+            }
           }
         }
       }
     },
     "e6train_only": {
       "n_train_rows": 100,
+      "n_fit_rows": 80,
+      "scored_on": [
+        "e6_test"
+      ],
+      "e6_val_excluded_reason": "e6_val is this combo's model-selection set (it has no other validation data), so scoring it there would report a selection score as a held-out one. e6_test is untouched by every combo and is the comparable number.",
       "permissive": {
         "fit": {
           "val_uar": 0.42857142857142855,
@@ -362,81 +383,47 @@
             "macro_f1": 0.402930402930403,
             "psi_contested": 0.7,
             "psi_strict": 0.5
-          },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.42857142857142855,
-            "macro_f1": 0.30303030303030304,
-            "psi_contested": 0.7,
-            "psi_strict": 0.5
           }
         }
       },
       "prosodic": {
-        "logreg": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.3703703703703704,
-            "macro_f1": 0.3181286549707602,
-            "psi_contested": 0.45454545454545453,
-            "psi_strict": 0.35714285714285715,
-            "top_class": "negative",
-            "top_class_share": 0.65,
-            "is_degenerate": false
+        "n_fit_rows": 80,
+        "models": {
+          "logreg": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.39999999999999997,
+              "macro_f1": 0.3784461152882206,
+              "psi_contested": 0.5,
+              "psi_strict": 0.42857142857142855,
+              "top_class": "negative",
+              "top_class_share": 0.65,
+              "is_degenerate": false
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 1.0,
-            "macro_f1": 1.0,
-            "psi_contested": 1.0,
-            "psi_strict": 1.0,
-            "top_class": "neutral",
-            "top_class_share": 0.35,
-            "is_degenerate": false
-          }
-        },
-        "svm_rbf": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.2777777777777778,
-            "macro_f1": 0.13333333333333333,
-            "psi_contested": 0.4444444444444444,
-            "psi_strict": 0.2857142857142857,
-            "top_class": "negative",
-            "top_class_share": 0.95,
-            "is_degenerate": true
+          "svm_rbf": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.2777777777777778,
+              "macro_f1": 0.13333333333333333,
+              "psi_contested": 0.4444444444444444,
+              "psi_strict": 0.2857142857142857,
+              "top_class": "negative",
+              "top_class_share": 0.95,
+              "is_degenerate": true
+            }
           },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.8095238095238094,
-            "macro_f1": 0.7965811965811967,
-            "psi_contested": 0.9166666666666666,
-            "psi_strict": 0.7857142857142857,
-            "top_class": "positive",
-            "top_class_share": 0.45,
-            "is_degenerate": false
-          }
-        },
-        "hist_gbdt": {
-          "e6_test": {
-            "n_clips": 20,
-            "uar": 0.4185185185185185,
-            "macro_f1": 0.36327561327561325,
-            "psi_contested": 0.6,
-            "psi_strict": 0.42857142857142855,
-            "top_class": "negative",
-            "top_class_share": 0.75,
-            "is_degenerate": false
-          },
-          "e6_val": {
-            "n_clips": 20,
-            "uar": 0.9523809523809524,
-            "macro_f1": 0.9487179487179488,
-            "psi_contested": 1.0,
-            "psi_strict": 1.0,
-            "top_class": "neutral",
-            "top_class_share": 0.35,
-            "is_degenerate": false
+          "hist_gbdt": {
+            "e6_test": {
+              "n_clips": 20,
+              "uar": 0.25925925925925924,
+              "macro_f1": 0.1818181818181818,
+              "psi_contested": 0.375,
+              "psi_strict": 0.21428571428571427,
+              "top_class": "negative",
+              "top_class_share": 0.8,
+              "is_degenerate": false
+            }
           }
         }
       }

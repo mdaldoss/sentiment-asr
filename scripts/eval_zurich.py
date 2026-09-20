@@ -136,7 +136,7 @@ def zero_shot(e6: pd.DataFrame) -> dict[str, object]:
                 "accuracy": result.accuracy,
                 "psi_contested": result.psi_contested,
                 "psi_strict": result.psi_strict,
-            }
+            } | bootstrap_ci(np.array([p["predicted_sentiment"] for p in result.predictions]), df)
             logger.info(
                 "zero-shot %-46s %-8s UAR=%.3f PSI=%.3f",
                 solution.name[:46],
@@ -164,6 +164,64 @@ def _flag_if_suspicious(value: float, model: str, dataset: str) -> None:
             value,
             SUSPICIOUS_UAR,
         )
+
+
+def bootstrap_ci(
+    y_pred: np.ndarray, df: pd.DataFrame, *, n_boot: int = 2000, seed: int = 0
+) -> dict[str, object]:
+    """Percentile bootstrap over clips for UAR and PSI.
+
+    E6's test split is 20 clips from one speaker, and each class's recall is
+    therefore estimated from five to nine of them. Without an interval,
+    0.452 against 0.278 reads as a result; with one it may be two draws from
+    the same distribution. This project has reported point estimates with no
+    intervals everywhere and listed that as a known gap -- on a 20-clip set
+    it stops being a gap and becomes a way to mislead, so the interval is
+    computed here rather than promised later.
+
+    `y_pred` is an array of predicted label strings, so both the harness
+    (which stores predictions as dicts) and the in-script prosodic path
+    (which builds Prediction objects) feed this the same thing.
+
+    Resampling is over clips, which treats them as exchangeable. They are
+    not quite: the same speaker and the same 34 sentences recur, so the true
+    interval is if anything *wider* than this one. It is a floor on the
+    uncertainty, not a full account of it.
+    """
+    y_true = df["prosody_sentiment"].to_numpy()
+    y_pred = np.asarray(y_pred)
+    incongruent = ~df["is_congruent"].to_numpy()
+    text = df["text_sentiment"].to_numpy()
+
+    rng = np.random.default_rng(seed)
+    uars, psis = [], []
+    idx_all = np.arange(len(df))
+    for _ in range(n_boot):
+        idx = rng.choice(idx_all, size=len(idx_all), replace=True)
+        recalls = [
+            (y_pred[idx][y_true[idx] == c] == c).mean()
+            for c in np.unique(y_true)
+            if (y_true[idx] == c).any()
+        ]
+        if recalls:
+            uars.append(float(np.mean(recalls)))
+
+        m = incongruent[idx]
+        picked_prosody = (y_pred[idx][m] == y_true[idx][m]).sum()
+        picked_text = (y_pred[idx][m] == text[idx][m]).sum()
+        contested = picked_prosody + picked_text
+        if contested:
+            psis.append(float(picked_prosody / contested))
+
+    def pct(values: list[float]) -> dict[str, float]:
+        if not values:
+            return {"lo": float("nan"), "hi": float("nan")}
+        return {
+            "lo": float(np.percentile(values, 2.5)),
+            "hi": float(np.percentile(values, 97.5)),
+        }
+
+    return {"uar_ci95": pct(uars), "psi_contested_ci95": pct(psis), "n_boot": n_boot}
 
 
 def _prosodic_combo(
@@ -197,7 +255,9 @@ def _prosodic_combo(
             preds = as_predictions(
                 pipeline.predict(X), pipeline.predict_proba(X), pipeline.classes_
             )
-            per_dataset[name] = score(preds, df)
+            per_dataset[name] = score(preds, df) | bootstrap_ci(
+                np.array([p.sentiment.value for p in preds]), df
+            )
             _flag_if_suspicious(per_dataset[name]["uar"], f"prosodic/{model_name}", name)
         per_model[model_name] = per_dataset
         logger.info(
@@ -294,7 +354,9 @@ def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
                     "macro_f1": result.macro_f1,
                     "psi_contested": result.psi_contested,
                     "psi_strict": result.psi_strict,
-                }
+                } | bootstrap_ci(
+                    np.array([p["predicted_sentiment"] for p in result.predictions]), df
+                )
                 _flag_if_suspicious(result.uar, "permissive", name)
                 logger.info(
                     "  permissive %-8s UAR=%.3f PSI=%.3f", name, result.uar, result.psi_contested
