@@ -41,6 +41,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import sys
@@ -82,6 +83,10 @@ PROSODIC_CACHE = CACHE_DIR / "features_prosodic.npz"
 WAVLM_CACHE = CACHE_DIR / "embeddings_wavlm-base.npz"
 
 PROSODIC_MODELS: tuple[str, ...] = ("logreg", "svm_rbf", "hist_gbdt")
+
+# Same ceiling ssa/train.py and scripts/train_prosodic.py use: SOTA
+# speaker-independent is below 0.90, so anything above it here is a bug.
+SUSPICIOUS_UAR = 0.90
 
 
 def e6_eval_sets(e6: pd.DataFrame) -> dict[str, pd.DataFrame]:
@@ -143,14 +148,44 @@ def zero_shot(e6: pd.DataFrame) -> dict[str, object]:
     return out
 
 
+def _flag_if_suspicious(value: float, model: str, dataset: str) -> None:
+    """Shout when a speaker-independent score exceeds the plausibility
+    ceiling. SOTA speaker-independent is below 0.90 (CLAUDE.md pinned
+    facts), so anything above it is a bug -- and this script has already
+    produced one. `ssa/train.py` and `scripts/train_prosodic.py` carry the
+    same guard; without it here, the leak showed up only as a number that
+    looked like very good news."""
+    if np.isfinite(value) and value > SUSPICIOUS_UAR:
+        logger.warning(
+            "  !! %s on %s scored UAR=%.3f, above the %.2f plausibility ceiling -- "
+            "suspect leakage before believing it",
+            model,
+            dataset,
+            value,
+            SUSPICIOUS_UAR,
+        )
+
+
 def _prosodic_combo(
     train_df: pd.DataFrame, eval_sets: dict[str, pd.DataFrame], cache: dict[str, np.ndarray]
 ) -> dict[str, object]:
-    """Fit every prosodic candidate on `train_df`, score on each eval set."""
-    X_train_raw, _ = embeddings_matrix(train_df, cache)
+    """Fit every prosodic candidate on `train_df`, score on each eval set.
+
+    Only `split == "train"` rows are fitted on. That restriction is not
+    cosmetic: the first run of this script fitted the whole manifest, so the
+    `e6train_only` combo trained on the validation speaker and was then
+    scored on her, returning UAR 1.000 -- above the 0.90 ceiling CLAUDE.md
+    names as the signature of leakage rather than success. `train_permissive`
+    has always honoured the split; this had to as well.
+    """
+    fit_rows = train_df[train_df["split"] == "train"].reset_index(drop=True)
+    if len(fit_rows) == 0:
+        raise ValueError("no split=='train' rows to fit on")
+
+    X_train_raw, _ = embeddings_matrix(fit_rows, cache)
     imputer = SimpleImputer(strategy="median").fit(X_train_raw)
     X_train = imputer.transform(X_train_raw)
-    y_train = train_df["prosody_sentiment"].to_numpy()
+    y_train = fit_rows["prosody_sentiment"].to_numpy()
 
     per_model: dict[str, object] = {}
     for model_name in PROSODIC_MODELS:
@@ -163,6 +198,7 @@ def _prosodic_combo(
                 pipeline.predict(X), pipeline.predict_proba(X), pipeline.classes_
             )
             per_dataset[name] = score(preds, df)
+            _flag_if_suspicious(per_dataset[name]["uar"], f"prosodic/{model_name}", name)
         per_model[model_name] = per_dataset
         logger.info(
             "  prosodic %-10s %s",
@@ -172,7 +208,10 @@ def _prosodic_combo(
                 for k, v in per_dataset.items()
             ),
         )
-    return per_model
+    # n_fit_rows is a sibling of the model map, never a member of it: mixing
+    # a scalar into a mapping whose values are all per-dataset score dicts is
+    # what made the previous run die halfway through the retraining pass.
+    return {"n_fit_rows": len(fit_rows), "models": per_model}
 
 
 def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
@@ -180,14 +219,26 @@ def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
     e6_train = e6[e6.split == "train"].reset_index(drop=True)
     e6_val = e6[e6.split == "val"].reset_index(drop=True)
     e6_test = e6[e6.split == "test"].reset_index(drop=True)
-    # e6_all is deliberately absent: it contains the training speakers.
-    eval_sets = {"e6_test": e6_test, "e6_val": e6_val}
 
     combos: dict[str, pd.DataFrame] = {
         "cremad_only": cremad,
         "cremad_plus_e6train": pd.concat([cremad, e6_train], ignore_index=True),
         "e6train_only": pd.concat([e6_train, e6_val], ignore_index=True),
     }
+
+    def eval_sets_for(combo_name: str) -> dict[str, pd.DataFrame]:
+        """`e6_test` is held out from everything. `e6_val` is Silvia, and
+        `e6train_only` uses her to *select* its model -- the permissive
+        probe picks its classifier on her, and she is this combo's only
+        validation data. A selection set is not a held-out set, so she is
+        dropped from that combo's evaluation rather than reported as one.
+        `e6_all` never appears here at all: it contains the training
+        speakers, and is honest only in the zero-shot pass.
+        """
+        sets = {"e6_test": e6_test}
+        if combo_name != "e6train_only":
+            sets["e6_val"] = e6_val
+        return sets
 
     prosodic_cache = extract_and_cache(
         pd.concat([cremad, e6], ignore_index=True),
@@ -205,7 +256,18 @@ def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
         # overlap slips through.
         assert_speaker_disjoint(train_manifest)
 
-        combo_out: dict[str, object] = {"n_train_rows": len(train_manifest)}
+        eval_sets = eval_sets_for(combo_name)
+        combo_out: dict[str, object] = {
+            "n_train_rows": len(train_manifest),
+            "n_fit_rows": int((train_manifest["split"] == "train").sum()),
+            "scored_on": sorted(eval_sets),
+        }
+        if combo_name == "e6train_only":
+            combo_out["e6_val_excluded_reason"] = (
+                "e6_val is this combo's model-selection set (it has no other validation "
+                "data), so scoring it there would report a selection score as a held-out "
+                "one. e6_test is untouched by every combo and is the comparable number."
+            )
 
         # --- Solution B, permissive backend -------------------------------
         manifest_path = CACHE_DIR / "combo_manifests" / f"e6_{combo_name}.csv"
@@ -233,6 +295,7 @@ def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
                     "psi_contested": result.psi_contested,
                     "psi_strict": result.psi_strict,
                 }
+                _flag_if_suspicious(result.uar, "permissive", name)
                 logger.info(
                     "  permissive %-8s UAR=%.3f PSI=%.3f", name, result.uar, result.psi_contested
                 )
@@ -248,7 +311,29 @@ def retrained(e6: pd.DataFrame, cremad: pd.DataFrame) -> dict[str, object]:
     return out
 
 
+def previous_zero_shot() -> dict[str, object]:
+    """Reuse the last run's zero-shot block verbatim.
+
+    Only valid because the zero-shot pass depends on nothing the
+    retraining half touches -- it scores the shipped models on E6 and
+    fits nothing. If that ever stops being true, this shortcut has to go.
+    """
+    if not SUMMARY_PATH.exists():
+        raise SystemExit("--retrain-only needs an existing summary to reuse; run once without it")
+    return json.loads(SUMMARY_PATH.read_text())["zero_shot"]
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--retrain-only",
+        action="store_true",
+        help="Skip the zero-shot pass and reuse its results from the existing summary. "
+        "The zero-shot pass runs ASR over every clip and is the slow half; the retraining "
+        "half is what changes when a combo or a split is corrected.",
+    )
+    args = parser.parse_args()
+
     if not E6_MANIFEST.exists():
         raise SystemExit(f"{E6_MANIFEST} not found -- run `make data-zurich` first")
 
@@ -272,7 +357,7 @@ def main() -> None:
         "speakers_by_split": {
             f"{s}/{sp}": int(n) for (s, sp), n in e6.groupby(["split", "speaker_id"]).size().items()
         },
-        "zero_shot": zero_shot(e6),
+        "zero_shot": previous_zero_shot() if args.retrain_only else zero_shot(e6),
         "retrained": retrained(e6, cremad),
     }
 

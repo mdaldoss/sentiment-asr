@@ -1,0 +1,262 @@
+{
+  "solution": "D:prosodic(egemaps+contour/svm_rbf)",
+  "dataset": "e6_test",
+  "split_type": "all",
+  "n_clips": 20,
+  "n_incongruent": 14,
+  "uar": 0.3333333333333333,
+  "macro_f1": 0.15384615384615385,
+  "accuracy": 0.3,
+  "ece": 0.6169592470908067,
+  "psi_contested": 0.5,
+  "psi_strict": 0.35714285714285715,
+  "confusion_matrix": [
+    [
+      6,
+      0,
+      0
+    ],
+    [
+      9,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ]
+  ],
+  "confusion_labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "abstention_rate": 0.0,
+  "latency_p50_ms": 610.18887299997,
+  "latency_p95_ms": 739.883377400031,
+  "git_sha": "2887ee1734c7518ee5e654b0069c9c005cee46c8",
+  "timestamp": "2026-09-20T20:13:24.962656+00:00",
+  "predictions": [
+    {
+      "clip_id": "e6_zurich_matteo_c7974cb0",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8829691624014179,
+      "abstained": false,
+      "latency_ms": 721.0050010000941,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_0d1d2a38",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8864110578512914,
+      "abstained": false,
+      "latency_ms": 854.3540719999783,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_d0115741",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8012799607423259,
+      "abstained": false,
+      "latency_ms": 583.5424930000954,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_ca8b0dc0",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9619187681404221,
+      "abstained": false,
+      "latency_ms": 525.7688099998177,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_7f4dfc85",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9091486010584775,
+      "abstained": false,
+      "latency_ms": 626.7650229999617,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_e2af3752",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9609001840910055,
+      "abstained": false,
+      "latency_ms": 584.1411629999129,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_a09ad786",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9620624250123426,
+      "abstained": false,
+      "latency_ms": 590.2209769999445,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_85a1e718",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.898532972709531,
+      "abstained": false,
+      "latency_ms": 699.8648379999395,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_38e5dbf5",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9568882910652747,
+      "abstained": false,
+      "latency_ms": 667.0571560000553,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_49a1b8aa",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9175572317354154,
+      "abstained": false,
+      "latency_ms": 530.5353700000524,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_5f35d260",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8910171493539734,
+      "abstained": false,
+      "latency_ms": 733.8586040000337,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_f0f8c41e",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9224590982627032,
+      "abstained": false,
+      "latency_ms": 620.5214909998631,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_eabace3f",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9357515481655427,
+      "abstained": false,
+      "latency_ms": 581.3789070000439,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_4b22ca99",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9191662418724423,
+      "abstained": false,
+      "latency_ms": 608.2066870001199,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_37a20630",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9302335898400999,
+      "abstained": false,
+      "latency_ms": 612.1710589998202,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_14de08e1",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9350487632154665,
+      "abstained": false,
+      "latency_ms": 723.5055239998474,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_38e3e9f4",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9234471166147472,
+      "abstained": false,
+      "latency_ms": 656.14609499994,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_662dfadd",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.925402559129521,
+      "abstained": false,
+      "latency_ms": 585.4248000000553,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_793efcac",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9336341783027017,
+      "abstained": false,
+      "latency_ms": 494.32232599997405,
+      "transcript": null
+    },
+    {
+      "clip_id": "e6_zurich_matteo_7a9a323c",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.885356042251432,
+      "abstained": false,
+      "latency_ms": 582.5397240000711,
+      "transcript": null
+    }
+  ]
+}

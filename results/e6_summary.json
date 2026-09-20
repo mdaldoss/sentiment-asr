@@ -1,0 +1,452 @@
+{
+  "dataset": "e6_zurich",
+  "n_clips": 120,
+  "n_speakers": 6,
+  "n_incongruent": 84,
+  "speakers_by_split": {
+    "test/zurich_matteo": 20,
+    "train/speaker1": 20,
+    "train/zurich_cate": 20,
+    "train/zurich_isinsu": 20,
+    "train/zurich_paoli": 20,
+    "val/zurich_silvia": 20
+  },
+  "zero_shot": {
+    "A:lexical(small+twitter-roberta-base-sentiment-latest)": {
+      "e6_test": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.35555555555555557,
+        "macro_f1": 0.34920634920634913,
+        "accuracy": 0.35,
+        "psi_contested": 0.18181818181818182,
+        "psi_strict": 0.14285714285714285
+      },
+      "e6_val": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.34920634920634913,
+        "macro_f1": 0.3298368298368299,
+        "accuracy": 0.35,
+        "psi_contested": 0.23076923076923078,
+        "psi_strict": 0.21428571428571427
+      },
+      "e6_all": {
+        "n_clips": 120,
+        "n_incongruent": 84,
+        "uar": 0.32112794612794615,
+        "macro_f1": 0.31555555555555553,
+        "accuracy": 0.31666666666666665,
+        "psi_contested": 0.1232876712328767,
+        "psi_strict": 0.10714285714285714
+      }
+    },
+    "B:acoustic(permissive/logreg)": {
+      "e6_test": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.2777777777777778,
+        "macro_f1": 0.13333333333333333,
+        "accuracy": 0.25,
+        "psi_contested": 0.4444444444444444,
+        "psi_strict": 0.2857142857142857
+      },
+      "e6_val": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.3968253968253968,
+        "macro_f1": 0.3996101364522417,
+        "accuracy": 0.4,
+        "psi_contested": 0.6,
+        "psi_strict": 0.42857142857142855
+      },
+      "e6_all": {
+        "n_clips": 120,
+        "n_incongruent": 84,
+        "uar": 0.38375420875420874,
+        "macro_f1": 0.34154734154734157,
+        "accuracy": 0.38333333333333336,
+        "psi_contested": 0.5789473684210527,
+        "psi_strict": 0.39285714285714285
+      }
+    },
+    "B:acoustic(research/audeering-vad)": {
+      "e6_test": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.2888888888888889,
+        "macro_f1": 0.20000000000000004,
+        "accuracy": 0.25,
+        "psi_contested": 0.36363636363636365,
+        "psi_strict": 0.2857142857142857
+      },
+      "e6_val": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.3888888888888889,
+        "macro_f1": 0.367003367003367,
+        "accuracy": 0.4,
+        "psi_contested": 0.625,
+        "psi_strict": 0.35714285714285715
+      },
+      "e6_all": {
+        "n_clips": 120,
+        "n_incongruent": 84,
+        "uar": 0.3589225589225589,
+        "macro_f1": 0.3319063316702305,
+        "accuracy": 0.35833333333333334,
+        "psi_contested": 0.3968253968253968,
+        "psi_strict": 0.2976190476190476
+      }
+    },
+    "C:fusion(A:lexical(small+twitter-roberta-base-sentiment-latest)+B:acoustic(permissive/logreg))": {
+      "e6_test": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.2222222222222222,
+        "macro_f1": 0.1111111111111111,
+        "accuracy": 0.2,
+        "psi_contested": 0.3333333333333333,
+        "psi_strict": 0.21428571428571427
+      },
+      "e6_val": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.4444444444444444,
+        "macro_f1": 0.436026936026936,
+        "accuracy": 0.45,
+        "psi_contested": 0.6363636363636364,
+        "psi_strict": 0.5
+      },
+      "e6_all": {
+        "n_clips": 120,
+        "n_incongruent": 84,
+        "uar": 0.3828282828282829,
+        "macro_f1": 0.3344038846227153,
+        "accuracy": 0.38333333333333336,
+        "psi_contested": 0.5517241379310345,
+        "psi_strict": 0.38095238095238093
+      }
+    },
+    "D:prosodic(egemaps+contour/svm_rbf)": {
+      "e6_test": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.15384615384615385,
+        "accuracy": 0.3,
+        "psi_contested": 0.5,
+        "psi_strict": 0.35714285714285715
+      },
+      "e6_val": {
+        "n_clips": 20,
+        "n_incongruent": 14,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.1728395061728395,
+        "accuracy": 0.35,
+        "psi_contested": 0.5555555555555556,
+        "psi_strict": 0.35714285714285715
+      },
+      "e6_all": {
+        "n_clips": 120,
+        "n_incongruent": 84,
+        "uar": 0.3333333333333333,
+        "macro_f1": 0.16666666666666666,
+        "accuracy": 0.3333333333333333,
+        "psi_contested": 0.5454545454545454,
+        "psi_strict": 0.35714285714285715
+      }
+    }
+  },
+  "retrained": {
+    "cremad_only": {
+      "n_train_rows": 7442,
+      "permissive": {
+        "fit": {
+          "val_uar": 0.784428620877219,
+          "val_macro_f1": 0.7530865358733422,
+          "model_type": "logreg"
+        },
+        "eval": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.2777777777777778,
+            "macro_f1": 0.13333333333333333,
+            "psi_contested": 0.4444444444444444,
+            "psi_strict": 0.2857142857142857
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.3968253968253968,
+            "macro_f1": 0.3996101364522417,
+            "psi_contested": 0.6,
+            "psi_strict": 0.42857142857142855
+          }
+        }
+      },
+      "prosodic": {
+        "logreg": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.15384615384615385,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.1728395061728395,
+            "psi_contested": 0.5555555555555556,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          }
+        },
+        "svm_rbf": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.15384615384615385,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.1728395061728395,
+            "psi_contested": 0.5555555555555556,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          }
+        },
+        "hist_gbdt": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.15384615384615385,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.1728395061728395,
+            "psi_contested": 0.5555555555555556,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 1.0,
+            "is_degenerate": true
+          }
+        }
+      }
+    },
+    "cremad_plus_e6train": {
+      "n_train_rows": 7522,
+      "permissive": {
+        "fit": {
+          "val_uar": 0.7973779854620977,
+          "val_macro_f1": 0.769545525071948,
+          "model_type": "logreg"
+        },
+        "eval": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.31851851851851853,
+            "macro_f1": 0.3107546048722519,
+            "psi_contested": 0.4444444444444444,
+            "psi_strict": 0.2857142857142857
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.41269841269841273,
+            "macro_f1": 0.394896331738437,
+            "psi_contested": 0.75,
+            "psi_strict": 0.42857142857142855
+          }
+        }
+      },
+      "prosodic": {
+        "logreg": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3444444444444444,
+            "macro_f1": 0.3427350427350428,
+            "psi_contested": 0.5555555555555556,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 0.35,
+            "is_degenerate": false
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.34126984126984133,
+            "macro_f1": 0.29947089947089944,
+            "psi_contested": 0.5555555555555556,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 0.7,
+            "is_degenerate": false
+          }
+        },
+        "svm_rbf": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.4925925925925925,
+            "macro_f1": 0.4579831932773109,
+            "psi_contested": 0.8181818181818182,
+            "psi_strict": 0.6428571428571429,
+            "top_class": "negative",
+            "top_class_share": 0.55,
+            "is_degenerate": false
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.373015873015873,
+            "macro_f1": 0.2920634920634921,
+            "psi_contested": 0.6666666666666666,
+            "psi_strict": 0.42857142857142855,
+            "top_class": "positive",
+            "top_class_share": 0.75,
+            "is_degenerate": false
+          }
+        },
+        "hist_gbdt": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3259259259259259,
+            "macro_f1": 0.337037037037037,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "neutral",
+            "top_class_share": 0.45,
+            "is_degenerate": false
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.21428571428571427,
+            "macro_f1": 0.17777777777777778,
+            "psi_contested": 0.4,
+            "psi_strict": 0.2857142857142857,
+            "top_class": "positive",
+            "top_class_share": 0.6,
+            "is_degenerate": false
+          }
+        }
+      }
+    },
+    "e6train_only": {
+      "n_train_rows": 100,
+      "permissive": {
+        "fit": {
+          "val_uar": 0.42857142857142855,
+          "val_macro_f1": 0.30303030303030304,
+          "model_type": "logreg"
+        },
+        "eval": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.4518518518518519,
+            "macro_f1": 0.402930402930403,
+            "psi_contested": 0.7,
+            "psi_strict": 0.5
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.42857142857142855,
+            "macro_f1": 0.30303030303030304,
+            "psi_contested": 0.7,
+            "psi_strict": 0.5
+          }
+        }
+      },
+      "prosodic": {
+        "logreg": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.3703703703703704,
+            "macro_f1": 0.3181286549707602,
+            "psi_contested": 0.45454545454545453,
+            "psi_strict": 0.35714285714285715,
+            "top_class": "negative",
+            "top_class_share": 0.65,
+            "is_degenerate": false
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 1.0,
+            "macro_f1": 1.0,
+            "psi_contested": 1.0,
+            "psi_strict": 1.0,
+            "top_class": "neutral",
+            "top_class_share": 0.35,
+            "is_degenerate": false
+          }
+        },
+        "svm_rbf": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.2777777777777778,
+            "macro_f1": 0.13333333333333333,
+            "psi_contested": 0.4444444444444444,
+            "psi_strict": 0.2857142857142857,
+            "top_class": "negative",
+            "top_class_share": 0.95,
+            "is_degenerate": true
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.8095238095238094,
+            "macro_f1": 0.7965811965811967,
+            "psi_contested": 0.9166666666666666,
+            "psi_strict": 0.7857142857142857,
+            "top_class": "positive",
+            "top_class_share": 0.45,
+            "is_degenerate": false
+          }
+        },
+        "hist_gbdt": {
+          "e6_test": {
+            "n_clips": 20,
+            "uar": 0.4185185185185185,
+            "macro_f1": 0.36327561327561325,
+            "psi_contested": 0.6,
+            "psi_strict": 0.42857142857142855,
+            "top_class": "negative",
+            "top_class_share": 0.75,
+            "is_degenerate": false
+          },
+          "e6_val": {
+            "n_clips": 20,
+            "uar": 0.9523809523809524,
+            "macro_f1": 0.9487179487179488,
+            "psi_contested": 1.0,
+            "psi_strict": 1.0,
+            "top_class": "neutral",
+            "top_class_share": 0.35,
+            "is_degenerate": false
+          }
+        }
+      }
+    }
+  },
+  "interpretation": "zero_shot is the cross-corpus generalisation number this project has listed as missing from the start: models fitted on CREMA-D (acted, American, studio, fixed neutral sentences) meeting six European speakers on laptop microphones. retrained asks whether 80 clips from four matched speakers beat 5,235 acted ones. Read PSI beside UAR: E6 is 70% incongruent, so a model that reads the words rather than hearing the delivery is penalised here in a way CREMA-D's always-neutral text cannot penalise it.",
+  "caveats": [
+    "E6's test split is ONE speaker and 20 clips; its val split is one speaker and 20. Differences of a few points between combos are not resolvable at that size, and no confidence intervals are computed.",
+    "text_sentiment on E6 is assigned by hand from the sentence text (see scripts/build_zurich.py) because the dataset labels intended delivery only. PSI here therefore depends on that labelling in a way it does not for E5, where the text valence was fixed by design before any audio existed.",
+    "One E6 training speaker also recorded E3, and carries E3's speaker1 id. No combo that trains on E6 is scored on E3 anywhere in this script.",
+    "e6_all (120 clips) includes the training speakers and appears only in the zero-shot pass, where no model has been fitted on any E6 audio."
+  ]
+}
