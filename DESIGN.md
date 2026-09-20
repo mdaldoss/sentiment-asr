@@ -393,6 +393,93 @@ drawn from comparing an in-domain fit against a cross-domain transfer. Measured 
 prosodic features *do* win on the real voice — but the headline is that both
 representations lose far more to the training corpus than they differ from each other.
 
+## Per-speaker normalisation: the fragility diagnosis survives its test
+
+Finding 3 above was an *argument*: prosodic features transfer badly because absolute
+pitch, loudness and harmonicity move with microphone, room and voice, so removing each
+speaker's own baseline should recover most of the loss. That argument makes a falsifiable
+prediction, and `scripts/normalise_speaker.py` runs it — four normalisation schemes on
+both representations, everything trained on CREMA-D's speaker-disjoint split and applied
+cold (`results/speaker_normalisation.json`).
+
+**Prosodic features, UAR out of domain** (chance 0.333; CREMA-D's own test split shown
+for reference):
+
+| Model | Scheme | e3a | e3b | E5 | CREMA-D test |
+|---|---|--:|--:|--:|--:|
+| logreg | raw | 0.370 | 0.407 | 0.278 | 0.646 |
+| | dataset_z | 0.444 | 0.259 | 0.389 | 0.629 |
+| | **speaker_z** | **0.556** | **0.630** | **0.611** | **0.675** |
+| | speaker_z_loo | 0.556 | 0.630 | 0.600 | 0.673 |
+| svm_rbf | raw | 0.370 | 0.370 | 0.333 | 0.684 |
+| | dataset_z | 0.630 | 0.704 | 0.589 | 0.670 |
+| | **speaker_z** | **0.630** | **0.630** | **0.611** | **0.703** |
+| | speaker_z_loo | 0.556 | 0.630 | 0.544 | 0.684 |
+| hist_gbdt | raw | 0.333 | 0.333 | 0.333 | 0.638 |
+| | dataset_z | 0.519 | 0.519 | 0.522 | 0.591 |
+| | **speaker_z** | **0.593** | **0.667** | **0.600** | **0.667** |
+| | speaker_z_loo | 0.556 | 0.556 | 0.589 | 0.666 |
+
+(`linear_svm` is in the JSON and omitted here: it is the weakest candidate under every
+scheme and adds nothing to the comparison.)
+
+**The same treatment on WavLM** (logreg, the classifier the representation comparison
+used): raw 0.444 / 0.519 / 0.511 → speaker_z 0.593 / 0.481 / 0.456. One gain, two losses,
+net nothing.
+
+**That asymmetry is the result.** Normalisation recovers the prosodic features
+specifically (+0.19 to +0.33 UAR out of domain) and does essentially nothing for the
+learned representation — which is exactly what the fragility diagnosis predicted, because
+a representation that never had a speaker-offset problem has none to fix. The argument
+in finding 3 is now a measurement.
+
+**Three things matter more than the UAR numbers.**
+
+1. **It stops the models collapsing.** Under `raw`, **9 of 12** out-of-domain
+   (model, dataset) pairs were degenerate — predicting one class for ≥95% of clips, which
+   is what puts UAR at exactly 0.333 and PSI at exactly 0.500 and makes a collapsed model
+   read as an ordinary weak one. Under *every* normalisation scheme: **0 of 12**. Three of
+   the four classifiers were not weak out of domain, they were dead, and this is what
+   revived them.
+
+2. **PSI on E5 — the metric this project exists to move.** The prosodic models sat at
+   0.378–0.500 raw and reach **0.714–0.750** under `speaker_z`, above the permissive
+   backend's 0.682 on identical audio and far above the audeering model's 0.211. A
+   classifier with no neural network, structurally incapable of representing a word, is
+   the most prosody-sensitive thing measured anywhere in this repo.
+
+3. **The gain is not self-normalisation leakage.** `speaker_z_loo` — where a clip's own
+   values never enter its own normalisation — lands within a few points of `speaker_z`
+   throughout. That was the obvious way for a result this size to be an artefact, and it
+   isn't.
+
+**Where the benefit actually comes from is not where you would guess.** On E3 there is
+exactly one speaker, so `dataset_z` and `speaker_z` are the *same* transformation on the
+evaluation side; the entire difference between those rows is how **CREMA-D** was
+normalised — pooled across all 64 training actors, or within each. For logreg on e3b that
+is 0.259 vs 0.630, a 0.37 UAR gap with the evaluation-side transform held identical.
+Normalising the *training corpus* per speaker is doing at least as much work as
+normalising the user, which is worth knowing because the training side needs no pool of
+the user's audio and carries none of the caveats below.
+
+### What this does not license
+
+**It is transductive and cannot become Solution D.** Per-speaker statistics need a pool of
+that speaker's clips; `predict(clip)` has one clip. `speaker_z_loo` removes the
+self-normalisation leak but not the pool requirement. For Ami — one user, audio
+accumulating over weeks — a running per-speaker baseline is realistic, and this is a
+small-sample stand-in for the longitudinal baselining this document argues for elsewhere.
+It is not a change to the shipped model, and the numbers above are not deployment numbers.
+
+**Every evaluation set here is class-balanced per speaker by construction** (E3: 9 per
+sentiment per take; E5: 15 per delivery per voice; CREMA-D: every actor reads every
+emotion). Mean removal uses no labels, but it implicitly assumes a label *distribution*:
+under balance, a speaker's mean sits near the average of the three class centroids, which
+is precisely the condition that lets a boundary fitted on another corpus land correctly.
+A user who is mostly low-mood would have that mood partly normalised away, because the
+baseline and the signal are the same quantity. The next section measures what that
+assumption is worth instead of leaving it as an argument.
+
 ## Backend x training-data comparison
 
 Requested directly: does folding the user's own recordings (E3) and/or the Hume
