@@ -162,6 +162,29 @@ class ProsodicExtractor:
         return vector
 
 
+class MemoizingExtractor:
+    """Extracts each clip once, keyed by clip_id.
+
+    Scoring several candidate classifiers over the same evaluation set
+    otherwise re-runs openSMILE and Praat once per classifier, which is
+    the dominant cost (~0.6s/clip) and produces identical vectors every
+    time. Shared between solutions, it makes a four-model comparison cost
+    what one model costs.
+    """
+
+    def __init__(self, inner: ProsodicExtractor | None = None) -> None:
+        self._inner = inner if inner is not None else ProsodicExtractor()
+        self._cache: dict[str, np.ndarray] = {}
+        self.name = self._inner.name
+
+    def embed(self, clip: AudioClip) -> np.ndarray:
+        cached = self._cache.get(clip.clip_id)
+        if cached is None:
+            cached = self._inner.embed(clip)
+            self._cache[clip.clip_id] = cached
+        return cached
+
+
 def describe(vector: np.ndarray, top_k: int = 8) -> list[tuple[str, float]]:
     """Name the largest-magnitude features of one vector -- the readable
     counterpart to an embedding, useful when explaining a prediction."""

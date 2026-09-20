@@ -45,15 +45,27 @@ class ProsodicSolution:
         self,
         model_path: Path = DEFAULT_MODEL_PATH,
         *,
+        model_type: str | None = None,
         extractor: ProsodicExtractor | None = None,
     ) -> None:
+        """`model_type` picks one of the fitted candidates; the default is
+        whichever the training run selected. Being able to name one matters
+        because the in-domain winner is not necessarily the one that still
+        works on a new speaker -- see scripts/eval_prosodic.py."""
         if not model_path.exists():
             raise FileNotFoundError(
                 f"no prosodic model at {model_path} -- run `make train-prosodic` first"
             )
         bundle = joblib.load(model_path)
-        self._pipeline = bundle["pipeline"]
-        self._model_type = bundle["model_type"]
+        if model_type is None:
+            self._pipeline = bundle["pipeline"]
+            self._model_type = bundle["model_type"]
+        else:
+            available = bundle.get("pipelines", {})
+            if model_type not in available:
+                raise KeyError(f"no fitted {model_type!r}; have {sorted(available)}")
+            self._pipeline = available[model_type]
+            self._model_type = model_type
         self._extractor = extractor if extractor is not None else ProsodicExtractor()
         self.name = f"D:prosodic(egemaps+contour/{self._model_type})"
 

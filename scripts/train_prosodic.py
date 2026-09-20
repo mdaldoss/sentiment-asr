@@ -125,11 +125,13 @@ def main() -> None:
     logger.info("train %s, val %s, %d features", X_train.shape, X_val.shape, len(FEATURE_NAMES))
 
     scores: dict[str, dict[str, float]] = {}
+    fitted: dict[str, Pipeline] = {}
     best_name, best_pipeline, best_uar = "", None, -1.0
 
     for name, clf in candidates().items():
         pipeline = build_pipeline(clf)
         pipeline.fit(X_train, y_train_str)
+        fitted[name] = pipeline
         pred = [Sentiment(s) for s in pipeline.predict(X_val)]
         val_uar, val_f1 = uar(y_val, pred), macro_f1(y_val, pred)
         scores[name] = {"val_uar": val_uar, "val_macro_f1": val_f1}
@@ -145,11 +147,18 @@ def main() -> None:
             SUSPICIOUS_UAR,
         )
 
+    # Every fitted pipeline is kept, not only the selected one. Selecting on
+    # CREMA-D's validation split is selecting in-domain, and the first run of
+    # this script showed that picking the in-domain winner (svm_rbf, 0.703)
+    # chose the candidate that collapses to a single class on out-of-domain
+    # audio. Keeping all four lets the evaluation score them everywhere and
+    # decide on evidence that includes the domains we actually care about.
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(
         {
             "pipeline": best_pipeline,
             "model_type": best_name,
+            "pipelines": fitted,
             "feature_names": list(FEATURE_NAMES),
         },
         MODEL_PATH,
