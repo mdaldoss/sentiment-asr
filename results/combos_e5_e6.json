@@ -1,0 +1,763 @@
+{
+  "training_sets": {
+    "cremad": 5235,
+    "e6": 100,
+    "e5": 45,
+    "e5_e6": 145,
+    "cremad_e5_e6": 5380
+  },
+  "results": {
+    "cremad": {
+      "n_train_clips": 5235,
+      "n_train_speakers": 64,
+      "train_class_counts": {
+        "negative": 3576,
+        "positive": 894,
+        "neutral": 765
+      },
+      "eval": {
+        "cremad_test": {
+          "n_clips": 300,
+          "n_incongruent": 256,
+          "uar": 0.7822688868599915,
+          "macro_f1": 0.7739855562414871,
+          "psi_contested": 0.9393939393939394,
+          "psi_strict": 0.84765625,
+          "predicted_class_share": {
+            "neutral": 0.16,
+            "negative": 0.67,
+            "positive": 0.17
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.7202040600581284,
+            "hi": 0.8407675380407941
+          },
+          "psi_contested_ci95": {
+            "lo": 0.9063829787234042,
+            "hi": 0.9661052706858327
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_val": {
+          "n_clips": 40,
+          "n_incongruent": 30,
+          "uar": 0.32967032967032966,
+          "macro_f1": 0.29792663476874,
+          "psi_contested": 0.5,
+          "psi_strict": 0.3333333333333333,
+          "predicted_class_share": {
+            "neutral": 0.225,
+            "negative": 0.625,
+            "positive": 0.15
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.19435966810966812,
+            "hi": 0.46907113719613713
+          },
+          "psi_contested_ci95": {
+            "lo": 0.2777777777777778,
+            "hi": 0.7333333333333333
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_test": {
+          "n_clips": 20,
+          "n_incongruent": 14,
+          "uar": 0.2777777777777778,
+          "macro_f1": 0.13333333333333333,
+          "psi_contested": 0.4444444444444444,
+          "psi_strict": 0.2857142857142857,
+          "predicted_class_share": {
+            "negative": 0.95,
+            "positive": 0.05
+          },
+          "is_degenerate": true,
+          "uar_ci95": {
+            "lo": 0.16666666666666666,
+            "hi": 0.3333333333333333
+          },
+          "psi_contested_ci95": {
+            "lo": 0.125,
+            "hi": 0.8
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_heldout_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.5555555555555555,
+          "macro_f1": 0.5465824498082562,
+          "psi_contested": 0.7272727272727273,
+          "psi_strict": 0.5333333333333333,
+          "predicted_class_share": {
+            "neutral": 0.4,
+            "negative": 0.35555555555555557,
+            "positive": 0.24444444444444444
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.4054367690058479,
+            "hi": 0.6975981620718462
+          },
+          "psi_contested_ci95": {
+            "lo": 0.5263157894736842,
+            "hi": 0.9047619047619048
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_train_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.4666666666666666,
+          "macro_f1": 0.4345238095238095,
+          "psi_contested": 0.6363636363636364,
+          "psi_strict": 0.4666666666666667,
+          "predicted_class_share": {
+            "positive": 0.13333333333333333,
+            "negative": 0.7333333333333333,
+            "neutral": 0.13333333333333333
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.3493983119563615,
+            "hi": 0.602574428495481
+          },
+          "psi_contested_ci95": {
+            "lo": 0.42857142857142855,
+            "hi": 0.8333333333333334
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e3": {
+          "n_clips": 54,
+          "n_incongruent": 36,
+          "uar": 0.48148148148148145,
+          "macro_f1": 0.42083333333333334,
+          "psi_contested": 0.6296296296296297,
+          "psi_strict": 0.4722222222222222,
+          "predicted_class_share": {
+            "negative": 0.8518518518518519,
+            "positive": 0.037037037037037035,
+            "neutral": 0.1111111111111111
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.3958333333333333,
+            "hi": 0.5730280518004301
+          },
+          "psi_contested_ci95": {
+            "lo": 0.4443627450980392,
+            "hi": 0.8148148148148148
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        }
+      }
+    },
+    "e6": {
+      "n_train_clips": 100,
+      "n_train_speakers": 5,
+      "train_class_counts": {
+        "positive": 34,
+        "negative": 32,
+        "neutral": 34
+      },
+      "eval": {
+        "cremad_test": {
+          "n_clips": 300,
+          "n_incongruent": 256,
+          "uar": 0.34842108314131276,
+          "macro_f1": 0.147791510350844,
+          "psi_contested": 0.8382352941176471,
+          "psi_strict": 0.22265625,
+          "predicted_class_share": {
+            "positive": 0.9233333333333333,
+            "negative": 0.03333333333333333,
+            "neutral": 0.043333333333333335
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.31951567898708855,
+            "hi": 0.37877917498565195
+          },
+          "psi_contested_ci95": {
+            "lo": 0.75,
+            "hi": 0.9245494226978315
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_val": {
+          "n_clips": 40,
+          "n_incongruent": 30,
+          "uar": 0.32234432234432236,
+          "macro_f1": 0.3106332138590203,
+          "psi_contested": 0.5263157894736842,
+          "psi_strict": 0.3333333333333333,
+          "predicted_class_share": {
+            "neutral": 0.125,
+            "negative": 0.45,
+            "positive": 0.425
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.18461161387631977,
+            "hi": 0.4712937574121785
+          },
+          "psi_contested_ci95": {
+            "lo": 0.3,
+            "hi": 0.75
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_test": {
+          "n_clips": 20,
+          "n_incongruent": 14,
+          "uar": 0.3111111111111111,
+          "macro_f1": 0.22857142857142856,
+          "psi_contested": 0.4444444444444444,
+          "psi_strict": 0.2857142857142857,
+          "predicted_class_share": {
+            "positive": 0.5,
+            "negative": 0.4,
+            "neutral": 0.1
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.1111111111111111,
+            "hi": 0.5238095238095238
+          },
+          "psi_contested_ci95": {
+            "lo": 0.125,
+            "hi": 0.7777777777777778
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_heldout_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.4222222222222222,
+          "macro_f1": 0.3777437033250987,
+          "psi_contested": 0.7368421052631579,
+          "psi_strict": 0.4666666666666667,
+          "predicted_class_share": {
+            "negative": 0.6222222222222222,
+            "neutral": 0.13333333333333333,
+            "positive": 0.24444444444444444
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.2989731347084288,
+            "hi": 0.548848039215686
+          },
+          "psi_contested_ci95": {
+            "lo": 0.5294117647058824,
+            "hi": 0.9167499999999995
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_train_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.5333333333333333,
+          "macro_f1": 0.47177177177177176,
+          "psi_contested": 0.72,
+          "psi_strict": 0.6,
+          "predicted_class_share": {
+            "neutral": 0.1111111111111111,
+            "positive": 0.4888888888888889,
+            "negative": 0.4
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.41829986802413277,
+            "hi": 0.6352270299145298
+          },
+          "psi_contested_ci95": {
+            "lo": 0.5384615384615384,
+            "hi": 0.8928571428571429
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e3": {
+          "excluded_reason": "trained on ['speaker1'], who also recorded E3 -- scoring here would put the same speaker on both sides of the split"
+        }
+      }
+    },
+    "e5": {
+      "n_train_clips": 45,
+      "n_train_speakers": 1,
+      "train_class_counts": {
+        "positive": 15,
+        "neutral": 15,
+        "negative": 15
+      },
+      "eval": {
+        "cremad_test": {
+          "n_clips": 300,
+          "n_incongruent": 256,
+          "uar": 0.3840144631392837,
+          "macro_f1": 0.33718940823647,
+          "psi_contested": 0.9870967741935484,
+          "psi_strict": 0.59765625,
+          "predicted_class_share": {
+            "negative": 0.59,
+            "neutral": 0.01,
+            "positive": 0.4
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.33238020552664593,
+            "hi": 0.4360347563060707
+          },
+          "psi_contested_ci95": {
+            "lo": 0.967741935483871,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_val": {
+          "n_clips": 40,
+          "n_incongruent": 30,
+          "uar": 0.521978021978022,
+          "macro_f1": 0.42589118198874293,
+          "psi_contested": 0.7083333333333334,
+          "psi_strict": 0.5666666666666667,
+          "predicted_class_share": {
+            "negative": 0.7,
+            "positive": 0.3
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.41945663985137666,
+            "hi": 0.616813088871912
+          },
+          "psi_contested_ci95": {
+            "lo": 0.519962962962963,
+            "hi": 0.88
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_test": {
+          "n_clips": 20,
+          "n_incongruent": 14,
+          "uar": 0.35185185185185186,
+          "macro_f1": 0.2727272727272727,
+          "psi_contested": 0.4444444444444444,
+          "psi_strict": 0.2857142857142857,
+          "predicted_class_share": {
+            "neutral": 0.1,
+            "negative": 0.8,
+            "positive": 0.1
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.20196969696969694,
+            "hi": 0.48484848484848486
+          },
+          "psi_contested_ci95": {
+            "lo": 0.125,
+            "hi": 0.8
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_heldout_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.7333333333333334,
+          "macro_f1": 0.724376550463507,
+          "psi_contested": 0.88,
+          "psi_strict": 0.7333333333333333,
+          "predicted_class_share": {
+            "positive": 0.4888888888888889,
+            "neutral": 0.3333333333333333,
+            "negative": 0.17777777777777778
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.6094594943240453,
+            "hi": 0.8500066844919786
+          },
+          "psi_contested_ci95": {
+            "lo": 0.7391304347826086,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_train_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 1.0,
+          "macro_f1": 1.0,
+          "psi_contested": 1.0,
+          "psi_strict": 1.0,
+          "predicted_class_share": {
+            "positive": 0.3333333333333333,
+            "neutral": 0.3333333333333333,
+            "negative": 0.3333333333333333
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "psi_contested_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": true,
+          "overlapping_speakers": [
+            "hume_ava_song"
+          ]
+        },
+        "e3": {
+          "n_clips": 54,
+          "n_incongruent": 36,
+          "uar": 0.3703703703703704,
+          "macro_f1": 0.28964368964368964,
+          "psi_contested": 0.6,
+          "psi_strict": 0.4166666666666667,
+          "predicted_class_share": {
+            "negative": 0.8703703703703703,
+            "neutral": 0.07407407407407407,
+            "positive": 0.05555555555555555
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.2916624493927126,
+            "hi": 0.4571459096459096
+          },
+          "psi_contested_ci95": {
+            "lo": 0.39391233766233763,
+            "hi": 0.7916666666666666
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        }
+      }
+    },
+    "e5_e6": {
+      "n_train_clips": 145,
+      "n_train_speakers": 6,
+      "train_class_counts": {
+        "positive": 49,
+        "neutral": 49,
+        "negative": 47
+      },
+      "eval": {
+        "cremad_test": {
+          "n_clips": 300,
+          "n_incongruent": 256,
+          "uar": 0.37654884570236075,
+          "macro_f1": 0.20869007535674203,
+          "psi_contested": 0.918918918918919,
+          "psi_strict": 0.265625,
+          "predicted_class_share": {
+            "positive": 0.88,
+            "negative": 0.08666666666666667,
+            "neutral": 0.03333333333333333
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.34026347989910705,
+            "hi": 0.4159175391462533
+          },
+          "psi_contested_ci95": {
+            "lo": 0.85,
+            "hi": 0.9736842105263158
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_val": {
+          "n_clips": 40,
+          "n_incongruent": 30,
+          "uar": 0.37362637362637363,
+          "macro_f1": 0.33052362707535116,
+          "psi_contested": 0.5714285714285714,
+          "psi_strict": 0.4,
+          "predicted_class_share": {
+            "negative": 0.575,
+            "positive": 0.375,
+            "neutral": 0.05
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.24441798941798945,
+            "hi": 0.5100541728008834
+          },
+          "psi_contested_ci95": {
+            "lo": 0.36363636363636365,
+            "hi": 0.777898550724637
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_test": {
+          "n_clips": 20,
+          "n_incongruent": 14,
+          "uar": 0.38518518518518513,
+          "macro_f1": 0.347985347985348,
+          "psi_contested": 0.5555555555555556,
+          "psi_strict": 0.35714285714285715,
+          "predicted_class_share": {
+            "neutral": 0.2,
+            "negative": 0.35,
+            "positive": 0.45
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.16666666666666666,
+            "hi": 0.6260912698412697
+          },
+          "psi_contested_ci95": {
+            "lo": 0.2222222222222222,
+            "hi": 0.875
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_heldout_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.6888888888888888,
+          "macro_f1": 0.682252388134741,
+          "psi_contested": 0.92,
+          "psi_strict": 0.7666666666666667,
+          "predicted_class_share": {
+            "negative": 0.24444444444444444,
+            "neutral": 0.3333333333333333,
+            "positive": 0.4222222222222222
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.548603726747109,
+            "hi": 0.8109584995614406
+          },
+          "psi_contested_ci95": {
+            "lo": 0.8,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_train_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 1.0,
+          "macro_f1": 1.0,
+          "psi_contested": 1.0,
+          "psi_strict": 1.0,
+          "predicted_class_share": {
+            "positive": 0.3333333333333333,
+            "neutral": 0.3333333333333333,
+            "negative": 0.3333333333333333
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "psi_contested_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": true,
+          "overlapping_speakers": [
+            "hume_ava_song"
+          ]
+        },
+        "e3": {
+          "excluded_reason": "trained on ['speaker1'], who also recorded E3 -- scoring here would put the same speaker on both sides of the split"
+        }
+      }
+    },
+    "cremad_e5_e6": {
+      "n_train_clips": 5380,
+      "n_train_speakers": 70,
+      "train_class_counts": {
+        "negative": 3623,
+        "positive": 943,
+        "neutral": 814
+      },
+      "eval": {
+        "cremad_test": {
+          "n_clips": 300,
+          "n_incongruent": 256,
+          "uar": 0.7839267857919222,
+          "macro_f1": 0.769148115031601,
+          "psi_contested": 0.9347826086956522,
+          "psi_strict": 0.83984375,
+          "predicted_class_share": {
+            "neutral": 0.16333333333333333,
+            "negative": 0.6566666666666666,
+            "positive": 0.18
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.7202774574237162,
+            "hi": 0.8441847561820653
+          },
+          "psi_contested_ci95": {
+            "lo": 0.900422077922078,
+            "hi": 0.963963963963964
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_val": {
+          "n_clips": 40,
+          "n_incongruent": 30,
+          "uar": 0.4010989010989012,
+          "macro_f1": 0.40027671349510435,
+          "psi_contested": 0.631578947368421,
+          "psi_strict": 0.4,
+          "predicted_class_share": {
+            "neutral": 0.275,
+            "negative": 0.4,
+            "positive": 0.325
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.2462896825396825,
+            "hi": 0.5579532987437399
+          },
+          "psi_contested_ci95": {
+            "lo": 0.41169786096256683,
+            "hi": 0.8422064777327929
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e6_test": {
+          "n_clips": 20,
+          "n_incongruent": 14,
+          "uar": 0.3444444444444444,
+          "macro_f1": 0.33903133903133903,
+          "psi_contested": 0.6,
+          "psi_strict": 0.42857142857142855,
+          "predicted_class_share": {
+            "positive": 0.2,
+            "negative": 0.6,
+            "neutral": 0.2
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.1388798701298701,
+            "hi": 0.5833928571428568
+          },
+          "psi_contested_ci95": {
+            "lo": 0.2857142857142857,
+            "hi": 0.9
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_heldout_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 0.6,
+          "macro_f1": 0.6093181818181818,
+          "psi_contested": 0.8421052631578947,
+          "psi_strict": 0.5333333333333333,
+          "predicted_class_share": {
+            "positive": 0.37777777777777777,
+            "neutral": 0.4,
+            "negative": 0.2222222222222222
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 0.4425474035768153,
+            "hi": 0.7444505718954249
+          },
+          "psi_contested_ci95": {
+            "lo": 0.6470588235294118,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": false,
+          "overlapping_speakers": []
+        },
+        "e5_train_voice": {
+          "n_clips": 45,
+          "n_incongruent": 30,
+          "uar": 1.0,
+          "macro_f1": 1.0,
+          "psi_contested": 1.0,
+          "psi_strict": 1.0,
+          "predicted_class_share": {
+            "positive": 0.3333333333333333,
+            "neutral": 0.3333333333333333,
+            "negative": 0.3333333333333333
+          },
+          "is_degenerate": false,
+          "uar_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "psi_contested_ci95": {
+            "lo": 1.0,
+            "hi": 1.0
+          },
+          "n_boot": 2000,
+          "in_domain": true,
+          "overlapping_speakers": [
+            "hume_ava_song"
+          ]
+        },
+        "e3": {
+          "excluded_reason": "trained on ['speaker1'], who also recorded E3 -- scoring here would put the same speaker on both sides of the split"
+        }
+      }
+    }
+  },
+  "method": "Frozen WavLM-base embeddings into StandardScaler + LogisticRegression(max_iter=2000, class_weight='balanced') -- the permissive backend's primary path, held identical across all five training sets so the only thing that varies is the training data. 95% intervals are a percentile bootstrap over clips. cremad_test is the 300-clip stratified subset used by the other comparison tables.",
+  "e5_split_note": "E5 has exactly two voices. hume_ava_song trains; hume_colton_rivers is held out of every training set here and is the only honest E5 evaluation. e5_train_voice is reported too, flagged in_domain for the models that trained on it -- the gap between the two columns is what a 45-clip, single-voice training set actually buys.",
+  "caveats": [
+    "TRAINING ON E5 BREAKS THIS PROJECT'S OWN DESIGN RULE. DESIGN.md designates E5 eval-only: it is the instrument that measures prosody sensitivity under contradiction. A model trained on it can no longer use it as a clean PSI instrument, so read the cross-corpus columns for those rows.",
+    "Sample sizes are wildly unequal by design: 45 clips and one voice for e5, 100 clips and five speakers for e6, against CREMA-D's 5,235. A combo losing to CREMA-D is not surprising; a combo BEATING it on held-out speakers would be.",
+    "E3 is excluded for every combo trained on E6, because one E6 training speaker also recorded E3 under the same speaker id.",
+    "e6_test is 20 clips from one speaker and e5_heldout_voice is 45 from one synthetic voice. Differences of a few points between combos are not resolvable at those sizes, which is why every cell carries an interval.",
+    "The MLP fallback in train_permissive is not reproduced here. It triggers on weak validation UAR and needs a val block that a 45-clip training set cannot spare; holding the classifier fixed is what makes the five rows comparable."
+  ]
+}

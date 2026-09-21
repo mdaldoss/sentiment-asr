@@ -285,6 +285,79 @@ and should not be believed.
   resolvable, which is why every figure carries an interval — and why the one claim that
   ignored that warning reversed when more data arrived.
 
+## Training the permissive probe on E5 and E6, separately and together
+
+Requested directly: fit the permissive acoustic probe on the Hume set (E5) and the Zurich
+recordings (E6), each alone and combined, and score every result everywhere
+(`scripts/train_combos_e5_e6.py`, `results/combos_e5_e6.json`). Same classifier in every
+cell — frozen WavLM into `StandardScaler` + `LogisticRegression(class_weight="balanced")`
+— so the only thing that varies is the training data.
+
+E5 has exactly two voices, so training on it while keeping an honest held-out E5 score
+means one voice trains (Ava) and the other never does (Colton). **Training on E5 also
+breaks a rule this project set for itself**: `DESIGN.md` designates E5 eval-only because
+it is the instrument that measures prosody sensitivity under contradiction. For the
+E5-trained rows, read the cross-corpus columns.
+
+**UAR on held-out data** (chance 0.333; 95% bootstrap intervals; `e3` is excluded
+automatically wherever a training speaker also recorded it):
+
+| Training set | clips | CREMA-D test | **E6 val** (40, 2 spk) | E6 test (20, 1 spk) | E5 held-out voice |
+|---|--:|--:|--:|--:|--:|
+| cremad | 5,235 | **0.782** | 0.330 [0.19, 0.47] | 0.278 ⚠ | 0.556 [0.41, 0.70] |
+| e6 | 100 | 0.348 | 0.322 [0.18, 0.47] | 0.311 [0.11, 0.52] | 0.422 [0.30, 0.55] |
+| e5 | 45 | 0.384 | **0.522 [0.42, 0.62]** † | 0.352 [0.20, 0.48] | **0.733 [0.61, 0.85]** |
+| e5_e6 | 145 | 0.377 | 0.374 [0.24, 0.51] | **0.385 [0.17, 0.63]** | 0.689 [0.55, 0.81] |
+| **cremad_e5_e6** | 5,380 | **0.784** | **0.401 [0.25, 0.56]** | 0.344 [0.14, 0.58] | 0.600 [0.44, 0.74] |
+
+⚠ degenerate — one class for ≥95% of clips. † see below: this number is not what it looks
+like.
+
+**The eye-catching cell is real and its mechanism is not the headline.** Training on 45
+clips from a single synthetic voice beats CREMA-D's 5,235 on real held-out human speakers
+(0.522 against 0.330). That reads as "matched task structure beats scale", and it is
+half-true at best. The per-class recalls say what actually happened:
+
+| Training set | negative | neutral | positive |
+|---|--:|--:|--:|
+| cremad | 0.615 | 0.231 | 0.143 |
+| **e5** | **0.923** | **0.000** | 0.643 |
+| e5_e6 | 0.615 | 0.077 | 0.429 |
+| **cremad_e5_e6** | 0.462 | **0.385** | 0.357 |
+| e6 | 0.385 | 0.154 | 0.429 |
+
+The E5-trained probe **never predicts neutral at all** on E6's held-out speakers. It is an
+excellent two-pole discriminator — 0.923 on negative, 0.643 on positive, better on both
+than anything else in the table — and it is blind to the middle class. UAR is designed to
+expose exactly this (a class at zero recall caps UAR at 0.667), so 0.522 is a legitimate
+number, but quoting it without the third column would misrepresent the model badly.
+
+*Inference, not measurement:* E5's neutral condition is a synthetic "flat, matter-of-fact"
+delivery, and 15 such clips from one voice look unlikely to cover what neutral sounds like
+in real conversational speech. The poles transfer; the middle does not.
+
+**The balanced answer is the boring one.** `cremad_e5_e6` is the only model with all three
+recalls above 0.35 on real held-out speakers, it improves E6 val over CREMA-D alone
+(0.330 → 0.401) and it costs nothing on the benchmark (0.782 → 0.784). Adding 145 clips
+to 5,235 buys a modest, unresolved improvement and no regression. Every interval in that
+column overlaps every other, so this is a direction, not a result.
+
+**Training on E6 alone is the worst option in the table**, including on E6's own held-out
+speakers (0.322, below CREMA-D's 0.330 and below chance-plus-noise). One hundred clips
+from five speakers is not enough to learn the task, and being in the right domain does not
+compensate. That is the same lesson as everywhere else in this document, pointing the
+other way for once: matched data does not beat more data at this sample size.
+
+**On E5's held-out voice the E5-trained probe wins (0.733), as it should.** Same
+generator, same delivery descriptions, a different voice — that is cross-voice
+within-corpus, a far easier problem than anything else in the table, and it is not
+evidence of generalisation.
+
+**No leakage warning fired.** The two `UAR 1.000` cells in the JSON are the E5-trained
+models scored on their own 45 training clips; the script flags them `in_domain` from the
+actual speaker sets rather than a hardcoded list, and they are excluded from the table
+above.
+
 ## E3: human recordings, and a control on the Cartesia finding
 
 E3 (`data/recorded{0,}/`, `scripts/eval_e3.py`) is now recorded and evaluated: 27
