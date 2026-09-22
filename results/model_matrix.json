@@ -1,0 +1,5072 @@
+{
+  "configurations": {
+    "X1_cremad_hume__zurich": {
+      "question": "Train CREMA-D + Hume, test on the Zurich human recordings.",
+      "n_train_clips": 5280,
+      "n_train_speakers": 65,
+      "train_class_counts": {
+        "negative": 3591,
+        "positive": 909,
+        "neutral": 780
+      },
+      "train_sources": {
+        "crema_d": 5235,
+        "hume": 45
+      },
+      "n_val_clips": 782,
+      "n_val_speakers": 10,
+      "eval_sets": {
+        "zurich_all": {
+          "n_clips": 160,
+          "n_speakers": 8,
+          "n_incongruent": 111,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.1728395061728395,
+            "accuracy": 0.35,
+            "psi_contested": 0.38095238095238093,
+            "psi_strict": 0.2882882882882883,
+            "always_predicts": "neutral"
+          }
+        },
+        "zurich_test_speaker": {
+          "n_clips": 20,
+          "n_speakers": 1,
+          "n_incongruent": 14,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.20689655172413793,
+            "accuracy": 0.45,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "always_predicts": "neutral"
+          }
+        }
+      },
+      "notes": [
+        "Hume's Ava Song trains; Colton Rivers is held out into the validation set so threshold fitting and candidate selection see a second corpus rather than CREMA-D alone. Neither voice is in any test set here.",
+        "All 160 Zurich clips are scored: 8 speakers, none of whom appear in training. zurich_test_speaker is Zurich's own 20-clip held-out speaker, reported separately for comparability with X3 and results/e6_summary.json."
+      ],
+      "backends": {
+        "research_valence_thresholds": {
+          "description": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim, frozen, with two valence thresholds grid-searched on this configuration's validation split. Two free parameters in total. CC-BY-NC-SA-4.0, research use only.",
+          "fitted": {
+            "low": 0.4,
+            "high": 0.47500000000000003,
+            "val_uar": 0.456426292681386
+          },
+          "eval": {
+            "zurich_all": {
+              "n_clips": 160,
+              "n_incongruent": 111,
+              "uar": 0.35571366911544494,
+              "macro_f1": 0.33002676743819875,
+              "accuracy": 0.35,
+              "psi_contested": 0.36585365853658536,
+              "psi_strict": 0.2702702702702703,
+              "per_class_recall": {
+                "negative": 0.6274509803921569,
+                "neutral": 0.23214285714285715,
+                "positive": 0.20754716981132076
+              },
+              "support": {
+                "negative": 51,
+                "neutral": 56,
+                "positive": 53
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    32,
+                    8,
+                    11
+                  ],
+                  [
+                    31,
+                    13,
+                    12
+                  ],
+                  [
+                    32,
+                    10,
+                    11
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.59375,
+                "neutral": 0.19375,
+                "positive": 0.2125
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.28678541020495046,
+                "hi": 0.42773308793036036
+              },
+              "psi_contested_ci95": {
+                "lo": 0.26506024096385544,
+                "hi": 0.4722298534798534
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.2888888888888889,
+              "macro_f1": 0.20000000000000004,
+              "accuracy": 0.25,
+              "psi_contested": 0.36363636363636365,
+              "psi_strict": 0.2857142857142857,
+              "per_class_recall": {
+                "negative": 0.6666666666666666,
+                "neutral": 0.0,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    4,
+                    0,
+                    2
+                  ],
+                  [
+                    7,
+                    0,
+                    2
+                  ],
+                  [
+                    3,
+                    1,
+                    1
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.7,
+                "positive": 0.25,
+                "neutral": 0.05
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.1111111111111111,
+                "hi": 0.48164682539682446
+              },
+              "psi_contested_ci95": {
+                "lo": 0.09090909090909091,
+                "hi": 0.6666666666666666
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "research_vad_head": {
+          "description": "Same frozen audeering encoder, but its (valence, arousal, dominance) triple fed to the same StandardScaler + balanced LogisticRegression used for the permissive probe. Present so that 'the research backend barely moves with training data' can be distinguished from 'the research backend only has two knobs to move'.",
+          "eval": {
+            "zurich_all": {
+              "n_clips": 160,
+              "n_incongruent": 111,
+              "uar": 0.39847039444708704,
+              "macro_f1": 0.31960665861189425,
+              "accuracy": 0.4125,
+              "psi_contested": 0.4880952380952381,
+              "psi_strict": 0.36936936936936937,
+              "per_class_recall": {
+                "negative": 0.09803921568627451,
+                "neutral": 0.9464285714285714,
+                "positive": 0.1509433962264151
+              },
+              "support": {
+                "negative": 51,
+                "neutral": 56,
+                "positive": 53
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    5,
+                    45,
+                    1
+                  ],
+                  [
+                    1,
+                    53,
+                    2
+                  ],
+                  [
+                    8,
+                    37,
+                    8
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.84375,
+                "positive": 0.06875,
+                "negative": 0.0875
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.35298033928021005,
+                "hi": 0.44548850018255287
+              },
+              "psi_contested_ci95": {
+                "lo": 0.3863430996714129,
+                "hi": 0.5934065934065934
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.39999999999999997,
+              "macro_f1": 0.326007326007326,
+              "accuracy": 0.5,
+              "psi_contested": 0.5,
+              "psi_strict": 0.42857142857142855,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    5,
+                    1
+                  ],
+                  [
+                    0,
+                    9,
+                    0
+                  ],
+                  [
+                    1,
+                    3,
+                    1
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.85,
+                "positive": 0.1,
+                "negative": 0.05
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.3333333333333333,
+                "hi": 0.5555555555555555
+              },
+              "psi_contested_ci95": {
+                "lo": 0.2,
+                "hi": 0.7857142857142857
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "permissive": {
+          "description": "microsoft/wavlm-base frozen (mean+std pooled, 1536-d) into StandardScaler + LogisticRegression(max_iter=2000, class_weight='balanced'). MIT end to end.",
+          "fitted": {
+            "val_uar": 0.7725179377134755,
+            "val_macro_f1": 0.7414976042649246
+          },
+          "eval": {
+            "zurich_all": {
+              "n_clips": 160,
+              "n_incongruent": 111,
+              "uar": 0.4333390588939978,
+              "macro_f1": 0.4022541856635063,
+              "accuracy": 0.425,
+              "psi_contested": 0.6455696202531646,
+              "psi_strict": 0.4594594594594595,
+              "per_class_recall": {
+                "negative": 0.7450980392156863,
+                "neutral": 0.19642857142857142,
+                "positive": 0.3584905660377358
+              },
+              "support": {
+                "negative": 51,
+                "neutral": 56,
+                "positive": 53
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    38,
+                    3,
+                    10
+                  ],
+                  [
+                    38,
+                    11,
+                    7
+                  ],
+                  [
+                    28,
+                    6,
+                    19
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.65,
+                "neutral": 0.125,
+                "positive": 0.225
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.362107016207668,
+                "hi": 0.5058320912945529
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5374186643835617,
+                "hi": 0.7500735294117643
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.2222222222222222,
+              "macro_f1": 0.1111111111111111,
+              "accuracy": 0.2,
+              "psi_contested": 0.3333333333333333,
+              "psi_strict": 0.21428571428571427,
+              "per_class_recall": {
+                "negative": 0.6666666666666666,
+                "neutral": 0.0,
+                "positive": 0.0
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    4,
+                    0,
+                    2
+                  ],
+                  [
+                    9,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    0
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.9,
+                "positive": 0.1
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.08333333333333333,
+                "hi": 0.3333333333333333
+              },
+              "psi_contested_ci95": {
+                "lo": 0.0,
+                "hi": 0.6666666666666666
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "prosody": {
+          "description": "eGeMAPS + pitch/loudness contour descriptors (no pretrained network, nothing in the path can represent a word) into impute -> standardise -> classifier. All four candidates from scripts/train_prosodic.py are fitted and reported; 'logreg' is the pre-registered headline so this table is not quietly showing the best of four.",
+          "headline_candidate": "logreg",
+          "val_selected_candidate": "hist_gbdt",
+          "candidate_val_scores": {
+            "logreg": {
+              "val_uar": 0.6055758404218357,
+              "val_macro_f1": 0.49374038823580113
+            },
+            "linear_svm": {
+              "val_uar": 0.422552470150108,
+              "val_macro_f1": 0.4338378528850057
+            },
+            "svm_rbf": {
+              "val_uar": 0.6581053554063144,
+              "val_macro_f1": 0.5768649864463078
+            },
+            "hist_gbdt": {
+              "val_uar": 0.6617914661981993,
+              "val_macro_f1": 0.6092329810498504
+            }
+          },
+          "eval": {
+            "zurich_all": {
+              "n_clips": 160,
+              "n_incongruent": 111,
+              "uar": 0.37159549354332927,
+              "macro_f1": 0.30296839063652353,
+              "accuracy": 0.3625,
+              "psi_contested": 0.5466666666666666,
+              "psi_strict": 0.36936936936936937,
+              "per_class_recall": {
+                "negative": 0.5686274509803921,
+                "neutral": 0.017857142857142856,
+                "positive": 0.5283018867924528
+              },
+              "support": {
+                "negative": 51,
+                "neutral": 56,
+                "positive": 53
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    29,
+                    0,
+                    22
+                  ],
+                  [
+                    19,
+                    1,
+                    36
+                  ],
+                  [
+                    24,
+                    1,
+                    28
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.5375,
+                "negative": 0.45,
+                "neutral": 0.0125
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.30952380952380953,
+                "hi": 0.43715878918098283
+              },
+              "psi_contested_ci95": {
+                "lo": 0.44155844155844154,
+                "hi": 0.6666666666666666
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.3,
+              "macro_f1": 0.22128851540616246,
+              "accuracy": 0.25,
+              "psi_contested": 0.4,
+              "psi_strict": 0.2857142857142857,
+              "per_class_recall": {
+                "negative": 0.5,
+                "neutral": 0.0,
+                "positive": 0.4
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    3,
+                    0,
+                    3
+                  ],
+                  [
+                    2,
+                    0,
+                    7
+                  ],
+                  [
+                    3,
+                    0,
+                    2
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.4,
+                "positive": 0.6
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.09512987012987013,
+                "hi": 0.5238095238095238
+              },
+              "psi_contested_ci95": {
+                "lo": 0.1111111111111111,
+                "hi": 0.7272727272727273
+              },
+              "n_boot": 2000
+            }
+          },
+          "eval_all_candidates": {
+            "logreg": {
+              "zurich_all": {
+                "n_clips": 160,
+                "n_incongruent": 111,
+                "uar": 0.37159549354332927,
+                "macro_f1": 0.30296839063652353,
+                "accuracy": 0.3625,
+                "psi_contested": 0.5466666666666666,
+                "psi_strict": 0.36936936936936937,
+                "per_class_recall": {
+                  "negative": 0.5686274509803921,
+                  "neutral": 0.017857142857142856,
+                  "positive": 0.5283018867924528
+                },
+                "support": {
+                  "negative": 51,
+                  "neutral": 56,
+                  "positive": 53
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      29,
+                      0,
+                      22
+                    ],
+                    [
+                      19,
+                      1,
+                      36
+                    ],
+                    [
+                      24,
+                      1,
+                      28
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "positive": 0.5375,
+                  "negative": 0.45,
+                  "neutral": 0.0125
+                },
+                "top_class": "positive",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.30952380952380953,
+                  "hi": 0.43715878918098283
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.44155844155844154,
+                  "hi": 0.6666666666666666
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3,
+                "macro_f1": 0.22128851540616246,
+                "accuracy": 0.25,
+                "psi_contested": 0.4,
+                "psi_strict": 0.2857142857142857,
+                "per_class_recall": {
+                  "negative": 0.5,
+                  "neutral": 0.0,
+                  "positive": 0.4
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      3,
+                      0,
+                      3
+                    ],
+                    [
+                      2,
+                      0,
+                      7
+                    ],
+                    [
+                      3,
+                      0,
+                      2
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.4,
+                  "positive": 0.6
+                },
+                "top_class": "positive",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.09512987012987013,
+                  "hi": 0.5238095238095238
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.1111111111111111,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              }
+            },
+            "linear_svm": {
+              "zurich_all": {
+                "n_clips": 160,
+                "n_incongruent": 111,
+                "uar": 0.31976815883586135,
+                "macro_f1": 0.17895931269249474,
+                "accuracy": 0.30625,
+                "psi_contested": 0.4861111111111111,
+                "psi_strict": 0.3153153153153153,
+                "per_class_recall": {
+                  "negative": 0.9215686274509803,
+                  "neutral": 0.0,
+                  "positive": 0.03773584905660377
+                },
+                "support": {
+                  "negative": 51,
+                  "neutral": 56,
+                  "positive": 53
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      47,
+                      2,
+                      2
+                    ],
+                    [
+                      51,
+                      0,
+                      5
+                    ],
+                    [
+                      50,
+                      1,
+                      2
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.925,
+                  "positive": 0.05625,
+                  "neutral": 0.01875
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.2881350845422915,
+                  "hi": 0.3498884006347304
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.36583430120015487,
+                  "hi": 0.6081081081081081
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.15384615384615385,
+                "accuracy": 0.3,
+                "psi_contested": 0.5,
+                "psi_strict": 0.35714285714285715,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      0,
+                      0
+                    ],
+                    [
+                      9,
+                      0,
+                      0
+                    ],
+                    [
+                      5,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.16666666666666666,
+                  "hi": 0.8181818181818182
+                },
+                "n_boot": 2000
+              }
+            },
+            "svm_rbf": {
+              "zurich_all": {
+                "n_clips": 160,
+                "n_incongruent": 111,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16113744075829384,
+                "accuracy": 0.31875,
+                "psi_contested": 0.5211267605633803,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 51,
+                  "neutral": 56,
+                  "positive": 53
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      51,
+                      0,
+                      0
+                    ],
+                    [
+                      56,
+                      0,
+                      0
+                    ],
+                    [
+                      53,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.40535798956851593,
+                  "hi": 0.6393606557377048
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.15384615384615385,
+                "accuracy": 0.3,
+                "psi_contested": 0.5,
+                "psi_strict": 0.35714285714285715,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      0,
+                      0
+                    ],
+                    [
+                      9,
+                      0,
+                      0
+                    ],
+                    [
+                      5,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.16666666666666666,
+                  "hi": 0.8181818181818182
+                },
+                "n_boot": 2000
+              }
+            },
+            "hist_gbdt": {
+              "zurich_all": {
+                "n_clips": 160,
+                "n_incongruent": 111,
+                "uar": 0.3514613392526822,
+                "macro_f1": 0.22234248163896406,
+                "accuracy": 0.3375,
+                "psi_contested": 0.5507246376811594,
+                "psi_strict": 0.34234234234234234,
+                "per_class_recall": {
+                  "negative": 0.9411764705882353,
+                  "neutral": 0.0,
+                  "positive": 0.11320754716981132
+                },
+                "support": {
+                  "negative": 51,
+                  "neutral": 56,
+                  "positive": 53
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      48,
+                      0,
+                      3
+                    ],
+                    [
+                      53,
+                      0,
+                      3
+                    ],
+                    [
+                      47,
+                      0,
+                      6
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.925,
+                  "positive": 0.075
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.3169582487802772,
+                  "hi": 0.38642566325190436
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.43661971830985913,
+                  "hi": 0.666776315789473
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3444444444444445,
+                "macro_f1": 0.22826086956521738,
+                "accuracy": 0.3,
+                "psi_contested": 0.5,
+                "psi_strict": 0.35714285714285715,
+                "per_class_recall": {
+                  "negative": 0.8333333333333334,
+                  "neutral": 0.0,
+                  "positive": 0.2
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      5,
+                      0,
+                      1
+                    ],
+                    [
+                      8,
+                      0,
+                      1
+                    ],
+                    [
+                      4,
+                      0,
+                      1
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "positive": 0.15,
+                  "negative": 0.85
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.1851851851851852,
+                  "hi": 0.5138888888888888
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.18181818181818182,
+                  "hi": 0.8333333333333334
+                },
+                "n_boot": 2000
+              }
+            }
+          }
+        }
+      }
+    },
+    "X2_cremad__hume": {
+      "question": "Train CREMA-D only, test on the Hume incongruence set.",
+      "n_train_clips": 5235,
+      "n_train_speakers": 64,
+      "train_class_counts": {
+        "negative": 3576,
+        "positive": 894,
+        "neutral": 765
+      },
+      "train_sources": {
+        "crema_d": 5235
+      },
+      "n_val_clips": 737,
+      "n_val_speakers": 9,
+      "eval_sets": {
+        "hume_all": {
+          "n_clips": 90,
+          "n_speakers": 2,
+          "n_incongruent": 60,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "accuracy": 0.3333333333333333,
+            "psi_contested": 0.5,
+            "psi_strict": 0.3333333333333333,
+            "always_predicts": "positive"
+          }
+        },
+        "hume_ava": {
+          "n_clips": 45,
+          "n_speakers": 1,
+          "n_incongruent": 30,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "accuracy": 0.3333333333333333,
+            "psi_contested": 0.5,
+            "psi_strict": 0.3333333333333333,
+            "always_predicts": "positive"
+          }
+        },
+        "hume_colton": {
+          "n_clips": 45,
+          "n_speakers": 1,
+          "n_incongruent": 30,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "accuracy": 0.3333333333333333,
+            "psi_contested": 0.5,
+            "psi_strict": 0.3333333333333333,
+            "always_predicts": "positive"
+          }
+        }
+      },
+      "notes": [
+        "No E5 anywhere in the fit, so this is the only configuration whose E5 PSI reading is a clean instrument (DESIGN.md designates E5 eval-only).",
+        "Both voices are scored together and separately: 45 clips each, and a two-voice synthetic corpus is not a population."
+      ],
+      "backends": {
+        "research_valence_thresholds": {
+          "description": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim, frozen, with two valence thresholds grid-searched on this configuration's validation split. Two free parameters in total. CC-BY-NC-SA-4.0, research use only.",
+          "fitted": {
+            "low": 0.4,
+            "high": 0.47500000000000003,
+            "val_uar": 0.4540807496414973
+          },
+          "eval": {
+            "hume_all": {
+              "n_clips": 90,
+              "n_incongruent": 60,
+              "uar": 0.39999999999999997,
+              "macro_f1": 0.3671283623302815,
+              "accuracy": 0.4,
+              "psi_contested": 0.21052631578947367,
+              "psi_strict": 0.2,
+              "per_class_recall": {
+                "negative": 0.4,
+                "neutral": 0.13333333333333333,
+                "positive": 0.6666666666666666
+              },
+              "support": {
+                "negative": 30,
+                "neutral": 30,
+                "positive": 30
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    12,
+                    6,
+                    12
+                  ],
+                  [
+                    10,
+                    4,
+                    16
+                  ],
+                  [
+                    9,
+                    1,
+                    20
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.5333333333333333,
+                "neutral": 0.12222222222222222,
+                "negative": 0.34444444444444444
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.3077881031592365,
+                "hi": 0.4911493699061313
+              },
+              "psi_contested_ci95": {
+                "lo": 0.10714285714285714,
+                "hi": 0.3220475669764898
+              },
+              "n_boot": 2000
+            },
+            "hume_ava": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.37777777777777777,
+              "macro_f1": 0.34510125889436233,
+              "accuracy": 0.37777777777777777,
+              "psi_contested": 0.18518518518518517,
+              "psi_strict": 0.16666666666666666,
+              "per_class_recall": {
+                "negative": 0.3333333333333333,
+                "neutral": 0.13333333333333333,
+                "positive": 0.6666666666666666
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    5,
+                    3,
+                    7
+                  ],
+                  [
+                    5,
+                    2,
+                    8
+                  ],
+                  [
+                    4,
+                    1,
+                    10
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.5555555555555556,
+                "neutral": 0.13333333333333333,
+                "negative": 0.3111111111111111
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.2519855509987089,
+                "hi": 0.5074206349206348
+              },
+              "psi_contested_ci95": {
+                "lo": 0.045454545454545456,
+                "hi": 0.3333333333333333
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.4222222222222222,
+              "macro_f1": 0.3879385964912281,
+              "accuracy": 0.4222222222222222,
+              "psi_contested": 0.23333333333333334,
+              "psi_strict": 0.23333333333333334,
+              "per_class_recall": {
+                "negative": 0.4666666666666667,
+                "neutral": 0.13333333333333333,
+                "positive": 0.6666666666666666
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    7,
+                    3,
+                    5
+                  ],
+                  [
+                    5,
+                    2,
+                    8
+                  ],
+                  [
+                    5,
+                    0,
+                    10
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.5111111111111111,
+                "neutral": 0.1111111111111111,
+                "negative": 0.37777777777777777
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.2905943627450981,
+                "hi": 0.5479360165118679
+              },
+              "psi_contested_ci95": {
+                "lo": 0.09375,
+                "hi": 0.39285714285714285
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "research_vad_head": {
+          "description": "Same frozen audeering encoder, but its (valence, arousal, dominance) triple fed to the same StandardScaler + balanced LogisticRegression used for the permissive probe. Present so that 'the research backend barely moves with training data' can be distinguished from 'the research backend only has two knobs to move'.",
+          "eval": {
+            "hume_all": {
+              "n_clips": 90,
+              "n_incongruent": 60,
+              "uar": 0.4777777777777778,
+              "macro_f1": 0.3938580799045915,
+              "accuracy": 0.4777777777777778,
+              "psi_contested": 0.6136363636363636,
+              "psi_strict": 0.45,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.43333333333333335
+              },
+              "support": {
+                "negative": 30,
+                "neutral": 30,
+                "positive": 30
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    30,
+                    0
+                  ],
+                  [
+                    0,
+                    30,
+                    0
+                  ],
+                  [
+                    3,
+                    14,
+                    13
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.14444444444444443,
+                "neutral": 0.8222222222222222,
+                "negative": 0.03333333333333333
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4197530864197531,
+                "hi": 0.5416666666666666
+              },
+              "psi_contested_ci95": {
+                "lo": 0.46808510638297873,
+                "hi": 0.7555691056910568
+              },
+              "n_boot": 2000
+            },
+            "hume_ava": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.5555555555555555,
+              "macro_f1": 0.4794326241134752,
+              "accuracy": 0.5555555555555556,
+              "psi_contested": 0.6666666666666666,
+              "psi_strict": 0.5333333333333333,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.6666666666666666
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    3,
+                    2,
+                    10
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.2222222222222222,
+                "neutral": 0.7111111111111111,
+                "negative": 0.06666666666666667
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4761904761904762,
+                "hi": 0.6333333333333333
+              },
+              "psi_contested_ci95": {
+                "lo": 0.4782608695652174,
+                "hi": 0.8461538461538461
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.39999999999999997,
+              "macro_f1": 0.28654970760233917,
+              "accuracy": 0.4,
+              "psi_contested": 0.55,
+              "psi_strict": 0.36666666666666664,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    0,
+                    12,
+                    3
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.06666666666666667,
+                "neutral": 0.9333333333333333
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.3333333333333333,
+                "hi": 0.4761904761904762
+              },
+              "psi_contested_ci95": {
+                "lo": 0.3181818181818182,
+                "hi": 0.7502155172413781
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "permissive": {
+          "description": "microsoft/wavlm-base frozen (mean+std pooled, 1536-d) into StandardScaler + LogisticRegression(max_iter=2000, class_weight='balanced'). MIT end to end.",
+          "fitted": {
+            "val_uar": 0.7850899965385946,
+            "val_macro_f1": 0.7543900111926481
+          },
+          "eval": {
+            "hume_all": {
+              "n_clips": 90,
+              "n_incongruent": 60,
+              "uar": 0.5111111111111112,
+              "macro_f1": 0.492523765348974,
+              "accuracy": 0.5111111111111111,
+              "psi_contested": 0.6818181818181818,
+              "psi_strict": 0.5,
+              "per_class_recall": {
+                "negative": 0.8,
+                "neutral": 0.4,
+                "positive": 0.3333333333333333
+              },
+              "support": {
+                "negative": 30,
+                "neutral": 30,
+                "positive": 30
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    24,
+                    3,
+                    3
+                  ],
+                  [
+                    14,
+                    12,
+                    4
+                  ],
+                  [
+                    11,
+                    9,
+                    10
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.18888888888888888,
+                "negative": 0.5444444444444444,
+                "neutral": 0.26666666666666666
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.41958399675843183,
+                "hi": 0.6044197218529471
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5416666666666666,
+                "hi": 0.8181818181818182
+              },
+              "n_boot": 2000
+            },
+            "hume_ava": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.4666666666666666,
+              "macro_f1": 0.4345238095238095,
+              "accuracy": 0.4666666666666667,
+              "psi_contested": 0.6363636363636364,
+              "psi_strict": 0.4666666666666667,
+              "per_class_recall": {
+                "negative": 0.8666666666666667,
+                "neutral": 0.2,
+                "positive": 0.3333333333333333
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    13,
+                    2,
+                    0
+                  ],
+                  [
+                    11,
+                    3,
+                    1
+                  ],
+                  [
+                    9,
+                    1,
+                    5
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.13333333333333333,
+                "negative": 0.7333333333333333,
+                "neutral": 0.13333333333333333
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.3493983119563615,
+                "hi": 0.602574428495481
+              },
+              "psi_contested_ci95": {
+                "lo": 0.42857142857142855,
+                "hi": 0.8333333333333334
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.5555555555555555,
+              "macro_f1": 0.5465824498082562,
+              "accuracy": 0.5555555555555556,
+              "psi_contested": 0.7272727272727273,
+              "psi_strict": 0.5333333333333333,
+              "per_class_recall": {
+                "negative": 0.7333333333333333,
+                "neutral": 0.6,
+                "positive": 0.3333333333333333
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    11,
+                    1,
+                    3
+                  ],
+                  [
+                    3,
+                    9,
+                    3
+                  ],
+                  [
+                    2,
+                    8,
+                    5
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.4,
+                "negative": 0.35555555555555557,
+                "positive": 0.24444444444444444
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4054367690058479,
+                "hi": 0.6975981620718462
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5263157894736842,
+                "hi": 0.9047619047619048
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "prosody": {
+          "description": "eGeMAPS + pitch/loudness contour descriptors (no pretrained network, nothing in the path can represent a word) into impute -> standardise -> classifier. All four candidates from scripts/train_prosodic.py are fitted and reported; 'logreg' is the pre-registered headline so this table is not quietly showing the best of four.",
+          "headline_candidate": "logreg",
+          "val_selected_candidate": "svm_rbf",
+          "candidate_val_scores": {
+            "logreg": {
+              "val_uar": 0.6463927211590763,
+              "val_macro_f1": 0.5011659221240059
+            },
+            "linear_svm": {
+              "val_uar": 0.45695495228205507,
+              "val_macro_f1": 0.48337366560258127
+            },
+            "svm_rbf": {
+              "val_uar": 0.7030794145280126,
+              "val_macro_f1": 0.5914606766799129
+            },
+            "hist_gbdt": {
+              "val_uar": 0.6530621075013597,
+              "val_macro_f1": 0.6016898893987267
+            }
+          },
+          "eval": {
+            "hume_all": {
+              "n_clips": 90,
+              "n_incongruent": 60,
+              "uar": 0.27777777777777773,
+              "macro_f1": 0.21404997642621404,
+              "accuracy": 0.2777777777777778,
+              "psi_contested": 0.3783783783783784,
+              "psi_strict": 0.23333333333333334,
+              "per_class_recall": {
+                "negative": 0.6,
+                "neutral": 0.23333333333333334,
+                "positive": 0.0
+              },
+              "support": {
+                "negative": 30,
+                "neutral": 30,
+                "positive": 30
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    18,
+                    12,
+                    0
+                  ],
+                  [
+                    23,
+                    7,
+                    0
+                  ],
+                  [
+                    30,
+                    0,
+                    0
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.7888888888888889,
+                "neutral": 0.2111111111111111
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.2023754826254826,
+                "hi": 0.3573697999485106
+              },
+              "psi_contested_ci95": {
+                "lo": 0.21875,
+                "hi": 0.5455086580086577
+              },
+              "n_boot": 2000
+            },
+            "hume_ava": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.2888888888888889,
+              "macro_f1": 0.24144672531769307,
+              "accuracy": 0.28888888888888886,
+              "psi_contested": 0.3333333333333333,
+              "psi_strict": 0.2,
+              "per_class_recall": {
+                "negative": 0.4,
+                "neutral": 0.4666666666666667,
+                "positive": 0.0
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    6,
+                    9,
+                    0
+                  ],
+                  [
+                    8,
+                    7,
+                    0
+                  ],
+                  [
+                    15,
+                    0,
+                    0
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.6444444444444445,
+                "neutral": 0.35555555555555557
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.16732026143790849,
+                "hi": 0.4086542182662538
+              },
+              "psi_contested_ci95": {
+                "lo": 0.11764705882352941,
+                "hi": 0.5714285714285714
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.26666666666666666,
+              "macro_f1": 0.14035087719298245,
+              "accuracy": 0.26666666666666666,
+              "psi_contested": 0.42105263157894735,
+              "psi_strict": 0.26666666666666666,
+              "per_class_recall": {
+                "negative": 0.8,
+                "neutral": 0.0,
+                "positive": 0.0
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    12,
+                    3,
+                    0
+                  ],
+                  [
+                    15,
+                    0,
+                    0
+                  ],
+                  [
+                    15,
+                    0,
+                    0
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.9333333333333333,
+                "neutral": 0.06666666666666667
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.19047619047619047,
+                "hi": 0.3333333333333333
+              },
+              "psi_contested_ci95": {
+                "lo": 0.21052631578947367,
+                "hi": 0.65
+              },
+              "n_boot": 2000
+            }
+          },
+          "eval_all_candidates": {
+            "logreg": {
+              "hume_all": {
+                "n_clips": 90,
+                "n_incongruent": 60,
+                "uar": 0.27777777777777773,
+                "macro_f1": 0.21404997642621404,
+                "accuracy": 0.2777777777777778,
+                "psi_contested": 0.3783783783783784,
+                "psi_strict": 0.23333333333333334,
+                "per_class_recall": {
+                  "negative": 0.6,
+                  "neutral": 0.23333333333333334,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 30,
+                  "neutral": 30,
+                  "positive": 30
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      18,
+                      12,
+                      0
+                    ],
+                    [
+                      23,
+                      7,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.7888888888888889,
+                  "neutral": 0.2111111111111111
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.2023754826254826,
+                  "hi": 0.3573697999485106
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.21875,
+                  "hi": 0.5455086580086577
+                },
+                "n_boot": 2000
+              },
+              "hume_ava": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.2888888888888889,
+                "macro_f1": 0.24144672531769307,
+                "accuracy": 0.28888888888888886,
+                "psi_contested": 0.3333333333333333,
+                "psi_strict": 0.2,
+                "per_class_recall": {
+                  "negative": 0.4,
+                  "neutral": 0.4666666666666667,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      9,
+                      0
+                    ],
+                    [
+                      8,
+                      7,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.6444444444444445,
+                  "neutral": 0.35555555555555557
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.16732026143790849,
+                  "hi": 0.4086542182662538
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.11764705882352941,
+                  "hi": 0.5714285714285714
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.26666666666666666,
+                "macro_f1": 0.14035087719298245,
+                "accuracy": 0.26666666666666666,
+                "psi_contested": 0.42105263157894735,
+                "psi_strict": 0.26666666666666666,
+                "per_class_recall": {
+                  "negative": 0.8,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      12,
+                      3,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.9333333333333333,
+                  "neutral": 0.06666666666666667
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.19047619047619047,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.21052631578947367,
+                  "hi": 0.65
+                },
+                "n_boot": 2000
+              }
+            },
+            "linear_svm": {
+              "hume_all": {
+                "n_clips": 90,
+                "n_incongruent": 60,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 30,
+                  "neutral": 30,
+                  "positive": 30
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.34372767857142855,
+                  "hi": 0.65855044345898
+                },
+                "n_boot": 2000
+              },
+              "hume_ava": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              }
+            },
+            "svm_rbf": {
+              "hume_all": {
+                "n_clips": 90,
+                "n_incongruent": 60,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 30,
+                  "neutral": 30,
+                  "positive": 30
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.34372767857142855,
+                  "hi": 0.65855044345898
+                },
+                "n_boot": 2000
+              },
+              "hume_ava": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              }
+            },
+            "hist_gbdt": {
+              "hume_all": {
+                "n_clips": 90,
+                "n_incongruent": 60,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 30,
+                  "neutral": 30,
+                  "positive": 30
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ],
+                    [
+                      30,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.34372767857142855,
+                  "hi": 0.65855044345898
+                },
+                "n_boot": 2000
+              },
+              "hume_ava": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              }
+            }
+          }
+        }
+      }
+    },
+    "X3_cremad_hume_zurich__disjoint": {
+      "question": "Train CREMA-D + Hume + Zurich, test on a speaker-disjoint split of the same union.",
+      "n_train_clips": 5380,
+      "n_train_speakers": 70,
+      "train_class_counts": {
+        "negative": 3623,
+        "positive": 943,
+        "neutral": 814
+      },
+      "train_sources": {
+        "crema_d": 5235,
+        "hume": 45,
+        "recorded": 100
+      },
+      "n_val_clips": 777,
+      "n_val_speakers": 11,
+      "eval_sets": {
+        "pooled_all": {
+          "n_clips": 1535,
+          "n_speakers": 20,
+          "n_incongruent": 1299,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.2669270833333333,
+            "accuracy": 0.6677524429967426,
+            "psi_contested": 0.9854932301740812,
+            "psi_strict": 0.7844495765973826,
+            "always_predicts": "negative"
+          }
+        },
+        "pooled_cremad_subset300": {
+          "n_clips": 365,
+          "n_speakers": 20,
+          "n_incongruent": 300,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.25493513818386915,
+            "accuracy": 0.6191780821917808,
+            "psi_contested": 0.9361702127659575,
+            "psi_strict": 0.7333333333333333,
+            "always_predicts": "negative"
+          }
+        },
+        "cremad_test": {
+          "n_clips": 1470,
+          "n_speakers": 18,
+          "n_incongruent": 1255,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.2705470223659391,
+            "accuracy": 0.6829931972789116,
+            "psi_contested": 1.0,
+            "psi_strict": 0.8,
+            "always_predicts": "negative"
+          }
+        },
+        "hume_colton": {
+          "n_clips": 45,
+          "n_speakers": 1,
+          "n_incongruent": 30,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "accuracy": 0.3333333333333333,
+            "psi_contested": 0.5,
+            "psi_strict": 0.3333333333333333,
+            "always_predicts": "positive"
+          }
+        },
+        "zurich_test_speaker": {
+          "n_clips": 20,
+          "n_speakers": 1,
+          "n_incongruent": 14,
+          "majority_baseline": {
+            "uar": 0.3333333333333333,
+            "macro_f1": 0.20689655172413793,
+            "accuracy": 0.45,
+            "psi_contested": 0.5,
+            "psi_strict": 0.35714285714285715,
+            "always_predicts": "neutral"
+          }
+        }
+      },
+      "notes": [
+        "The union's split is each corpus's own speaker-disjoint split, concatenated: CREMA-D 64/9/18 speakers, Hume Ava/-/Colton, Zurich 5/2/1 speakers. assert_speaker_disjoint is run on the assembled manifest.",
+        "pooled_all is 1,535 clips of which 1,470 are CREMA-D, so it is a CREMA-D number wearing a union's name. pooled_cremad_subset300 subsamples CREMA-D test to 300 (class-stratified, seed 0) so the three corpora are less lopsided. Read the per-corpus rows first.",
+        "This is the within-corpus regime for all three corpora at once. Its numbers are not generalisation numbers -- X1 and X2 are."
+      ],
+      "backends": {
+        "research_valence_thresholds": {
+          "description": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim, frozen, with two valence thresholds grid-searched on this configuration's validation split. Two free parameters in total. CC-BY-NC-SA-4.0, research use only.",
+          "fitted": {
+            "low": 0.4,
+            "high": 0.47500000000000003,
+            "val_uar": 0.4476819870436892
+          },
+          "eval": {
+            "pooled_all": {
+              "n_clips": 1535,
+              "n_incongruent": 1299,
+              "uar": 0.43365927717854585,
+              "macro_f1": 0.43897031955853283,
+              "accuracy": 0.5895765472312704,
+              "psi_contested": 0.7497765862377123,
+              "psi_strict": 0.6458814472671286,
+              "per_class_recall": {
+                "negative": 0.7424390243902439,
+                "neutral": 0.2301255230125523,
+                "positive": 0.3284132841328413
+              },
+              "support": {
+                "negative": 1025,
+                "neutral": 239,
+                "positive": 271
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    761,
+                    179,
+                    85
+                  ],
+                  [
+                    149,
+                    55,
+                    35
+                  ],
+                  [
+                    107,
+                    75,
+                    89
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.6625407166123779,
+                "neutral": 0.2013029315960912,
+                "positive": 0.13615635179153093
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4058894575413807,
+                "hi": 0.46193442269158796
+              },
+              "psi_contested_ci95": {
+                "lo": 0.7240758321118027,
+                "hi": 0.7757551894660751
+              },
+              "n_boot": 2000
+            },
+            "pooled_cremad_subset300": {
+              "n_clips": 365,
+              "n_incongruent": 300,
+              "uar": 0.4419078238300181,
+              "macro_f1": 0.44806186413522386,
+              "accuracy": 0.5698630136986301,
+              "psi_contested": 0.6715867158671587,
+              "psi_strict": 0.6066666666666667,
+              "per_class_recall": {
+                "negative": 0.7389380530973452,
+                "neutral": 0.22058823529411764,
+                "positive": 0.36619718309859156
+              },
+              "support": {
+                "negative": 226,
+                "neutral": 68,
+                "positive": 71
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    167,
+                    43,
+                    16
+                  ],
+                  [
+                    38,
+                    15,
+                    15
+                  ],
+                  [
+                    25,
+                    20,
+                    26
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.2136986301369863,
+                "negative": 0.6301369863013698,
+                "positive": 0.15616438356164383
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.38912672167875717,
+                "hi": 0.4973218962076625
+              },
+              "psi_contested_ci95": {
+                "lo": 0.6165327491263369,
+                "hi": 0.7275989006580003
+              },
+              "n_boot": 2000
+            },
+            "cremad_test": {
+              "n_clips": 1470,
+              "n_incongruent": 1255,
+              "uar": 0.43476018406992184,
+              "macro_f1": 0.43983771998847376,
+              "accuracy": 0.5993197278911565,
+              "psi_contested": 0.7680890538033395,
+              "psi_strict": 0.6597609561752988,
+              "per_class_recall": {
+                "negative": 0.7470119521912351,
+                "neutral": 0.24651162790697675,
+                "positive": 0.3107569721115538
+              },
+              "support": {
+                "negative": 1004,
+                "neutral": 215,
+                "positive": 251
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    750,
+                    176,
+                    78
+                  ],
+                  [
+                    137,
+                    53,
+                    25
+                  ],
+                  [
+                    99,
+                    74,
+                    78
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.6707482993197279,
+                "neutral": 0.20612244897959184,
+                "positive": 0.12312925170068027
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.40678291238520314,
+                "hi": 0.464416801552414
+              },
+              "psi_contested_ci95": {
+                "lo": 0.7433541090986975,
+                "hi": 0.7920913033608526
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.4222222222222222,
+              "macro_f1": 0.3879385964912281,
+              "accuracy": 0.4222222222222222,
+              "psi_contested": 0.23333333333333334,
+              "psi_strict": 0.23333333333333334,
+              "per_class_recall": {
+                "negative": 0.4666666666666667,
+                "neutral": 0.13333333333333333,
+                "positive": 0.6666666666666666
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    7,
+                    3,
+                    5
+                  ],
+                  [
+                    5,
+                    2,
+                    8
+                  ],
+                  [
+                    5,
+                    0,
+                    10
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.5111111111111111,
+                "neutral": 0.1111111111111111,
+                "negative": 0.37777777777777777
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.2905943627450981,
+                "hi": 0.5479360165118679
+              },
+              "psi_contested_ci95": {
+                "lo": 0.09375,
+                "hi": 0.39285714285714285
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.2888888888888889,
+              "macro_f1": 0.20000000000000004,
+              "accuracy": 0.25,
+              "psi_contested": 0.36363636363636365,
+              "psi_strict": 0.2857142857142857,
+              "per_class_recall": {
+                "negative": 0.6666666666666666,
+                "neutral": 0.0,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    4,
+                    0,
+                    2
+                  ],
+                  [
+                    7,
+                    0,
+                    2
+                  ],
+                  [
+                    3,
+                    1,
+                    1
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.7,
+                "positive": 0.25,
+                "neutral": 0.05
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.1111111111111111,
+                "hi": 0.48164682539682446
+              },
+              "psi_contested_ci95": {
+                "lo": 0.09090909090909091,
+                "hi": 0.6666666666666666
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "research_vad_head": {
+          "description": "Same frozen audeering encoder, but its (valence, arousal, dominance) triple fed to the same StandardScaler + balanced LogisticRegression used for the permissive probe. Present so that 'the research backend barely moves with training data' can be distinguished from 'the research backend only has two knobs to move'.",
+          "eval": {
+            "pooled_all": {
+              "n_clips": 1535,
+              "n_incongruent": 1299,
+              "uar": 0.600673472843515,
+              "macro_f1": 0.4880643563113571,
+              "accuracy": 0.5035830618892508,
+              "psi_contested": 0.5933400605449042,
+              "psi_strict": 0.45265588914549654,
+              "per_class_recall": {
+                "negative": 0.41268292682926827,
+                "neutral": 0.8284518828451883,
+                "positive": 0.5608856088560885
+              },
+              "support": {
+                "negative": 1025,
+                "neutral": 239,
+                "positive": 271
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    423,
+                    365,
+                    237
+                  ],
+                  [
+                    33,
+                    198,
+                    8
+                  ],
+                  [
+                    61,
+                    58,
+                    152
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.33680781758957656,
+                "positive": 0.2586319218241042,
+                "neutral": 0.4045602605863192
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.5725661264888109,
+                "hi": 0.6265514664615979
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5631924316596219,
+                "hi": 0.6224937485792225
+              },
+              "n_boot": 2000
+            },
+            "pooled_cremad_subset300": {
+              "n_clips": 365,
+              "n_incongruent": 300,
+              "uar": 0.5909297534294785,
+              "macro_f1": 0.48204122345998773,
+              "accuracy": 0.4876712328767123,
+              "psi_contested": 0.5707964601769911,
+              "psi_strict": 0.43,
+              "per_class_recall": {
+                "negative": 0.35398230088495575,
+                "neutral": 0.9117647058823529,
+                "positive": 0.5070422535211268
+              },
+              "support": {
+                "negative": 226,
+                "neutral": 68,
+                "positive": 71
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    80,
+                    92,
+                    54
+                  ],
+                  [
+                    6,
+                    62,
+                    0
+                  ],
+                  [
+                    10,
+                    25,
+                    36
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.4904109589041096,
+                "positive": 0.2465753424657534,
+                "negative": 0.26301369863013696
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.5399910931131146,
+                "hi": 0.6401987199728766
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5065474070881046,
+                "hi": 0.6339285714285714
+              },
+              "n_boot": 2000
+            },
+            "cremad_test": {
+              "n_clips": 1470,
+              "n_incongruent": 1255,
+              "uar": 0.6054248123783935,
+              "macro_f1": 0.487274547936764,
+              "accuracy": 0.5061224489795918,
+              "psi_contested": 0.59436913451512,
+              "psi_strict": 0.4541832669322709,
+              "per_class_recall": {
+                "negative": 0.4213147410358566,
+                "neutral": 0.8093023255813954,
+                "positive": 0.5856573705179283
+              },
+              "support": {
+                "negative": 1004,
+                "neutral": 215,
+                "positive": 251
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    423,
+                    345,
+                    236
+                  ],
+                  [
+                    33,
+                    174,
+                    8
+                  ],
+                  [
+                    60,
+                    44,
+                    147
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.3510204081632653,
+                "positive": 0.26598639455782314,
+                "neutral": 0.38299319727891157
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.5755543459597621,
+                "hi": 0.6335262705678167
+              },
+              "psi_contested_ci95": {
+                "lo": 0.5634579686657606,
+                "hi": 0.6233786275452942
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.4222222222222222,
+              "macro_f1": 0.318922305764411,
+              "accuracy": 0.4222222222222222,
+              "psi_contested": 0.6,
+              "psi_strict": 0.4,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.26666666666666666
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    0,
+                    15,
+                    0
+                  ],
+                  [
+                    0,
+                    11,
+                    4
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.08888888888888889,
+                "neutral": 0.9111111111111111
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.35555555555555557,
+                "hi": 0.5
+              },
+              "psi_contested_ci95": {
+                "lo": 0.3683014354066986,
+                "hi": 0.8076923076923077
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.39999999999999997,
+              "macro_f1": 0.326007326007326,
+              "accuracy": 0.5,
+              "psi_contested": 0.5,
+              "psi_strict": 0.42857142857142855,
+              "per_class_recall": {
+                "negative": 0.0,
+                "neutral": 1.0,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    0,
+                    5,
+                    1
+                  ],
+                  [
+                    0,
+                    9,
+                    0
+                  ],
+                  [
+                    1,
+                    3,
+                    1
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.85,
+                "positive": 0.1,
+                "negative": 0.05
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.3333333333333333,
+                "hi": 0.5555555555555555
+              },
+              "psi_contested_ci95": {
+                "lo": 0.2,
+                "hi": 0.7857142857142857
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "permissive": {
+          "description": "microsoft/wavlm-base frozen (mean+std pooled, 1536-d) into StandardScaler + LogisticRegression(max_iter=2000, class_weight='balanced'). MIT end to end.",
+          "fitted": {
+            "val_uar": 0.7710893125786743,
+            "val_macro_f1": 0.7503593178499032
+          },
+          "eval": {
+            "pooled_all": {
+              "n_clips": 1535,
+              "n_incongruent": 1299,
+              "uar": 0.7290650814457935,
+              "macro_f1": 0.7269846327421071,
+              "accuracy": 0.7986970684039087,
+              "psi_contested": 0.9392070484581497,
+              "psi_strict": 0.8206312548113934,
+              "per_class_recall": {
+                "negative": 0.8682926829268293,
+                "neutral": 0.6694560669456067,
+                "positive": 0.6494464944649446
+              },
+              "support": {
+                "negative": 1025,
+                "neutral": 239,
+                "positive": 271
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    890,
+                    46,
+                    89
+                  ],
+                  [
+                    55,
+                    160,
+                    24
+                  ],
+                  [
+                    69,
+                    26,
+                    176
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.6605863192182411,
+                "positive": 0.18827361563517916,
+                "neutral": 0.1511400651465798
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.7005028173956906,
+                "hi": 0.7568932957316252
+              },
+              "psi_contested_ci95": {
+                "lo": 0.9257286894140342,
+                "hi": 0.9523392000685166
+              },
+              "n_boot": 2000
+            },
+            "pooled_cremad_subset300": {
+              "n_clips": 365,
+              "n_incongruent": 300,
+              "uar": 0.7216886255935754,
+              "macro_f1": 0.715483197024128,
+              "accuracy": 0.7726027397260274,
+              "psi_contested": 0.9182879377431906,
+              "psi_strict": 0.7866666666666666,
+              "per_class_recall": {
+                "negative": 0.8407079646017699,
+                "neutral": 0.6764705882352942,
+                "positive": 0.647887323943662
+              },
+              "support": {
+                "negative": 226,
+                "neutral": 68,
+                "positive": 71
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    190,
+                    16,
+                    20
+                  ],
+                  [
+                    12,
+                    46,
+                    10
+                  ],
+                  [
+                    17,
+                    8,
+                    46
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "neutral": 0.1917808219178082,
+                "negative": 0.6,
+                "positive": 0.20821917808219179
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.6624056146995058,
+                "hi": 0.7772714683810825
+              },
+              "psi_contested_ci95": {
+                "lo": 0.8832684824902723,
+                "hi": 0.9501915708812261
+              },
+              "n_boot": 2000
+            },
+            "cremad_test": {
+              "n_clips": 1470,
+              "n_incongruent": 1255,
+              "uar": 0.74174156088823,
+              "macro_f1": 0.7392392366276722,
+              "accuracy": 0.8115646258503402,
+              "psi_contested": 0.9439927732610659,
+              "psi_strict": 0.8326693227091634,
+              "per_class_recall": {
+                "negative": 0.8754980079681275,
+                "neutral": 0.6883720930232559,
+                "positive": 0.6613545816733067
+              },
+              "support": {
+                "negative": 1004,
+                "neutral": 215,
+                "positive": 251
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    879,
+                    42,
+                    83
+                  ],
+                  [
+                    49,
+                    148,
+                    18
+                  ],
+                  [
+                    65,
+                    20,
+                    166
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.6755102040816326,
+                "positive": 0.1816326530612245,
+                "neutral": 0.14285714285714285
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.712049963768426,
+                "hi": 0.7707914772849394
+              },
+              "psi_contested_ci95": {
+                "lo": 0.9303566927458427,
+                "hi": 0.9567978059273816
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.6,
+              "macro_f1": 0.6093181818181818,
+              "accuracy": 0.6,
+              "psi_contested": 0.8421052631578947,
+              "psi_strict": 0.5333333333333333,
+              "per_class_recall": {
+                "negative": 0.6,
+                "neutral": 0.6,
+                "positive": 0.6
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    9,
+                    3,
+                    3
+                  ],
+                  [
+                    1,
+                    9,
+                    5
+                  ],
+                  [
+                    0,
+                    6,
+                    9
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.37777777777777777,
+                "neutral": 0.4,
+                "negative": 0.2222222222222222
+              },
+              "top_class": "neutral",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4425474035768153,
+                "hi": 0.7444505718954249
+              },
+              "psi_contested_ci95": {
+                "lo": 0.6470588235294118,
+                "hi": 1.0
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.2888888888888889,
+              "macro_f1": 0.2989441930618401,
+              "accuracy": 0.3,
+              "psi_contested": 0.5555555555555556,
+              "psi_strict": 0.35714285714285715,
+              "per_class_recall": {
+                "negative": 0.3333333333333333,
+                "neutral": 0.3333333333333333,
+                "positive": 0.2
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    2,
+                    1,
+                    3
+                  ],
+                  [
+                    5,
+                    3,
+                    1
+                  ],
+                  [
+                    4,
+                    0,
+                    1
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.25,
+                "negative": 0.55,
+                "neutral": 0.2
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.09523809523809523,
+                "hi": 0.5304563492063491
+              },
+              "psi_contested_ci95": {
+                "lo": 0.2222222222222222,
+                "hi": 0.8888888888888888
+              },
+              "n_boot": 2000
+            }
+          }
+        },
+        "prosody": {
+          "description": "eGeMAPS + pitch/loudness contour descriptors (no pretrained network, nothing in the path can represent a word) into impute -> standardise -> classifier. All four candidates from scripts/train_prosodic.py are fitted and reported; 'logreg' is the pre-registered headline so this table is not quietly showing the best of four.",
+          "headline_candidate": "logreg",
+          "val_selected_candidate": "svm_rbf",
+          "candidate_val_scores": {
+            "logreg": {
+              "val_uar": 0.6061312210248381,
+              "val_macro_f1": 0.4911178913467243
+            },
+            "linear_svm": {
+              "val_uar": 0.3847233735531608,
+              "val_macro_f1": 0.3702551535800164
+            },
+            "svm_rbf": {
+              "val_uar": 0.6813223419606397,
+              "val_macro_f1": 0.5870156541419561
+            },
+            "hist_gbdt": {
+              "val_uar": 0.6607802953547633,
+              "val_macro_f1": 0.6096755782760243
+            }
+          },
+          "eval": {
+            "pooled_all": {
+              "n_clips": 1535,
+              "n_incongruent": 1299,
+              "uar": 0.6216015515803693,
+              "macro_f1": 0.5525295743388506,
+              "accuracy": 0.5947882736156351,
+              "psi_contested": 0.7376237623762376,
+              "psi_strict": 0.573518090839107,
+              "per_class_recall": {
+                "negative": 0.5697560975609756,
+                "neutral": 0.6861924686192469,
+                "positive": 0.6088560885608856
+              },
+              "support": {
+                "negative": 1025,
+                "neutral": 239,
+                "positive": 271
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    584,
+                    228,
+                    213
+                  ],
+                  [
+                    51,
+                    164,
+                    24
+                  ],
+                  [
+                    71,
+                    35,
+                    165
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.45993485342019547,
+                "neutral": 0.2781758957654723,
+                "positive": 0.26188925081433223
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.5911913094337705,
+                "hi": 0.6492024879194502
+              },
+              "psi_contested_ci95": {
+                "lo": 0.7093546994288855,
+                "hi": 0.764651321050689
+              },
+              "n_boot": 2000
+            },
+            "pooled_cremad_subset300": {
+              "n_clips": 365,
+              "n_incongruent": 300,
+              "uar": 0.5422962903221865,
+              "macro_f1": 0.5151191954610758,
+              "accuracy": 0.5643835616438356,
+              "psi_contested": 0.7456140350877193,
+              "psi_strict": 0.5666666666666667,
+              "per_class_recall": {
+                "negative": 0.5929203539823009,
+                "neutral": 0.47058823529411764,
+                "positive": 0.5633802816901409
+              },
+              "support": {
+                "negative": 226,
+                "neutral": 68,
+                "positive": 71
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    134,
+                    47,
+                    45
+                  ],
+                  [
+                    23,
+                    32,
+                    13
+                  ],
+                  [
+                    22,
+                    9,
+                    40
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.4904109589041096,
+                "neutral": 0.2410958904109589,
+                "positive": 0.2684931506849315
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.4803026602430581,
+                "hi": 0.6019272644735897
+              },
+              "psi_contested_ci95": {
+                "lo": 0.6898148148148148,
+                "hi": 0.8017085948303371
+              },
+              "n_boot": 2000
+            },
+            "cremad_test": {
+              "n_clips": 1470,
+              "n_incongruent": 1255,
+              "uar": 0.6432579758485438,
+              "macro_f1": 0.5607344729215126,
+              "accuracy": 0.6047619047619047,
+              "psi_contested": 0.7433808553971487,
+              "psi_strict": 0.5816733067729084,
+              "per_class_recall": {
+                "negative": 0.5727091633466136,
+                "neutral": 0.7395348837209302,
+                "positive": 0.6175298804780877
+              },
+              "support": {
+                "negative": 1004,
+                "neutral": 215,
+                "positive": 251
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    575,
+                    219,
+                    210
+                  ],
+                  [
+                    40,
+                    159,
+                    16
+                  ],
+                  [
+                    63,
+                    33,
+                    155
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.46122448979591835,
+                "neutral": 0.2795918367346939,
+                "positive": 0.25918367346938775
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.6129049357496331,
+                "hi": 0.6726384479268456
+              },
+              "psi_contested_ci95": {
+                "lo": 0.7165954113335812,
+                "hi": 0.7699502623023297
+              },
+              "n_boot": 2000
+            },
+            "hume_colton": {
+              "n_clips": 45,
+              "n_incongruent": 30,
+              "uar": 0.4222222222222222,
+              "macro_f1": 0.4452728590659625,
+              "accuracy": 0.4222222222222222,
+              "psi_contested": 0.5789473684210527,
+              "psi_strict": 0.36666666666666664,
+              "per_class_recall": {
+                "negative": 0.4,
+                "neutral": 0.3333333333333333,
+                "positive": 0.5333333333333333
+              },
+              "support": {
+                "negative": 15,
+                "neutral": 15,
+                "positive": 15
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    6,
+                    9,
+                    0
+                  ],
+                  [
+                    9,
+                    5,
+                    1
+                  ],
+                  [
+                    7,
+                    0,
+                    8
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "positive": 0.2,
+                "negative": 0.4888888888888889,
+                "neutral": 0.3111111111111111
+              },
+              "top_class": "negative",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.275105580693816,
+                "hi": 0.577790404040404
+              },
+              "psi_contested_ci95": {
+                "lo": 0.35,
+                "hi": 0.8095238095238095
+              },
+              "n_boot": 2000
+            },
+            "zurich_test_speaker": {
+              "n_clips": 20,
+              "n_incongruent": 14,
+              "uar": 0.3,
+              "macro_f1": 0.2450980392156863,
+              "accuracy": 0.25,
+              "psi_contested": 0.4444444444444444,
+              "psi_strict": 0.2857142857142857,
+              "per_class_recall": {
+                "negative": 0.5,
+                "neutral": 0.0,
+                "positive": 0.4
+              },
+              "support": {
+                "negative": 6,
+                "neutral": 9,
+                "positive": 5
+              },
+              "confusion_matrix": {
+                "labels": [
+                  "negative",
+                  "neutral",
+                  "positive"
+                ],
+                "rows_true_cols_pred": [
+                  [
+                    3,
+                    0,
+                    3
+                  ],
+                  [
+                    2,
+                    0,
+                    7
+                  ],
+                  [
+                    1,
+                    2,
+                    2
+                  ]
+                ]
+              },
+              "predicted_class_share": {
+                "negative": 0.3,
+                "positive": 0.6,
+                "neutral": 0.1
+              },
+              "top_class": "positive",
+              "is_degenerate": false,
+              "uar_ci95": {
+                "lo": 0.09512987012987013,
+                "hi": 0.5238095238095238
+              },
+              "psi_contested_ci95": {
+                "lo": 0.14285714285714285,
+                "hi": 0.8
+              },
+              "n_boot": 2000
+            }
+          },
+          "eval_all_candidates": {
+            "logreg": {
+              "pooled_all": {
+                "n_clips": 1535,
+                "n_incongruent": 1299,
+                "uar": 0.6216015515803693,
+                "macro_f1": 0.5525295743388506,
+                "accuracy": 0.5947882736156351,
+                "psi_contested": 0.7376237623762376,
+                "psi_strict": 0.573518090839107,
+                "per_class_recall": {
+                  "negative": 0.5697560975609756,
+                  "neutral": 0.6861924686192469,
+                  "positive": 0.6088560885608856
+                },
+                "support": {
+                  "negative": 1025,
+                  "neutral": 239,
+                  "positive": 271
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      584,
+                      228,
+                      213
+                    ],
+                    [
+                      51,
+                      164,
+                      24
+                    ],
+                    [
+                      71,
+                      35,
+                      165
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.45993485342019547,
+                  "neutral": 0.2781758957654723,
+                  "positive": 0.26188925081433223
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.5911913094337705,
+                  "hi": 0.6492024879194502
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.7093546994288855,
+                  "hi": 0.764651321050689
+                },
+                "n_boot": 2000
+              },
+              "pooled_cremad_subset300": {
+                "n_clips": 365,
+                "n_incongruent": 300,
+                "uar": 0.5422962903221865,
+                "macro_f1": 0.5151191954610758,
+                "accuracy": 0.5643835616438356,
+                "psi_contested": 0.7456140350877193,
+                "psi_strict": 0.5666666666666667,
+                "per_class_recall": {
+                  "negative": 0.5929203539823009,
+                  "neutral": 0.47058823529411764,
+                  "positive": 0.5633802816901409
+                },
+                "support": {
+                  "negative": 226,
+                  "neutral": 68,
+                  "positive": 71
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      134,
+                      47,
+                      45
+                    ],
+                    [
+                      23,
+                      32,
+                      13
+                    ],
+                    [
+                      22,
+                      9,
+                      40
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.4904109589041096,
+                  "neutral": 0.2410958904109589,
+                  "positive": 0.2684931506849315
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.4803026602430581,
+                  "hi": 0.6019272644735897
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.6898148148148148,
+                  "hi": 0.8017085948303371
+                },
+                "n_boot": 2000
+              },
+              "cremad_test": {
+                "n_clips": 1470,
+                "n_incongruent": 1255,
+                "uar": 0.6432579758485438,
+                "macro_f1": 0.5607344729215126,
+                "accuracy": 0.6047619047619047,
+                "psi_contested": 0.7433808553971487,
+                "psi_strict": 0.5816733067729084,
+                "per_class_recall": {
+                  "negative": 0.5727091633466136,
+                  "neutral": 0.7395348837209302,
+                  "positive": 0.6175298804780877
+                },
+                "support": {
+                  "negative": 1004,
+                  "neutral": 215,
+                  "positive": 251
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      575,
+                      219,
+                      210
+                    ],
+                    [
+                      40,
+                      159,
+                      16
+                    ],
+                    [
+                      63,
+                      33,
+                      155
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.46122448979591835,
+                  "neutral": 0.2795918367346939,
+                  "positive": 0.25918367346938775
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.6129049357496331,
+                  "hi": 0.6726384479268456
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.7165954113335812,
+                  "hi": 0.7699502623023297
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.4222222222222222,
+                "macro_f1": 0.4452728590659625,
+                "accuracy": 0.4222222222222222,
+                "psi_contested": 0.5789473684210527,
+                "psi_strict": 0.36666666666666664,
+                "per_class_recall": {
+                  "negative": 0.4,
+                  "neutral": 0.3333333333333333,
+                  "positive": 0.5333333333333333
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      9,
+                      0
+                    ],
+                    [
+                      9,
+                      5,
+                      1
+                    ],
+                    [
+                      7,
+                      0,
+                      8
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "positive": 0.2,
+                  "negative": 0.4888888888888889,
+                  "neutral": 0.3111111111111111
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.275105580693816,
+                  "hi": 0.577790404040404
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.35,
+                  "hi": 0.8095238095238095
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3,
+                "macro_f1": 0.2450980392156863,
+                "accuracy": 0.25,
+                "psi_contested": 0.4444444444444444,
+                "psi_strict": 0.2857142857142857,
+                "per_class_recall": {
+                  "negative": 0.5,
+                  "neutral": 0.0,
+                  "positive": 0.4
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      3,
+                      0,
+                      3
+                    ],
+                    [
+                      2,
+                      0,
+                      7
+                    ],
+                    [
+                      1,
+                      2,
+                      2
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.3,
+                  "positive": 0.6,
+                  "neutral": 0.1
+                },
+                "top_class": "positive",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.09512987012987013,
+                  "hi": 0.5238095238095238
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.14285714285714285,
+                  "hi": 0.8
+                },
+                "n_boot": 2000
+              }
+            },
+            "linear_svm": {
+              "pooled_all": {
+                "n_clips": 1535,
+                "n_incongruent": 1299,
+                "uar": 0.3695250124049358,
+                "macro_f1": 0.33973527752263344,
+                "accuracy": 0.6820846905537459,
+                "psi_contested": 0.9838556505223172,
+                "psi_strict": 0.7975365665896844,
+                "per_class_recall": {
+                  "negative": 0.9912195121951219,
+                  "neutral": 0.02510460251046025,
+                  "positive": 0.09225092250922509
+                },
+                "support": {
+                  "negative": 1025,
+                  "neutral": 239,
+                  "positive": 271
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      1016,
+                      1,
+                      8
+                    ],
+                    [
+                      230,
+                      6,
+                      3
+                    ],
+                    [
+                      244,
+                      2,
+                      25
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.9706840390879479,
+                  "positive": 0.023452768729641693,
+                  "neutral": 0.005863192182410423
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3566062006708722,
+                  "hi": 0.38347166489383055
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.9759840528707604,
+                  "hi": 0.9913544668587896
+                },
+                "n_boot": 2000
+              },
+              "pooled_cremad_subset300": {
+                "n_clips": 365,
+                "n_incongruent": 300,
+                "uar": 0.36413876282159374,
+                "macro_f1": 0.32433656068549527,
+                "accuracy": 0.6273972602739726,
+                "psi_contested": 0.9324894514767933,
+                "psi_strict": 0.7366666666666667,
+                "per_class_recall": {
+                  "negative": 0.9778761061946902,
+                  "neutral": 0.04411764705882353,
+                  "positive": 0.07042253521126761
+                },
+                "support": {
+                  "negative": 226,
+                  "neutral": 68,
+                  "positive": 71
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      221,
+                      1,
+                      4
+                    ],
+                    [
+                      64,
+                      3,
+                      1
+                    ],
+                    [
+                      65,
+                      1,
+                      5
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.958904109589041,
+                  "positive": 0.0273972602739726,
+                  "neutral": 0.0136986301369863
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3398052524304657,
+                  "hi": 0.3915098923779172
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.898732783137233,
+                  "hi": 0.9618684295215618
+                },
+                "n_boot": 2000
+              },
+              "cremad_test": {
+                "n_clips": 1470,
+                "n_incongruent": 1255,
+                "uar": 0.3712977547175638,
+                "macro_f1": 0.34599637278472734,
+                "accuracy": 0.6972789115646258,
+                "psi_contested": 0.9970674486803519,
+                "psi_strict": 0.8127490039840638,
+                "per_class_recall": {
+                  "negative": 0.9910358565737052,
+                  "neutral": 0.023255813953488372,
+                  "positive": 0.099601593625498
+                },
+                "support": {
+                  "negative": 1004,
+                  "neutral": 215,
+                  "positive": 251
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      995,
+                      1,
+                      8
+                    ],
+                    [
+                      207,
+                      5,
+                      3
+                    ],
+                    [
+                      224,
+                      2,
+                      25
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.9700680272108844,
+                  "positive": 0.024489795918367346,
+                  "neutral": 0.005442176870748299
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.358136155460647,
+                  "hi": 0.38652673665015647
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.9932038834951457,
+                  "hi": 1.0
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.35555555555555557,
+                "macro_f1": 0.21115819209039546,
+                "accuracy": 0.35555555555555557,
+                "psi_contested": 0.55,
+                "psi_strict": 0.36666666666666664,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.06666666666666667,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      14,
+                      1,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.9777777777777777,
+                  "neutral": 0.022222222222222223
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.4102564102564103
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.7728535353535346
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.15384615384615385,
+                "accuracy": 0.3,
+                "psi_contested": 0.5,
+                "psi_strict": 0.35714285714285715,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      0,
+                      0
+                    ],
+                    [
+                      9,
+                      0,
+                      0
+                    ],
+                    [
+                      5,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.16666666666666666,
+                  "hi": 0.8181818181818182
+                },
+                "n_boot": 2000
+              }
+            },
+            "svm_rbf": {
+              "pooled_all": {
+                "n_clips": 1535,
+                "n_incongruent": 1299,
+                "uar": 0.5352684204666314,
+                "macro_f1": 0.5774069654831687,
+                "accuracy": 0.7407166123778501,
+                "psi_contested": 0.9527702089009991,
+                "psi_strict": 0.8075442648190916,
+                "per_class_recall": {
+                  "negative": 0.9453658536585365,
+                  "neutral": 0.34309623430962344,
+                  "positive": 0.3173431734317343
+                },
+                "support": {
+                  "negative": 1025,
+                  "neutral": 239,
+                  "positive": 271
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      969,
+                      26,
+                      30
+                    ],
+                    [
+                      152,
+                      82,
+                      5
+                    ],
+                    [
+                      174,
+                      11,
+                      86
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.8436482084690554,
+                  "positive": 0.07882736156351791,
+                  "neutral": 0.07752442996742671
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.5071742390260938,
+                  "hi": 0.5617742043785799
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.9400328832532358,
+                  "hi": 0.9647906357061287
+                },
+                "n_boot": 2000
+              },
+              "pooled_cremad_subset300": {
+                "n_clips": 365,
+                "n_incongruent": 300,
+                "uar": 0.48628025309587875,
+                "macro_f1": 0.5146743253359728,
+                "accuracy": 0.6821917808219178,
+                "psi_contested": 0.9230769230769231,
+                "psi_strict": 0.76,
+                "per_class_recall": {
+                  "negative": 0.9424778761061947,
+                  "neutral": 0.22058823529411764,
+                  "positive": 0.29577464788732394
+                },
+                "support": {
+                  "negative": 226,
+                  "neutral": 68,
+                  "positive": 71
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      213,
+                      4,
+                      9
+                    ],
+                    [
+                      52,
+                      15,
+                      1
+                    ],
+                    [
+                      50,
+                      0,
+                      21
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.863013698630137,
+                  "neutral": 0.052054794520547946,
+                  "positive": 0.08493150684931507
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.4384270271813226,
+                  "hi": 0.5358796642631172
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.8879586460907268,
+                  "hi": 0.9547173693609753
+                },
+                "n_boot": 2000
+              },
+              "cremad_test": {
+                "n_clips": 1470,
+                "n_incongruent": 1255,
+                "uar": 0.5560826461595478,
+                "macro_f1": 0.6006951451685053,
+                "accuracy": 0.7591836734693878,
+                "psi_contested": 0.965452847805789,
+                "psi_strict": 0.8239043824701195,
+                "per_class_recall": {
+                  "negative": 0.9442231075697212,
+                  "neutral": 0.3813953488372093,
+                  "positive": 0.3426294820717131
+                },
+                "support": {
+                  "negative": 1004,
+                  "neutral": 215,
+                  "positive": 251
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      948,
+                      26,
+                      30
+                    ],
+                    [
+                      128,
+                      82,
+                      5
+                    ],
+                    [
+                      154,
+                      11,
+                      86
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.8367346938775511,
+                  "positive": 0.08231292517006802,
+                  "neutral": 0.08095238095238096
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.526898391591497,
+                  "hi": 0.5842282821171173
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.954086081054216,
+                  "hi": 0.9756126027646831
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.16666666666666666,
+                "accuracy": 0.3333333333333333,
+                "psi_contested": 0.5,
+                "psi_strict": 0.3333333333333333,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ],
+                    [
+                      15,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.2857142857142857,
+                  "hi": 0.7272727272727273
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.3333333333333333,
+                "macro_f1": 0.15384615384615385,
+                "accuracy": 0.3,
+                "psi_contested": 0.5,
+                "psi_strict": 0.35714285714285715,
+                "per_class_recall": {
+                  "negative": 1.0,
+                  "neutral": 0.0,
+                  "positive": 0.0
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      6,
+                      0,
+                      0
+                    ],
+                    [
+                      9,
+                      0,
+                      0
+                    ],
+                    [
+                      5,
+                      0,
+                      0
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 1.0
+                },
+                "top_class": "negative",
+                "is_degenerate": true,
+                "uar_ci95": {
+                  "lo": 0.3333333333333333,
+                  "hi": 0.3333333333333333
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.16666666666666666,
+                  "hi": 0.8181818181818182
+                },
+                "n_boot": 2000
+              }
+            },
+            "hist_gbdt": {
+              "pooled_all": {
+                "n_clips": 1535,
+                "n_incongruent": 1299,
+                "uar": 0.6469667675756255,
+                "macro_f1": 0.6321399276046599,
+                "accuracy": 0.7153094462540717,
+                "psi_contested": 0.8577857785778578,
+                "psi_strict": 0.7336412625096228,
+                "per_class_recall": {
+                  "negative": 0.784390243902439,
+                  "neutral": 0.606694560669456,
+                  "positive": 0.5498154981549815
+                },
+                "support": {
+                  "negative": 1025,
+                  "neutral": 239,
+                  "positive": 271
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      804,
+                      121,
+                      100
+                    ],
+                    [
+                      76,
+                      145,
+                      18
+                    ],
+                    [
+                      84,
+                      38,
+                      149
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.6280130293159609,
+                  "positive": 0.1739413680781759,
+                  "neutral": 0.19804560260586318
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.6176610503218212,
+                  "hi": 0.6757470853976689
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.8371635655728168,
+                  "hi": 0.8783343098963537
+                },
+                "n_boot": 2000
+              },
+              "pooled_cremad_subset300": {
+                "n_clips": 365,
+                "n_incongruent": 300,
+                "uar": 0.63687486711,
+                "macro_f1": 0.6290777230432403,
+                "accuracy": 0.6958904109589041,
+                "psi_contested": 0.8503937007874016,
+                "psi_strict": 0.72,
+                "per_class_recall": {
+                  "negative": 0.7743362831858407,
+                  "neutral": 0.5588235294117647,
+                  "positive": 0.5774647887323944
+                },
+                "support": {
+                  "negative": 226,
+                  "neutral": 68,
+                  "positive": 71
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      175,
+                      27,
+                      24
+                    ],
+                    [
+                      22,
+                      38,
+                      8
+                    ],
+                    [
+                      18,
+                      12,
+                      41
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.589041095890411,
+                  "neutral": 0.21095890410958903,
+                  "positive": 0.2
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.5788383433966949,
+                  "hi": 0.6956064766038629
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.8045891415994131,
+                  "hi": 0.8932846821745609
+                },
+                "n_boot": 2000
+              },
+              "cremad_test": {
+                "n_clips": 1470,
+                "n_incongruent": 1255,
+                "uar": 0.6445582013033139,
+                "macro_f1": 0.6273521409727251,
+                "accuracy": 0.7197278911564626,
+                "psi_contested": 0.8621973929236499,
+                "psi_strict": 0.7378486055776893,
+                "per_class_recall": {
+                  "negative": 0.7898406374501992,
+                  "neutral": 0.6139534883720931,
+                  "positive": 0.5298804780876494
+                },
+                "support": {
+                  "negative": 1004,
+                  "neutral": 215,
+                  "positive": 251
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      793,
+                      112,
+                      99
+                    ],
+                    [
+                      68,
+                      132,
+                      15
+                    ],
+                    [
+                      82,
+                      36,
+                      133
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "negative": 0.6414965986394557,
+                  "positive": 0.16802721088435374,
+                  "neutral": 0.19047619047619047
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.6127598751370579,
+                  "hi": 0.6750221875938638
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.8410776053078609,
+                  "hi": 0.8820724073945806
+                },
+                "n_boot": 2000
+              },
+              "hume_colton": {
+                "n_clips": 45,
+                "n_incongruent": 30,
+                "uar": 0.6888888888888888,
+                "macro_f1": 0.6932471264367815,
+                "accuracy": 0.6888888888888889,
+                "psi_contested": 0.76,
+                "psi_strict": 0.6333333333333333,
+                "per_class_recall": {
+                  "negative": 0.5333333333333333,
+                  "neutral": 0.6,
+                  "positive": 0.9333333333333333
+                },
+                "support": {
+                  "negative": 15,
+                  "neutral": 15,
+                  "positive": 15
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      8,
+                      7,
+                      0
+                    ],
+                    [
+                      6,
+                      9,
+                      0
+                    ],
+                    [
+                      0,
+                      1,
+                      14
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "positive": 0.3111111111111111,
+                  "negative": 0.3111111111111111,
+                  "neutral": 0.37777777777777777
+                },
+                "top_class": "neutral",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.5581301599587204,
+                  "hi": 0.8149783549783548
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.5788967611336032,
+                  "hi": 0.92
+                },
+                "n_boot": 2000
+              },
+              "zurich_test_speaker": {
+                "n_clips": 20,
+                "n_incongruent": 14,
+                "uar": 0.4481481481481482,
+                "macro_f1": 0.44172494172494176,
+                "accuracy": 0.45,
+                "psi_contested": 0.6666666666666666,
+                "psi_strict": 0.5714285714285714,
+                "per_class_recall": {
+                  "negative": 0.5,
+                  "neutral": 0.4444444444444444,
+                  "positive": 0.4
+                },
+                "support": {
+                  "negative": 6,
+                  "neutral": 9,
+                  "positive": 5
+                },
+                "confusion_matrix": {
+                  "labels": [
+                    "negative",
+                    "neutral",
+                    "positive"
+                  ],
+                  "rows_true_cols_pred": [
+                    [
+                      3,
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      4,
+                      3
+                    ],
+                    [
+                      2,
+                      1,
+                      2
+                    ]
+                  ]
+                },
+                "predicted_class_share": {
+                  "positive": 0.3,
+                  "negative": 0.35,
+                  "neutral": 0.35
+                },
+                "top_class": "negative",
+                "is_degenerate": false,
+                "uar_ci95": {
+                  "lo": 0.20502645502645503,
+                  "hi": 0.6944444444444445
+                },
+                "psi_contested_ci95": {
+                  "lo": 0.36363636363636365,
+                  "hi": 0.9166666666666666
+                },
+                "n_boot": 2000
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "method": "Three acoustic backends fitted under three data regimes. The classifier on top of the permissive and research-head representations is held identical (StandardScaler + LogisticRegression(max_iter=2000, class_weight='balanced'), seed 0) so that what varies between those cells is the representation and the training data, not the estimator. The prosody backend fits all four candidates from scripts/train_prosodic.py; 'logreg' is the headline and the others are reported in eval_all_candidates. 95% intervals are a 2,000-sample percentile bootstrap over clips (scripts/eval_zurich.bootstrap_ci).",
+  "gold_label": "prosody_sentiment on every row, never text_sentiment (CLAUDE.md rule 2). UAR is the headline; accuracy appears only beside it (rule 7).",
+  "caveats": [
+    "TRAINING ON E5 (Hume) BREAKS THIS PROJECT'S OWN DESIGN RULE. DESIGN.md designates E5 eval-only because it is the instrument that measures prosody sensitivity under contradiction. X1 and X3 train on Ava Song's 45 clips, so for those configurations E5 is no longer a clean PSI instrument. X2, which trains on no E5 at all, is the honest PSI reading.",
+    "Sample sizes are wildly unequal by design: 45 Hume clips per voice and 20 Zurich test clips against CREMA-D's 1,470-clip test split. Differences of a few points between backends are not resolvable at those sizes, which is why every cell carries a bootstrap interval. Read the intervals, not the ranks.",
+    "The Zurich test speaker is ONE person and the Hume held-out voice is ONE synthetic voice. A controlled anecdote, not a population claim.",
+    "E3 is not scored anywhere here: Zurich's speaker1 is the same human who recorded E3, and X3 trains on him.",
+    "The research backend is CC-BY-NC-SA-4.0 (research use only) and cannot ship in a commercial product without a separate license from audEERING.",
+    "Only three configurations were requested, so there is no 'train on Zurich alone' or 'train on Hume alone' row here; results/combos_e5_e6.json already covers those for the permissive backend.",
+    "Bootstrap resampling is over clips, which treats them as exchangeable. The same speakers and carrier sentences recur, so the true intervals are if anything wider than these.",
+    "PSI ON CREMA-D IS NOT A PROSODY MEASUREMENT, and the majority-baseline rows are here to show it: CREMA-D's text is neutral on every clip, so a model that only ever says 'negative' never matches the text label and scores PSI contested 1.000 on cremad_test. Read PSI on the Hume and Zurich rows, where the text label actually varies; on CREMA-D read UAR."
+  ]
+}

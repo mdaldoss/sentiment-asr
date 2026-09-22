@@ -623,6 +623,11 @@ def main() -> None:
             "Bootstrap resampling is over clips, which treats them as exchangeable. The "
             "same speakers and carrier sentences recur, so the true intervals are if "
             "anything wider than these.",
+            "PSI ON CREMA-D IS NOT A PROSODY MEASUREMENT, and the majority-baseline rows "
+            "are here to show it: CREMA-D's text is neutral on every clip, so a model that "
+            "only ever says 'negative' never matches the text label and scores PSI "
+            "contested 1.000 on cremad_test. Read PSI on the Hume and Zurich rows, where "
+            "the text label actually varies; on CREMA-D read UAR.",
         ],
     }
 
