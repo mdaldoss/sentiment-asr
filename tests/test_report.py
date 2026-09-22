@@ -16,6 +16,7 @@ from ssa.report import (
     render_hume_section,
     render_leakage_table,
     render_main_table,
+    render_model_matrix_section,
     render_models_section,
     render_prosody_samples_section,
     render_status,
@@ -472,3 +473,72 @@ class TestRenderE5Section:
         html = render_e5_section(_fake_e5())
         assert "eval-only" in html
         assert "E3 remains the only real-speaker evidence" in html
+
+
+def _fake_model_matrix() -> dict:
+    def cell(uar: float, psi: float) -> dict:
+        return {
+            "n_clips": 160,
+            "uar": uar,
+            "macro_f1": uar - 0.03,
+            "accuracy": uar,
+            "psi_contested": psi,
+            "psi_strict": psi - 0.1,
+            "uar_ci95": {"lo": uar - 0.07, "hi": uar + 0.07},
+            "psi_contested_ci95": {"lo": psi - 0.1, "hi": psi + 0.1},
+        }
+
+    return {
+        "gold_label": "prosody_sentiment on every row, never text_sentiment",
+        "method": "held-identical classifier across cells",
+        "caveats": ["TRAINING ON E5 BREAKS THIS PROJECT'S OWN DESIGN RULE."],
+        "configurations": {
+            "X1_cremad_hume__zurich": {
+                "question": "Train CREMA-D + Hume, test on Zurich.",
+                "n_train_clips": 5280,
+                "n_train_speakers": 65,
+                "train_class_counts": {"negative": 3591},
+                "n_val_clips": 782,
+                "n_val_speakers": 10,
+                "notes": ["Ava trains; Colton is held out."],
+                "eval_sets": {
+                    "zurich_all": {
+                        "n_clips": 160,
+                        "majority_baseline": {"uar": 1 / 3, "always_predicts": "neutral"},
+                    }
+                },
+                "backends": {
+                    "research_valence_thresholds": {"eval": {"zurich_all": cell(0.356, 0.366)}},
+                    "research_vad_head": {"eval": {"zurich_all": cell(0.398, 0.488)}},
+                    "permissive": {"eval": {"zurich_all": cell(0.433, 0.646)}},
+                    "prosody": {"eval": {"zurich_all": cell(0.372, 0.547)}},
+                },
+            }
+        },
+    }
+
+
+class TestRenderModelMatrixSection:
+    def test_none_shows_pending(self) -> None:
+        assert "pending" in render_model_matrix_section(None)
+
+    def test_renders_every_backend_row(self) -> None:
+        html = render_model_matrix_section(_fake_model_matrix())
+        for label in ("2 thresholds", "VAD", "permissive (WavLM+probe)", "eGeMAPS+contour"):
+            assert label in html
+
+    def test_uar_carries_its_interval_and_the_baseline_is_shown(self) -> None:
+        """A UAR of 0.433 against a 0.333 baseline is only readable with both
+        numbers present -- CLAUDE.md rule 4."""
+        html = render_model_matrix_section(_fake_model_matrix())
+        assert "0.433" in html
+        assert "0.36" in html and "0.50" in html  # the bootstrap interval
+        assert "majority baseline" in html
+        assert "always neutral" in html
+
+    def test_caveats_and_gold_label_survive_into_the_page(self) -> None:
+        """Rule 6: the E5 training caveat must not be droppable by the
+        renderer -- it has to appear wherever the numbers appear."""
+        html = render_model_matrix_section(_fake_model_matrix())
+        assert "BREAKS THIS PROJECT'S OWN DESIGN RULE" in html
+        assert "never text_sentiment" in html

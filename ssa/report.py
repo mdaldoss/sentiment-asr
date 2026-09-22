@@ -537,6 +537,89 @@ def render_backend_combo_section(data: dict | None) -> str:
     """
 
 
+MODEL_MATRIX_BACKENDS: tuple[tuple[str, str], ...] = (
+    ("research_valence_thresholds", "B &mdash; research (audeering, 2 thresholds)"),
+    ("research_vad_head", "B &mdash; research (audeering VAD &rarr; logreg)"),
+    ("permissive", "B &mdash; permissive (WavLM+probe)"),
+    ("prosody", "D &mdash; prosody (eGeMAPS+contour, logreg)"),
+)
+
+
+def render_model_matrix_section(data: dict | None) -> str:
+    """All three acoustic backends under three training/test regimes.
+
+    See scripts/train_model_matrix.py for the methodology. The three
+    configurations are not interchangeable and the table says so on every
+    row: X1 and X2 are cross-corpus (the test corpus contributes nothing to
+    training), X3 is within-corpus-but-speaker-disjoint. CLAUDE.md rule 8 is
+    the reason they appear together rather than as one headline number.
+    """
+    if data is None:
+        return "<p class='pending'>Not yet run &mdash; <code>make model-matrix</code>.</p>"
+
+    blocks = []
+    for cfg_name, cfg in data["configurations"].items():
+        eval_names = list(cfg["eval_sets"])
+        header = "".join(
+            f'<th>{name}<br/><span class="caption">n={cfg["eval_sets"][name]["n_clips"]}</span></th>'
+            for name in eval_names
+        )
+
+        rows = []
+        for key, label in MODEL_MATRIX_BACKENDS:
+            backend = cfg["backends"].get(key)
+            if backend is None:
+                continue
+            cells = []
+            for name in eval_names:
+                s_ = backend["eval"][name]
+                ci = s_.get("uar_ci95", {})
+                # PSI is meaningless where the corpus's text label never
+                # varies -- see the CREMA-D caveat below the table.
+                psi = _fmt(s_.get("psi_contested"))
+                cells.append(
+                    f'<td class="num">{_fmt(s_["uar"])}'
+                    f'<br/><span class="caption">[{_fmt(ci.get("lo"), 2)},'
+                    f"&thinsp;{_fmt(ci.get('hi'), 2)}]</span>"
+                    f'<br/><span class="caption">PSI {psi}</span></td>'
+                )
+            rows.append(f"<tr><td>{label}</td>{''.join(cells)}</tr>")
+
+        baseline_cells = "".join(
+            f'<td class="num">{_fmt(cfg["eval_sets"][name]["majority_baseline"]["uar"])}'
+            f'<br/><span class="caption">always '
+            f"{cfg['eval_sets'][name]['majority_baseline']['always_predicts']}</span></td>"
+            for name in eval_names
+        )
+        rows.append(
+            f'<tr><td class="caption">majority baseline (reference)</td>{baseline_cells}</tr>'
+        )
+
+        notes = "".join(f"<li>{n}</li>" for n in cfg["notes"])
+        blocks.append(f"""
+        <h3><code>{cfg_name}</code></h3>
+        <p>{cfg["question"]}</p>
+        <p class="caption">Train {cfg["n_train_clips"]} clips / {cfg["n_train_speakers"]}
+        speakers, classes {cfg["train_class_counts"]}. Validation (threshold fitting and
+        candidate selection only) {cfg["n_val_clips"]} clips / {cfg["n_val_speakers"]} speakers.</p>
+        <table>
+          <thead><tr><th>Backend</th>{header}</tr></thead>
+          <tbody>{"".join(rows)}</tbody>
+        </table>
+        <ul class="caption">{notes}</ul>
+        """)
+
+    caveats = "".join(f"<li>{c}</li>" for c in data["caveats"])
+    return f"""
+    <p>Each cell is <strong>UAR</strong> with its 95% bootstrap interval and
+    <strong>PSI contested</strong> beneath. Chance UAR is 0.333 for three classes; PSI
+    chance is 0.5. {data["gold_label"]}</p>
+    {"".join(blocks)}
+    <p class="caption"><strong>Method.</strong> {data["method"]}</p>
+    <ul class="caption">{caveats}</ul>
+    """
+
+
 def render_e3_control_section(control: dict | None) -> str:
     if control is None:
         return "<p class='pending'>E3 evaluation / D1-vs-human control not yet run.</p>"
@@ -668,6 +751,7 @@ def build_report() -> str:
     leaky = load_json_if_exists(RESULTS_DIR / "leakage_comparison_permissive.json")
     backend_combos = load_json_if_exists(RESULTS_DIR / "backend_combo_comparison.json")
     e5 = load_json_if_exists(RESULTS_DIR / "e5_summary.json")
+    model_matrix = load_json_if_exists(RESULTS_DIR / "model_matrix.json")
     disjoint_permissive = next(
         (
             r
@@ -802,6 +886,9 @@ predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
 
 <h2>Backend x training-data comparison: WavLM+probe vs audeering/wav2vec2</h2>
 {render_backend_combo_section(backend_combos)}
+
+<h2>Model matrix: three backends x three training regimes (CREMA-D / Hume / Zurich)</h2>
+{render_model_matrix_section(model_matrix)}
 
 <h2>What didn't work, and why</h2>
 {render_what_didnt_work()}
