@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D1 listening page -- emotion rendering probe</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: .25rem; }
+  .text { color: #555; font-style: italic; }
+  table { border-collapse: collapse; width: 100%; margin-top: .5rem; }
+  th, td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+  td.stats { font-family: ui-monospace, monospace; font-size: .8rem; color: #444; }
+  audio { height: 32px; }
+</style>
+</head>
+<body>
+<h1>D1: does Cartesia render these 5 emotions audibly?</h1>
+<p>Each section below is one (text, length, speed) cell with all 5 emotions on the same
+words (when text is "neutral") or on matched-domain per-emotion sentences (when
+"congruent"). Play them back-to-back within a section -- that A/B comparison is the real
+test, more than any single number below each player. See results/d1_emotion_probe.json
+for the full write-up and CLAUDE.md rule 6: none of the numbers here are claimed as more
+than what a ~40-clip synthetic probe can support.</p>
+<h2>neutral text, short, speed=default</h2>
+<p class="text">"I need to check tomorrow's schedule."</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_short_default.wav"></audio></td><td class='stats'>F0 mean=162Hz std=27Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.49</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_short_default.wav"></audio></td><td class='stats'>F0 mean=172Hz std=18Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.47</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_short_default.wav"></audio></td><td class='stats'>F0 mean=182Hz std=36Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.52</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_short_default.wav"></audio></td><td class='stats'>F0 mean=208Hz std=32Hz | permissive=neutral (P+ - P-=-0.06) | research valence=0.55</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_default.wav"></audio></td><td class='stats'>F0 mean=192Hz std=38Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.52</td></tr>
+</table><h2>neutral text, short, speed=adjusted (chosen for sonic-3.5 comparison below)</h2>
+<p class="text">"I need to check tomorrow's schedule."</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=214Hz std=60Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.58</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=178Hz std=42Hz | permissive=neutral (P+ - P-=-0.36) | research valence=0.52</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=179Hz std=37Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.54</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=147Hz std=36Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.44</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=192Hz std=58Hz | permissive=neutral (P+ - P-=-0.00) | research valence=0.53</td></tr>
+</table><h2>neutral text, long, speed=default</h2>
+<p class="text">"I would like to check what time my appointment is on Thursday, and whether I need to bring anything with me."</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_long_default.wav"></audio></td><td class='stats'>F0 mean=179Hz std=54Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.56</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_long_default.wav"></audio></td><td class='stats'>F0 mean=160Hz std=46Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.53</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_long_default.wav"></audio></td><td class='stats'>F0 mean=163Hz std=26Hz | permissive=negative (P+ - P-=-0.98) | research valence=0.45</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_long_default.wav"></audio></td><td class='stats'>F0 mean=175Hz std=52Hz | permissive=negative (P+ - P-=-0.03) | research valence=0.53</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_long_default.wav"></audio></td><td class='stats'>F0 mean=171Hz std=34Hz | permissive=negative (P+ - P-=-0.99) | research valence=0.53</td></tr>
+</table><h2>neutral text, long, speed=adjusted</h2>
+<p class="text">"I would like to check what time my appointment is on Thursday, and whether I need to bring anything with me."</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=168Hz std=46Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.58</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=169Hz std=47Hz | permissive=neutral (P+ - P-=-0.02) | research valence=0.55</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=174Hz std=43Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.55</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=169Hz std=40Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.54</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=165Hz std=54Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.57</td></tr>
+</table><h2>congruent text, short, speed=default</h2>
+<p class="text">"(per-emotion text, see table)"</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_short_default.wav"></audio></td><td class='stats'>F0 mean=194Hz std=31Hz | permissive=negative (P+ - P-=-0.89) | research valence=0.71</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_short_default.wav"></audio></td><td class='stats'>F0 mean=156Hz std=54Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.39</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_short_default.wav"></audio></td><td class='stats'>F0 mean=179Hz std=41Hz | permissive=negative (P+ - P-=-0.99) | research valence=0.34</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_short_default.wav"></audio></td><td class='stats'>F0 mean=194Hz std=60Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.51</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_short_default.wav"></audio></td><td class='stats'>F0 mean=149Hz std=41Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.39</td></tr>
+</table><h2>congruent text, short, speed=adjusted</h2>
+<p class="text">"(per-emotion text, see table)"</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=186Hz std=27Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.69</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=169Hz std=48Hz | permissive=negative (P+ - P-=-0.92) | research valence=0.38</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=201Hz std=39Hz | permissive=positive (P+ - P-=+0.24) | research valence=0.35</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=167Hz std=46Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.38</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_short_adjusted.wav"></audio></td><td class='stats'>F0 mean=151Hz std=44Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.38</td></tr>
+</table><h2>congruent text, long, speed=default</h2>
+<p class="text">"(per-emotion text, see table)"</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_long_default.wav"></audio></td><td class='stats'>F0 mean=178Hz std=51Hz | permissive=neutral (P+ - P-=-0.12) | research valence=0.67</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_long_default.wav"></audio></td><td class='stats'>F0 mean=201Hz std=64Hz | permissive=negative (P+ - P-=-0.07) | research valence=0.39</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_long_default.wav"></audio></td><td class='stats'>F0 mean=177Hz std=32Hz | permissive=neutral (P+ - P-=+0.00) | research valence=0.37</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_long_default.wav"></audio></td><td class='stats'>F0 mean=172Hz std=17Hz | permissive=positive (P+ - P-=+0.61) | research valence=0.38</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_long_default.wav"></audio></td><td class='stats'>F0 mean=183Hz std=46Hz | permissive=negative (P+ - P-=-0.91) | research valence=0.31</td></tr>
+</table><h2>congruent text, long, speed=adjusted</h2>
+<p class="text">"(per-emotion text, see table)"</p>
+<table><tr><th>Emotion</th><th>Audio</th><th>Measured</th></tr>
+<tr><td>happy</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=176Hz std=28Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.67</td></tr>
+<tr><td>sad</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=191Hz std=62Hz | permissive=positive (P+ - P-=+1.00) | research valence=0.34</td></tr>
+<tr><td>angry</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=179Hz std=46Hz | permissive=neutral (P+ - P-=+0.01) | research valence=0.35</td></tr>
+<tr><td>calm</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=190Hz std=32Hz | permissive=positive (P+ - P-=+1.00) | research valence=0.45</td></tr>
+<tr><td>frustrated</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_long_adjusted.wav"></audio></td><td class='stats'>F0 mean=190Hz std=54Hz | permissive=negative (P+ - P-=-1.00) | research valence=0.31</td></tr>
+</table>
+<h2>sonic-3 vs sonic-3.5, on neutral text, short, speed=adjusted</h2>
+<table><tr><th>Emotion</th><th>sonic-3</th><th>sonic-3.5</th></tr>
+<tr><td>happy</td><td>sonic-3<br><audio controls src="../data/probes/d1/d1_happy_neutral_short_adjusted.wav"></audio></td><td>sonic-3.5<br><audio controls src="../data/probes/d1/d1_happy_neutral_short_adjusted_sonic35.wav"></audio></td></tr>
+<tr><td>sad</td><td>sonic-3<br><audio controls src="../data/probes/d1/d1_sad_neutral_short_adjusted.wav"></audio></td><td>sonic-3.5<br><audio controls src="../data/probes/d1/d1_sad_neutral_short_adjusted_sonic35.wav"></audio></td></tr>
+<tr><td>angry</td><td>sonic-3<br><audio controls src="../data/probes/d1/d1_angry_neutral_short_adjusted.wav"></audio></td><td>sonic-3.5<br><audio controls src="../data/probes/d1/d1_angry_neutral_short_adjusted_sonic35.wav"></audio></td></tr>
+<tr><td>calm</td><td>sonic-3<br><audio controls src="../data/probes/d1/d1_calm_neutral_short_adjusted.wav"></audio></td><td>sonic-3.5<br><audio controls src="../data/probes/d1/d1_calm_neutral_short_adjusted_sonic35.wav"></audio></td></tr>
+<tr><td>frustrated</td><td>sonic-3<br><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_adjusted.wav"></audio></td><td>sonic-3.5<br><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_adjusted_sonic35.wav"></audio></td></tr>
+</table>
+</body>
+</html>

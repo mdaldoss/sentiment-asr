@@ -1,0 +1,161 @@
+clip_id,path,speaker_id,source,text,text_sentiment,prosody_sentiment,emotion_tag,voice_id,is_congruent,split
+e6_zurich_egi_4a3c20c6,data/zurich/e6_zurich_egi_4a3c20c6.wav,zurich_egi,recorded,Let me know when you are ready.,neutral,negative,,,False,val
+e6_zurich_egi_89302068,data/zurich/e6_zurich_egi_89302068.wav,zurich_egi,recorded,I will be there in ten minutes.,neutral,positive,,,False,val
+e6_zurich_egi_36c90a16,data/zurich/e6_zurich_egi_36c90a16.wav,zurich_egi,recorded,That worked out better than I hoped.,positive,negative,,,False,val
+e6_zurich_egi_b69173aa,data/zurich/e6_zurich_egi_b69173aa.wav,zurich_egi,recorded,"Honestly, I expected more.",negative,positive,,,False,val
+e6_zurich_egi_c2a847cd,data/zurich/e6_zurich_egi_c2a847cd.wav,zurich_egi,recorded,"Could you repeat that, please?",neutral,neutral,,,True,val
+e6_zurich_egi_58505e6c,data/zurich/e6_zurich_egi_58505e6c.wav,zurich_egi,recorded,Nothing ever goes as planned.,negative,positive,,,False,val
+e6_zurich_egi_2bd08ae7,data/zurich/e6_zurich_egi_2bd08ae7.wav,zurich_egi,recorded,Thanks for helping me.,positive,neutral,,,False,val
+e6_zurich_egi_39390553,data/zurich/e6_zurich_egi_39390553.wav,zurich_egi,recorded,Do you mind if I ask something?,neutral,negative,,,False,val
+e6_zurich_egi_999a0526,data/zurich/e6_zurich_egi_999a0526.wav,zurich_egi,recorded,I didn't expect that.,neutral,positive,,,False,val
+e6_zurich_egi_73b9ca1d,data/zurich/e6_zurich_egi_73b9ca1d.wav,zurich_egi,recorded,Why did nobody tell me?,negative,negative,,,True,val
+e6_zurich_egi_6dfc8162,data/zurich/e6_zurich_egi_6dfc8162.wav,zurich_egi,recorded,I am so glad you called.,positive,neutral,,,False,val
+e6_zurich_egi_59be7957,data/zurich/e6_zurich_egi_59be7957.wav,zurich_egi,recorded,I have no idea what you mean.,negative,positive,,,False,val
+e6_zurich_egi_d8e20c55,data/zurich/e6_zurich_egi_d8e20c55.wav,zurich_egi,recorded,I am not sure about this plan.,negative,neutral,,,False,val
+e6_zurich_egi_936486a9,data/zurich/e6_zurich_egi_936486a9.wav,zurich_egi,recorded,Please send me the file again.,neutral,positive,,,False,val
+e6_zurich_egi_7aab39c3,data/zurich/e6_zurich_egi_7aab39c3.wav,zurich_egi,recorded,"Okay, I'll do it.",neutral,neutral,,,True,val
+e6_zurich_egi_293d6ce6,data/zurich/e6_zurich_egi_293d6ce6.wav,zurich_egi,recorded,That is completely unacceptable.,negative,positive,,,False,val
+e6_zurich_egi_caafa91c,data/zurich/e6_zurich_egi_caafa91c.wav,zurich_egi,recorded,We need to talk about this.,neutral,negative,,,False,val
+e6_zurich_egi_3145faa1,data/zurich/e6_zurich_egi_3145faa1.wav,zurich_egi,recorded,I finished everything on the list.,neutral,neutral,,,True,val
+e6_zurich_egi_de1e90ba,data/zurich/e6_zurich_egi_de1e90ba.wav,zurich_egi,recorded,It looks like the meeting was moved.,neutral,positive,,,False,val
+e6_zurich_egi_2ae155f8,data/zurich/e6_zurich_egi_2ae155f8.wav,zurich_egi,recorded,"That explains a lot, actually.",neutral,negative,,,False,val
+e6_zurich_bonzus_74248348,data/zurich/e6_zurich_bonzus_74248348.wav,zurich_bonzus,recorded,I have no idea what you mean.,negative,positive,,,False,train
+e6_zurich_bonzus_b957a46a,data/zurich/e6_zurich_bonzus_b957a46a.wav,zurich_bonzus,recorded,"Okay, I'll do it.",neutral,negative,,,False,train
+e6_zurich_bonzus_b18db585,data/zurich/e6_zurich_bonzus_b18db585.wav,zurich_bonzus,recorded,I told you this would happen.,negative,positive,,,False,train
+e6_zurich_bonzus_8a3a28b9,data/zurich/e6_zurich_bonzus_8a3a28b9.wav,zurich_bonzus,recorded,That is completely unacceptable.,negative,negative,,,True,train
+e6_zurich_bonzus_a0f3c499,data/zurich/e6_zurich_bonzus_a0f3c499.wav,zurich_bonzus,recorded,Thanks for helping me.,positive,positive,,,True,train
+e6_zurich_bonzus_c6c30b5f,data/zurich/e6_zurich_bonzus_c6c30b5f.wav,zurich_bonzus,recorded,It is just another normal day.,neutral,neutral,,,True,train
+e6_zurich_bonzus_c0579e37,data/zurich/e6_zurich_bonzus_c0579e37.wav,zurich_bonzus,recorded,Nothing ever goes as planned.,negative,positive,,,False,train
+e6_zurich_bonzus_dc44c617,data/zurich/e6_zurich_bonzus_dc44c617.wav,zurich_bonzus,recorded,Let me know when you are ready.,neutral,neutral,,,True,train
+e6_zurich_bonzus_e5687bdc,data/zurich/e6_zurich_bonzus_e5687bdc.wav,zurich_bonzus,recorded,Please send me the file again.,neutral,positive,,,False,train
+e6_zurich_bonzus_b55594e9,data/zurich/e6_zurich_bonzus_b55594e9.wav,zurich_bonzus,recorded,That's exactly what I wanted.,positive,neutral,,,False,train
+e6_zurich_bonzus_d10d3361,data/zurich/e6_zurich_bonzus_d10d3361.wav,zurich_bonzus,recorded,Do you mind if I ask something?,neutral,positive,,,False,train
+e6_zurich_bonzus_5c7d22c7,data/zurich/e6_zurich_bonzus_5c7d22c7.wav,zurich_bonzus,recorded,"Honestly, I expected more.",negative,neutral,,,False,train
+e6_zurich_bonzus_0f5b09c6,data/zurich/e6_zurich_bonzus_0f5b09c6.wav,zurich_bonzus,recorded,Everything is ready to go.,positive,negative,,,False,train
+e6_zurich_bonzus_5b0df3bf,data/zurich/e6_zurich_bonzus_5b0df3bf.wav,zurich_bonzus,recorded,"Whatever, it's fine.",neutral,positive,,,False,train
+e6_zurich_bonzus_eab6673d,data/zurich/e6_zurich_bonzus_eab6673d.wav,zurich_bonzus,recorded,This has been a long week.,negative,negative,,,True,train
+e6_zurich_bonzus_52f6c6ac,data/zurich/e6_zurich_bonzus_52f6c6ac.wav,zurich_bonzus,recorded,You did a great job today.,positive,positive,,,True,train
+e6_zurich_bonzus_01163670,data/zurich/e6_zurich_bonzus_01163670.wav,zurich_bonzus,recorded,I finished everything on the list.,neutral,neutral,,,True,train
+e6_zurich_bonzus_44bcd247,data/zurich/e6_zurich_bonzus_44bcd247.wav,zurich_bonzus,recorded,I am not sure about this plan.,negative,negative,,,True,train
+e6_zurich_bonzus_00d4e553,data/zurich/e6_zurich_bonzus_00d4e553.wav,zurich_bonzus,recorded,Can we discuss this tomorrow?,neutral,neutral,,,True,train
+e6_zurich_bonzus_576a675d,data/zurich/e6_zurich_bonzus_576a675d.wav,zurich_bonzus,recorded,I can't believe this happened.,neutral,positive,,,False,train
+e6_zurich_cate_5f207aa3,data/zurich/e6_zurich_cate_5f207aa3.wav,zurich_cate,recorded,This has been a long week.,negative,negative,,,True,train
+e6_zurich_cate_b568acb3,data/zurich/e6_zurich_cate_b568acb3.wav,zurich_cate,recorded,That worked out better than I hoped.,positive,neutral,,,False,train
+e6_zurich_cate_07bdff41,data/zurich/e6_zurich_cate_07bdff41.wav,zurich_cate,recorded,Let me know when you are ready.,neutral,negative,,,False,train
+e6_zurich_cate_4b582f03,data/zurich/e6_zurich_cate_4b582f03.wav,zurich_cate,recorded,This is going to take a while.,neutral,positive,,,False,train
+e6_zurich_cate_6539d190,data/zurich/e6_zurich_cate_6539d190.wav,zurich_cate,recorded,I will be there in ten minutes.,neutral,negative,,,False,train
+e6_zurich_cate_576b717e,data/zurich/e6_zurich_cate_576b717e.wav,zurich_cate,recorded,I am not sure about this plan.,negative,positive,,,False,train
+e6_zurich_cate_2be74985,data/zurich/e6_zurich_cate_2be74985.wav,zurich_cate,recorded,Let us try a different approach.,neutral,negative,,,False,train
+e6_zurich_cate_b9112ab2,data/zurich/e6_zurich_cate_b9112ab2.wav,zurich_cate,recorded,Why did nobody tell me?,negative,positive,,,False,train
+e6_zurich_cate_d8b7b0de,data/zurich/e6_zurich_cate_d8b7b0de.wav,zurich_cate,recorded,"Okay, I'll do it.",neutral,neutral,,,True,train
+e6_zurich_cate_69daefdb,data/zurich/e6_zurich_cate_69daefdb.wav,zurich_cate,recorded,Thanks for helping me.,positive,positive,,,True,train
+e6_zurich_cate_2a42da98,data/zurich/e6_zurich_cate_2a42da98.wav,zurich_cate,recorded,That is completely unacceptable.,negative,neutral,,,False,train
+e6_zurich_cate_b9e448ae,data/zurich/e6_zurich_cate_b9e448ae.wav,zurich_cate,recorded,I am so glad you called.,positive,positive,,,True,train
+e6_zurich_cate_1039dfd9,data/zurich/e6_zurich_cate_1039dfd9.wav,zurich_cate,recorded,You did a great job today.,positive,negative,,,False,train
+e6_zurich_cate_b4b92221,data/zurich/e6_zurich_cate_b4b92221.wav,zurich_cate,recorded,"Whatever, it's fine.",neutral,neutral,,,True,train
+e6_zurich_cate_f88e5d03,data/zurich/e6_zurich_cate_f88e5d03.wav,zurich_cate,recorded,This is my favorite part.,positive,negative,,,False,train
+e6_zurich_cate_a3efcb29,data/zurich/e6_zurich_cate_a3efcb29.wav,zurich_cate,recorded,I would rather not talk about it.,negative,neutral,,,False,train
+e6_zurich_cate_1b8d5ead,data/zurich/e6_zurich_cate_1b8d5ead.wav,zurich_cate,recorded,It looks like the meeting was moved.,neutral,negative,,,False,train
+e6_zurich_cate_3b020c87,data/zurich/e6_zurich_cate_3b020c87.wav,zurich_cate,recorded,Everything is ready to go.,positive,neutral,,,False,train
+e6_zurich_cate_7881bdc6,data/zurich/e6_zurich_cate_7881bdc6.wav,zurich_cate,recorded,I can't believe this happened.,neutral,positive,,,False,train
+e6_zurich_cate_26bef1f4,data/zurich/e6_zurich_cate_26bef1f4.wav,zurich_cate,recorded,I have no idea what you mean.,negative,neutral,,,False,train
+e6_zurich_paoli_75abdf55,data/zurich/e6_zurich_paoli_75abdf55.wav,zurich_paoli,recorded,It is just another normal day.,neutral,neutral,,,True,train
+e6_zurich_isinsu_3d87b1b5,data/zurich/e6_zurich_isinsu_3d87b1b5.wav,zurich_isinsu,recorded,Please send me the file again.,neutral,positive,,,False,train
+e6_zurich_paoli_d20ec9f9,data/zurich/e6_zurich_paoli_d20ec9f9.wav,zurich_paoli,recorded,Please send me the file again.,neutral,negative,,,False,train
+e6_zurich_paoli_2c415853,data/zurich/e6_zurich_paoli_2c415853.wav,zurich_paoli,recorded,That is completely unacceptable.,negative,positive,,,False,train
+e6_zurich_paoli_779419b2,data/zurich/e6_zurich_paoli_779419b2.wav,zurich_paoli,recorded,Why did nobody tell me?,negative,negative,,,True,train
+e6_zurich_isinsu_0f34a5be,data/zurich/e6_zurich_isinsu_0f34a5be.wav,zurich_isinsu,recorded,"Okay, I'll do it.",neutral,negative,,,False,train
+e6_zurich_paoli_5c4bcfff,data/zurich/e6_zurich_paoli_5c4bcfff.wav,zurich_paoli,recorded,I am so glad you called.,positive,neutral,,,False,train
+e6_zurich_isinsu_4bcb219e,data/zurich/e6_zurich_isinsu_4bcb219e.wav,zurich_isinsu,recorded,I am not sure about this plan.,negative,neutral,,,False,train
+e6_zurich_matteo_c7974cb0,data/zurich/e6_zurich_matteo_c7974cb0.wav,zurich_matteo,recorded,We need to talk about this.,neutral,neutral,,,True,test
+e6_zurich_paoli_b3ad281b,data/zurich/e6_zurich_paoli_b3ad281b.wav,zurich_paoli,recorded,Let us try a different approach.,neutral,negative,,,False,train
+e6_zurich_matteo_0d1d2a38,data/zurich/e6_zurich_matteo_0d1d2a38.wav,zurich_matteo,recorded,That worked out better than I hoped.,positive,negative,,,False,test
+e6_zurich_isinsu_f7d47567,data/zurich/e6_zurich_isinsu_f7d47567.wav,zurich_isinsu,recorded,Can we discuss this tomorrow?,neutral,positive,,,False,train
+e6_zurich_paoli_71daa7de,data/zurich/e6_zurich_paoli_71daa7de.wav,zurich_paoli,recorded,You did a great job today.,positive,neutral,,,False,train
+e6_zurich_matteo_d0115741,data/zurich/e6_zurich_matteo_d0115741.wav,zurich_matteo,recorded,I didn't expect that.,neutral,neutral,,,True,test
+e6_zurich_paoli_fd8d0422,data/zurich/e6_zurich_paoli_fd8d0422.wav,zurich_paoli,recorded,I will be there in ten minutes.,neutral,negative,,,False,train
+e6_zurich_matteo_ca8b0dc0,data/zurich/e6_zurich_matteo_ca8b0dc0.wav,zurich_matteo,recorded,Can we discuss this tomorrow?,neutral,negative,,,False,test
+e6_zurich_isinsu_b3c0fd0c,data/zurich/e6_zurich_isinsu_b3c0fd0c.wav,zurich_isinsu,recorded,That is completely unacceptable.,negative,neutral,,,False,train
+e6_zurich_paoli_9373e57e,data/zurich/e6_zurich_paoli_9373e57e.wav,zurich_paoli,recorded,This has been a long week.,negative,neutral,,,False,train
+e6_zurich_matteo_7f4dfc85,data/zurich/e6_zurich_matteo_7f4dfc85.wav,zurich_matteo,recorded,This is my favorite part.,positive,neutral,,,False,test
+e6_zurich_matteo_e2af3752,data/zurich/e6_zurich_matteo_e2af3752.wav,zurich_matteo,recorded,I have no idea what you mean.,negative,negative,,,True,test
+e6_zurich_isinsu_52e847a3,data/zurich/e6_zurich_isinsu_52e847a3.wav,zurich_isinsu,recorded,Are you serious?,neutral,negative,,,False,train
+e6_zurich_paoli_4dc9700b,data/zurich/e6_zurich_paoli_4dc9700b.wav,zurich_paoli,recorded,That's exactly what I wanted.,positive,positive,,,True,train
+e6_zurich_isinsu_7a9f9a25,data/zurich/e6_zurich_isinsu_7a9f9a25.wav,zurich_isinsu,recorded,This is going to take a while.,neutral,neutral,,,True,train
+e6_zurich_matteo_a09ad786,data/zurich/e6_zurich_matteo_a09ad786.wav,zurich_matteo,recorded,"Honestly, I expected more.",negative,positive,,,False,test
+e6_zurich_paoli_8a243e58,data/zurich/e6_zurich_paoli_8a243e58.wav,zurich_paoli,recorded,That worked out better than I hoped.,positive,neutral,,,False,train
+e6_zurich_matteo_85a1e718,data/zurich/e6_zurich_matteo_85a1e718.wav,zurich_matteo,recorded,Thanks for helping me.,positive,negative,,,False,test
+e6_zurich_isinsu_7f9bec63,data/zurich/e6_zurich_isinsu_7f9bec63.wav,zurich_isinsu,recorded,That worked out better than I hoped.,positive,positive,,,True,train
+e6_zurich_paoli_77aa59ec,data/zurich/e6_zurich_paoli_77aa59ec.wav,zurich_paoli,recorded,"Honestly, I expected more.",negative,positive,,,False,train
+e6_zurich_matteo_38e5dbf5,data/zurich/e6_zurich_matteo_38e5dbf5.wav,zurich_matteo,recorded,I told you this would happen.,negative,neutral,,,False,test
+e6_zurich_paoli_f2a8305f,data/zurich/e6_zurich_paoli_f2a8305f.wav,zurich_paoli,recorded,I really appreciate your time.,positive,neutral,,,False,train
+e6_zurich_isinsu_812704c7,data/zurich/e6_zurich_isinsu_812704c7.wav,zurich_isinsu,recorded,"Could you repeat that, please?",neutral,neutral,,,True,train
+e6_zurich_matteo_49a1b8aa,data/zurich/e6_zurich_matteo_49a1b8aa.wav,zurich_matteo,recorded,"Okay, I'll do it.",neutral,positive,,,False,test
+e6_zurich_paoli_e6c58546,data/zurich/e6_zurich_paoli_e6c58546.wav,zurich_paoli,recorded,Nothing ever goes as planned.,negative,negative,,,True,train
+e6_zurich_matteo_5f35d260,data/zurich/e6_zurich_matteo_5f35d260.wav,zurich_matteo,recorded,That is completely unacceptable.,negative,neutral,,,False,test
+e6_zurich_isinsu_d78f9e7a,data/zurich/e6_zurich_isinsu_d78f9e7a.wav,zurich_isinsu,recorded,That's exactly what I wanted.,positive,positive,,,True,train
+e6_zurich_matteo_f0f8c41e,data/zurich/e6_zurich_matteo_f0f8c41e.wav,zurich_matteo,recorded,I can't believe this happened.,neutral,positive,,,False,test
+e6_zurich_paoli_b2c3bc91,data/zurich/e6_zurich_paoli_b2c3bc91.wav,zurich_paoli,recorded,It looks like the meeting was moved.,neutral,neutral,,,True,train
+e6_zurich_matteo_eabace3f,data/zurich/e6_zurich_matteo_eabace3f.wav,zurich_matteo,recorded,I am so glad you called.,positive,neutral,,,False,test
+e6_zurich_isinsu_b2d7435f,data/zurich/e6_zurich_isinsu_b2d7435f.wav,zurich_isinsu,recorded,This is my favorite part.,positive,neutral,,,False,train
+e6_zurich_paoli_c61fdfab,data/zurich/e6_zurich_paoli_c61fdfab.wav,zurich_paoli,recorded,I didn't expect that.,neutral,positive,,,False,train
+e6_zurich_matteo_4b22ca99,data/zurich/e6_zurich_matteo_4b22ca99.wav,zurich_matteo,recorded,Everything is ready to go.,positive,positive,,,True,test
+e6_zurich_isinsu_f742bafa,data/zurich/e6_zurich_isinsu_f742bafa.wav,zurich_isinsu,recorded,I have no idea what you mean.,negative,negative,,,True,train
+e6_zurich_paoli_2ec796c8,data/zurich/e6_zurich_paoli_2ec796c8.wav,zurich_paoli,recorded,"Could you repeat that, please?",neutral,negative,,,False,train
+e6_zurich_matteo_37a20630,data/zurich/e6_zurich_matteo_37a20630.wav,zurich_matteo,recorded,This is going to take a while.,neutral,negative,,,False,test
+e6_zurich_paoli_8ab340f1,data/zurich/e6_zurich_paoli_8ab340f1.wav,zurich_paoli,recorded,I have no idea what you mean.,negative,neutral,,,False,train
+e6_zurich_matteo_14de08e1,data/zurich/e6_zurich_matteo_14de08e1.wav,zurich_matteo,recorded,I would rather not talk about it.,negative,neutral,,,False,test
+e6_zurich_paoli_f4cb087c,data/zurich/e6_zurich_paoli_f4cb087c.wav,zurich_paoli,recorded,I can't believe this happened.,neutral,positive,,,False,train
+e6_zurich_matteo_38e3e9f4,data/zurich/e6_zurich_matteo_38e3e9f4.wav,zurich_matteo,recorded,"Whatever, it's fine.",neutral,negative,,,False,test
+e6_zurich_matteo_662dfadd,data/zurich/e6_zurich_matteo_662dfadd.wav,zurich_matteo,recorded,It looks like the meeting was moved.,neutral,neutral,,,True,test
+e6_zurich_paoli_1b96b99f,data/zurich/e6_zurich_paoli_1b96b99f.wav,zurich_paoli,recorded,This is my favorite part.,positive,negative,,,False,train
+e6_zurich_matteo_793efcac,data/zurich/e6_zurich_matteo_793efcac.wav,zurich_matteo,recorded,Why did nobody tell me?,negative,positive,,,False,test
+e6_zurich_isinsu_04ade7ec,data/zurich/e6_zurich_isinsu_04ade7ec.wav,zurich_isinsu,recorded,I would rather not talk about it.,negative,neutral,,,False,train
+e6_zurich_isinsu_6e02ce78,data/zurich/e6_zurich_isinsu_6e02ce78.wav,zurich_isinsu,recorded,We need to talk about this.,neutral,positive,,,False,train
+e6_zurich_matteo_7a9a323c,data/zurich/e6_zurich_matteo_7a9a323c.wav,zurich_matteo,recorded,It is just another normal day.,neutral,neutral,,,True,test
+e6_zurich_isinsu_2f2fe944,data/zurich/e6_zurich_isinsu_2f2fe944.wav,zurich_isinsu,recorded,I didn't expect that.,neutral,neutral,,,True,train
+e6_zurich_isinsu_eee21376,data/zurich/e6_zurich_isinsu_eee21376.wav,zurich_isinsu,recorded,I can't believe this happened.,neutral,negative,,,False,train
+e6_zurich_isinsu_c036d2e6,data/zurich/e6_zurich_isinsu_c036d2e6.wav,zurich_isinsu,recorded,"Whatever, it's fine.",neutral,positive,,,False,train
+e6_zurich_isinsu_d0d7c7a3,data/zurich/e6_zurich_isinsu_d0d7c7a3.wav,zurich_isinsu,recorded,I finished everything on the list.,neutral,neutral,,,True,train
+e6_zurich_isinsu_676c9320,data/zurich/e6_zurich_isinsu_676c9320.wav,zurich_isinsu,recorded,I really appreciate your time.,positive,negative,,,False,train
+e6_zurich_isinsu_c6aa7e81,data/zurich/e6_zurich_isinsu_c6aa7e81.wav,zurich_isinsu,recorded,Thanks for helping me.,positive,positive,,,True,train
+e6_zurich_silvia_61e76305,data/zurich/e6_zurich_silvia_61e76305.wav,zurich_silvia,recorded,"Okay, I'll do it.",neutral,neutral,,,True,val
+e6_speaker1_1a49ce2d,data/zurich/e6_speaker1_1a49ce2d.wav,speaker1,recorded,"Okay, I'll do it.",neutral,positive,,,False,train
+e6_zurich_silvia_20a9ed47,data/zurich/e6_zurich_silvia_20a9ed47.wav,zurich_silvia,recorded,You did a great job today.,positive,negative,,,False,val
+e6_speaker1_ab3b84a7,data/zurich/e6_speaker1_ab3b84a7.wav,speaker1,recorded,Let us try a different approach.,neutral,neutral,,,True,train
+e6_zurich_silvia_c2aba504,data/zurich/e6_zurich_silvia_c2aba504.wav,zurich_silvia,recorded,I am so glad you called.,positive,positive,,,True,val
+e6_speaker1_8e73053e,data/zurich/e6_speaker1_8e73053e.wav,speaker1,recorded,I really appreciate your time.,positive,negative,,,False,train
+e6_zurich_silvia_8f6c49cb,data/zurich/e6_zurich_silvia_8f6c49cb.wav,zurich_silvia,recorded,I would rather not talk about it.,negative,neutral,,,False,val
+e6_speaker1_4be2a791,data/zurich/e6_speaker1_4be2a791.wav,speaker1,recorded,Can we discuss this tomorrow?,neutral,positive,,,False,train
+e6_zurich_silvia_988527f6,data/zurich/e6_zurich_silvia_988527f6.wav,zurich_silvia,recorded,I can't believe this happened.,neutral,negative,,,False,val
+e6_speaker1_cb6a7219,data/zurich/e6_speaker1_cb6a7219.wav,speaker1,recorded,I am not sure about this plan.,negative,negative,,,True,train
+e6_zurich_silvia_23f77a37,data/zurich/e6_zurich_silvia_23f77a37.wav,zurich_silvia,recorded,We need to talk about this.,neutral,positive,,,False,val
+e6_speaker1_0c351cee,data/zurich/e6_speaker1_0c351cee.wav,speaker1,recorded,This is going to take a while.,neutral,positive,,,False,train
+e6_speaker1_4f3ce8f3,data/zurich/e6_speaker1_4f3ce8f3.wav,speaker1,recorded,I didn't expect that.,neutral,negative,,,False,train
+e6_zurich_silvia_fcaaa826,data/zurich/e6_zurich_silvia_fcaaa826.wav,zurich_silvia,recorded,"Honestly, I expected more.",negative,neutral,,,False,val
+e6_speaker1_2c20e306,data/zurich/e6_speaker1_2c20e306.wav,speaker1,recorded,"Could you repeat that, please?",neutral,positive,,,False,train
+e6_zurich_silvia_84c36572,data/zurich/e6_zurich_silvia_84c36572.wav,zurich_silvia,recorded,Nothing ever goes as planned.,negative,negative,,,True,val
+e6_speaker1_1ea2d4f0,data/zurich/e6_speaker1_1ea2d4f0.wav,speaker1,recorded,Why did nobody tell me?,negative,negative,,,True,train
+e6_zurich_silvia_08bc1088,data/zurich/e6_zurich_silvia_08bc1088.wav,zurich_silvia,recorded,I am not sure about this plan.,negative,positive,,,False,val
+e6_speaker1_88c4131f,data/zurich/e6_speaker1_88c4131f.wav,speaker1,recorded,Nothing ever goes as planned.,negative,positive,,,False,train
+e6_zurich_silvia_245a1a68,data/zurich/e6_zurich_silvia_245a1a68.wav,zurich_silvia,recorded,Why did nobody tell me?,negative,negative,,,True,val
+e6_speaker1_37242a3b,data/zurich/e6_speaker1_37242a3b.wav,speaker1,recorded,"Honestly, I expected more.",negative,negative,,,True,train
+e6_zurich_silvia_11d71645,data/zurich/e6_zurich_silvia_11d71645.wav,zurich_silvia,recorded,I really appreciate your time.,positive,neutral,,,False,val
+e6_speaker1_11d63707,data/zurich/e6_speaker1_11d63707.wav,speaker1,recorded,I would rather not talk about it.,negative,neutral,,,False,train
+e6_zurich_silvia_6b091d0e,data/zurich/e6_zurich_silvia_6b091d0e.wav,zurich_silvia,recorded,It is just another normal day.,neutral,positive,,,False,val
+e6_speaker1_5716392e,data/zurich/e6_speaker1_5716392e.wav,speaker1,recorded,I will be there in ten minutes.,neutral,negative,,,False,train
+e6_zurich_silvia_c6c489df,data/zurich/e6_zurich_silvia_c6c489df.wav,zurich_silvia,recorded,Thanks for helping me.,positive,negative,,,False,val
+e6_zurich_silvia_e5df8531,data/zurich/e6_zurich_silvia_e5df8531.wav,zurich_silvia,recorded,"Could you repeat that, please?",neutral,neutral,,,True,val
+e6_zurich_silvia_cf1923d7,data/zurich/e6_zurich_silvia_cf1923d7.wav,zurich_silvia,recorded,I didn't expect that.,neutral,negative,,,False,val
+e6_zurich_silvia_8f3755fb,data/zurich/e6_zurich_silvia_8f3755fb.wav,zurich_silvia,recorded,I finished everything on the list.,neutral,neutral,,,True,val
+e6_zurich_silvia_5729074d,data/zurich/e6_zurich_silvia_5729074d.wav,zurich_silvia,recorded,This is going to take a while.,neutral,positive,,,False,val
+e6_zurich_silvia_090c77bc,data/zurich/e6_zurich_silvia_090c77bc.wav,zurich_silvia,recorded,This has been a long week.,negative,neutral,,,False,val
+e6_zurich_silvia_295f933a,data/zurich/e6_zurich_silvia_295f933a.wav,zurich_silvia,recorded,Do you mind if I ask something?,neutral,positive,,,False,val
+e6_zurich_silvia_5ac32e29,data/zurich/e6_zurich_silvia_5ac32e29.wav,zurich_silvia,recorded,Let us try a different approach.,neutral,negative,,,False,val
+e6_speaker1_793ce62d,data/zurich/e6_speaker1_793ce62d.wav,speaker1,recorded,Thanks for helping me.,positive,neutral,,,False,train
+e6_speaker1_ebe889c2,data/zurich/e6_speaker1_ebe889c2.wav,speaker1,recorded,That is completely unacceptable.,negative,positive,,,False,train
+e6_speaker1_5965eae5,data/zurich/e6_speaker1_5965eae5.wav,speaker1,recorded,"Whatever, it's fine.",neutral,negative,,,False,train
+e6_speaker1_c82d788d,data/zurich/e6_speaker1_c82d788d.wav,speaker1,recorded,I can't believe this happened.,neutral,neutral,,,True,train
+e6_speaker1_52245718,data/zurich/e6_speaker1_52245718.wav,speaker1,recorded,We need to talk about this.,neutral,negative,,,False,train
+e6_speaker1_0dd6ea5c,data/zurich/e6_speaker1_0dd6ea5c.wav,speaker1,recorded,I have no idea what you mean.,negative,neutral,,,False,train
+e6_speaker1_319aeab9,data/zurich/e6_speaker1_319aeab9.wav,speaker1,recorded,That's exactly what I wanted.,positive,positive,,,True,train

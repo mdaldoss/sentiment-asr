@@ -1,0 +1,224 @@
+{
+  "eval_subset_n": 300,
+  "eval_subset_seed": 0,
+  "combos": {
+    "cremad_only": {
+      "description": "CREMA-D train split only -- the baseline.",
+      "train_n_clips": 5235,
+      "permissive": {
+        "val_uar": 0.784428620877219,
+        "val_macro_f1": 0.7530865358733422,
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_cremad_only",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.7822688868599915,
+            "macro_f1": 0.7739855562414871,
+            "accuracy": 0.8366666666666667,
+            "psi_contested": 0.9393939393939394,
+            "psi_strict": 0.84765625
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_cremad_only",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.48148148148148145,
+            "macro_f1": 0.42083333333333334,
+            "accuracy": 0.48148148148148145,
+            "psi_contested": 0.6296296296296297,
+            "psi_strict": 0.4722222222222222
+          }
+        }
+      },
+      "research": {
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_shared_research",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.45018260075648886,
+            "macro_f1": 0.45713838625241837,
+            "accuracy": 0.6133333333333333,
+            "psi_contested": 0.7434782608695653,
+            "psi_strict": 0.66796875
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_shared_research",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.5185185185185185,
+            "macro_f1": 0.5069942153106454,
+            "accuracy": 0.5185185185185185,
+            "psi_contested": 0.37142857142857144,
+            "psi_strict": 0.3611111111111111
+          }
+        }
+      }
+    },
+    "cremad_e3": {
+      "description": "CREMA-D train + both E3 takes (the user's own recordings).",
+      "train_n_clips": 5289,
+      "permissive": {
+        "val_uar": 0.7969947584433564,
+        "val_macro_f1": 0.7680015920141129,
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_cremad_e3",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.7816826804631681,
+            "macro_f1": 0.7710606664011682,
+            "accuracy": 0.8333333333333334,
+            "psi_contested": 0.9388646288209607,
+            "psi_strict": 0.83984375
+          },
+          "e3_both_takes": {
+            "excluded_reason": "combo 'cremad_e3' trains on E3's speaker; scoring it on E3 here would put the same speaker on both sides of the split (CLAUDE.md rule 1)."
+          }
+        }
+      },
+      "research": {
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_shared_research",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.45018260075648886,
+            "macro_f1": 0.45713838625241837,
+            "accuracy": 0.6133333333333333,
+            "psi_contested": 0.7434782608695653,
+            "psi_strict": 0.66796875
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_shared_research",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.5185185185185185,
+            "macro_f1": 0.5069942153106454,
+            "accuracy": 0.5185185185185185,
+            "psi_contested": 0.37142857142857144,
+            "psi_strict": 0.3611111111111111
+          }
+        }
+      }
+    },
+    "cremad_e3_hume": {
+      "description": "CREMA-D train + both E3 takes + Hume with-description clips.",
+      "train_n_clips": 5309,
+      "permissive": {
+        "val_uar": 0.7832974830638383,
+        "val_macro_f1": 0.7569668229419267,
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_cremad_e3_hume",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.7833086967233308,
+            "macro_f1": 0.7747207524985303,
+            "accuracy": 0.8366666666666667,
+            "psi_contested": 0.9515418502202643,
+            "psi_strict": 0.84375
+          },
+          "e3_both_takes": {
+            "excluded_reason": "combo 'cremad_e3_hume' trains on E3's speaker; scoring it on E3 here would put the same speaker on both sides of the split (CLAUDE.md rule 1)."
+          }
+        }
+      },
+      "research": {
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_shared_research",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.45018260075648886,
+            "macro_f1": 0.45713838625241837,
+            "accuracy": 0.6133333333333333,
+            "psi_contested": 0.7434782608695653,
+            "psi_strict": 0.66796875
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_shared_research",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.5185185185185185,
+            "macro_f1": 0.5069942153106454,
+            "accuracy": 0.5185185185185185,
+            "psi_contested": 0.37142857142857144,
+            "psi_strict": 0.3611111111111111
+          }
+        }
+      }
+    },
+    "cremad_hume": {
+      "description": "CREMA-D train + Hume with-description clips (no E3).",
+      "train_n_clips": 5255,
+      "permissive": {
+        "val_uar": 0.7793292290955843,
+        "val_macro_f1": 0.7503495976937309,
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_cremad_hume",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.7849347129834934,
+            "macro_f1": 0.7783867783867784,
+            "accuracy": 0.84,
+            "psi_contested": 0.9475982532751092,
+            "psi_strict": 0.84765625
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_cremad_hume",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.48148148148148145,
+            "macro_f1": 0.44037145650048876,
+            "accuracy": 0.48148148148148145,
+            "psi_contested": 0.6666666666666666,
+            "psi_strict": 0.5
+          }
+        }
+      },
+      "research": {
+        "eval": {
+          "cremad_test": {
+            "dataset": "cremad_test",
+            "split_type": "combo_shared_research",
+            "n_clips": 300,
+            "n_incongruent": 256,
+            "uar": 0.45018260075648886,
+            "macro_f1": 0.45713838625241837,
+            "accuracy": 0.6133333333333333,
+            "psi_contested": 0.7434782608695653,
+            "psi_strict": 0.66796875
+          },
+          "e3_both_takes": {
+            "dataset": "e3_both_takes",
+            "split_type": "combo_shared_research",
+            "n_clips": 54,
+            "n_incongruent": 36,
+            "uar": 0.5185185185185185,
+            "macro_f1": 0.5069942153106454,
+            "accuracy": 0.5185185185185185,
+            "psi_contested": 0.37142857142857144,
+            "psi_strict": 0.3611111111111111
+          }
+        }
+      }
+    }
+  },
+  "research_backend_note": "The research backend (audeering/wav2vec2, CC-BY-NC-SA-4.0) has no trainable encoder -- only two valence thresholds, fit once from CREMA-D's own held-out validation split (ssa.train.train_research), which none of the extra sources ever enters in this design. Its numbers are therefore identical across all four combos by construction, computed once and reused here -- this is a real architectural property being reported, not a shortcut standing in for missing results. The permissive backend (WavLM + our own trained probe) is the one that actually differs by combo below.",
+  "interpretation": "Direct comparison requested by the user: does adding the user's own recordings (E3) and/or the Hume Octave synthetic probe to training change either backend's CREMA-D-test performance, and what happens on E3 itself when it's held out entirely (cremad_only, cremad_hume) vs folded into training (cremad_e3, cremad_e3_hume, where E3 eval is excluded -- CLAUDE.md rule 1). Cartesia is excluded throughout per the user's request; see d1_emotion_probe.json for why it wouldn't have added signal anyway. n is small for the added sources (E3: 1 speaker, 2 takes; Hume: 1 pseudo-speaker) relative to CREMA-D's 91 actors, so any shift in permissive numbers here should be read as a directional signal, not a robust generalisation claim."
+}

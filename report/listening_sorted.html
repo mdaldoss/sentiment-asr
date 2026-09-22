@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sorted listening check -- D1 + E3</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: .25rem; }
+  p { color: #444; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: 0.9rem; }
+  th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid #eee; vertical-align: middle; }
+  th { position: sticky; top: 0; background: #fff; }
+  td.detail { max-width: 220px; font-family: ui-monospace, monospace; font-size: 0.8rem; color: #555; }
+  audio { height: 28px; width: 180px; }
+  .unmeasured { background: #f5f4f1; border-left: 3px solid #888; padding: .6rem .9rem; border-radius: 4px; font-style: italic; }
+  tr:nth-child(-n+10) { background: #f0fff4; }
+  tr:nth-last-child(-n+10) { background: #fff5f0; }
+</style>
+</head>
+<body>
+<h1>Sorted listening check: 99 clips, D1 (Cartesia) + E3 (human), ranked by detection score</h1>
+<p>Detection score = the research model's valence, z-scored within its own source set, signed by
+the intended sentiment (positive/negative/neutral). High score = the detector is confident and
+(if correct) should sound clearly emotional; low score = confident in the wrong direction, or a
+neutral clip read as strongly polarised. <strong>Top 10 rows (green) and bottom 10 (orange) are
+the ones worth listening to</strong> -- do the top ones genuinely sound more emotional than the
+bottom ones? If yes, the detector is doing its job and low scorers are inexpressive source audio.
+If the ranking sounds arbitrary, the detector -- not the audio -- is the problem.</p>
+
+<h2>Which model actually extracts prosody/emotion (the "Valence" column above)</h2>
+
+    <p>A common point of confusion, worth stating precisely: <strong>WavLM does not
+    transcribe or recognize emotion by itself</strong> &mdash; two different models do
+    two different jobs.</p>
+    <table>
+      <thead><tr><th></th><th>Model</th><th>What it actually is</th><th>Paper</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription (Solution A only)</td><td><code>faster-whisper</code></td>
+            <td>OpenAI's Whisper ASR, CTranslate2-optimized. Nothing to do with WavLM.</td>
+            <td>&mdash;</td></tr>
+        <tr><td>Acoustic, <strong>permissive</strong> backend</td>
+            <td><code>microsoft/wavlm-base</code></td>
+            <td>A general-purpose self-supervised speech encoder &mdash; trained to
+            reconstruct masked/overlapping speech, never on an emotion label. We pool its
+            hidden states (mean+std) and train <em>our own</em> logistic regression on top
+            (fit on CREMA-D). WavLM supplies the representation; the emotion mapping is
+            ours, not WavLM's.</td>
+            <td>Chen et al. 2022,
+            <a href="https://arxiv.org/abs/2110.13900">arXiv:2110.13900</a></td></tr>
+        <tr><td>Acoustic, <strong>research</strong> backend</td>
+            <td><code>audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</code></td>
+            <td>A wav2vec2-large-robust backbone <strong>fine-tuned end-to-end</strong> on
+            MSP-Podcast to directly regress valence/arousal/dominance (VAD). This is the
+            model that actually extracts prosody/emotion &mdash; no probe needed, it
+            outputs VAD directly, and is what the sample plot below uses.</td>
+            <td>Wagner et al. 2023, "Dawn of the Transformer Era in Speech Emotion
+            Recognition: Closing the Valence Gap",
+            <a href="https://arxiv.org/abs/2203.07378">arXiv:2203.07378</a></td></tr>
+      </tbody>
+    </table>
+    <p class="unmeasured">A caveat straight from the research-backend paper, stated
+    rather than glossed over (CLAUDE.md rule 6): its authors report that the model's
+    strong valence performance comes partly from <strong>implicit linguistic
+    information learned during fine-tuning</strong>, not from prosody alone. Even this
+    "acoustic" model may not be as prosody-pure as its name implies &mdash; it doesn't
+    undermine this project's core comparisons (Solution A genuinely never sees audio;
+    the D1-vs-E3 Cartesia finding holds regardless), but it belongs in the record.</p>
+    
+
+<table>
+<tr><th>#</th><th>Source</th><th>Intended</th><th>Detail</th><th>Audio</th>
+<th>Score</th><th>Valence</th><th>Permissive pred.</th></tr>
+<tr><td>1</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_2_positive.wav"></audio></td><td>+2.45</td><td>0.84</td><td>negative</td></tr>
+<tr><td>2</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / congruent / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_short_default.wav"></audio></td><td>+2.15</td><td>0.71</td><td>negative</td></tr>
+<tr><td>3</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_0_positive.wav"></audio></td><td>+2.00</td><td>0.70</td><td>negative</td></tr>
+<tr><td>4</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / congruent / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_short_adjusted.wav"></audio></td><td>+1.93</td><td>0.69</td><td>negative</td></tr>
+<tr><td>5</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_2_negative.wav"></audio></td><td>+1.83</td><td>0.09</td><td>negative</td></tr>
+<tr><td>6</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / congruent / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_long_default.wav"></audio></td><td>+1.77</td><td>0.67</td><td>neutral</td></tr>
+<tr><td>7</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / congruent / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_long_default.wav"></audio></td><td>+1.77</td><td>0.31</td><td>negative</td></tr>
+<tr><td>8</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / congruent / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_long_adjusted.wav"></audio></td><td>+1.75</td><td>0.31</td><td>negative</td></tr>
+<tr><td>9</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / congruent / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_happy_congruent_long_adjusted.wav"></audio></td><td>+1.75</td><td>0.67</td><td>negative</td></tr>
+<tr><td>10</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_2_negative.wav"></audio></td><td>+1.68</td><td>0.07</td><td>negative</td></tr>
+<tr><td>11</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_0_negative.wav"></audio></td><td>+1.59</td><td>0.13</td><td>negative</td></tr>
+<tr><td>12</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_0_negative.wav"></audio></td><td>+1.50</td><td>0.10</td><td>negative</td></tr>
+<tr><td>13</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / congruent / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_long_adjusted.wav"></audio></td><td>+1.46</td><td>0.34</td><td>positive</td></tr>
+<tr><td>14</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / congruent / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_short_default.wav"></audio></td><td>+1.44</td><td>0.34</td><td>negative</td></tr>
+<tr><td>15</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_2_positive.wav"></audio></td><td>+1.43</td><td>0.61</td><td>negative</td></tr>
+<tr><td>16</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_0_positive.wav"></audio></td><td>+1.43</td><td>0.65</td><td>negative</td></tr>
+<tr><td>17</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / congruent / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_short_adjusted.wav"></audio></td><td>+1.40</td><td>0.35</td><td>positive</td></tr>
+<tr><td>18</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / congruent / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_long_adjusted.wav"></audio></td><td>+1.37</td><td>0.35</td><td>neutral</td></tr>
+<tr><td>19</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / congruent / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_angry_congruent_long_default.wav"></audio></td><td>+1.16</td><td>0.37</td><td>neutral</td></tr>
+<tr><td>20</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / congruent / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_short_adjusted.wav"></audio></td><td>+1.10</td><td>0.38</td><td>negative</td></tr>
+<tr><td>21</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / congruent / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_short_adjusted.wav"></audio></td><td>+1.07</td><td>0.38</td><td>negative</td></tr>
+<tr><td>22</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / congruent / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_long_default.wav"></audio></td><td>+0.99</td><td>0.39</td><td>negative</td></tr>
+<tr><td>23</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / congruent / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_frustrated_congruent_short_default.wav"></audio></td><td>+0.98</td><td>0.39</td><td>negative</td></tr>
+<tr><td>24</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / congruent / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_sad_congruent_short_default.wav"></audio></td><td>+0.97</td><td>0.39</td><td>negative</td></tr>
+<tr><td>25</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / neutral / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_long_adjusted.wav"></audio></td><td>+0.92</td><td>0.58</td><td>negative</td></tr>
+<tr><td>26</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_short_adjusted.wav"></audio></td><td>+0.90</td><td>0.58</td><td>neutral</td></tr>
+<tr><td>27</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_2_positive.wav"></audio></td><td>+0.81</td><td>0.54</td><td>negative</td></tr>
+<tr><td>28</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_1_negative.wav"></audio></td><td>+0.80</td><td>0.23</td><td>negative</td></tr>
+<tr><td>29</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_short_adjusted_sonic35.wav"></audio></td><td>+0.79</td><td>0.57</td><td>negative</td></tr>
+<tr><td>30</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_2_positive.wav"></audio></td><td>+0.78</td><td>0.50</td><td>negative</td></tr>
+<tr><td>31</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_1_positive.wav"></audio></td><td>+0.75</td><td>0.50</td><td>negative</td></tr>
+<tr><td>32</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_1_positive.wav"></audio></td><td>+0.73</td><td>0.50</td><td>positive</td></tr>
+<tr><td>33</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / neutral / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_long_default.wav"></audio></td><td>+0.71</td><td>0.56</td><td>negative</td></tr>
+<tr><td>34</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_0_positive.wav"></audio></td><td>+0.68</td><td>0.51</td><td>negative</td></tr>
+<tr><td>35</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_1_negative.wav"></audio></td><td>+0.48</td><td>0.30</td><td>negative</td></tr>
+<tr><td>36</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / neutral / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_long_default.wav"></audio></td><td>+0.40</td><td>0.45</td><td>negative</td></tr>
+<tr><td>37</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_1_positive.wav"></audio></td><td>+0.38</td><td>0.46</td><td>negative</td></tr>
+<tr><td>38</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_0_positive.wav"></audio></td><td>+0.35</td><td>0.44</td><td>positive</td></tr>
+<tr><td>39</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_2_negative.wav"></audio></td><td>+0.31</td><td>0.33</td><td>negative</td></tr>
+<tr><td>40</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_0_negative.wav"></audio></td><td>+0.29</td><td>0.33</td><td>negative</td></tr>
+<tr><td>41</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_1_negative.wav"></audio></td><td>+0.28</td><td>0.34</td><td>negative</td></tr>
+<tr><td>42</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_1_positive.wav"></audio></td><td>+0.24</td><td>0.43</td><td>negative</td></tr>
+<tr><td>43</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / neutral / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_short_default.wav"></audio></td><td>+0.23</td><td>0.47</td><td>neutral</td></tr>
+<tr><td>44</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_0_negative.wav"></audio></td><td>+0.04</td><td>0.38</td><td>negative</td></tr>
+<tr><td>45</td><td>D1 (Cartesia)</td><td>positive</td><td class="detail">happy / neutral / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_happy_neutral_short_default.wav"></audio></td><td>+0.04</td><td>0.49</td><td>neutral</td></tr>
+<tr><td>46</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_2_negative.wav"></audio></td><td>+0.02</td><td>0.38</td><td>negative</td></tr>
+<tr><td>47</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_0_neutral.wav"></audio></td><td>-0.04</td><td>0.38</td><td>negative</td></tr>
+<tr><td>48</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_1_negative.wav"></audio></td><td>-0.05</td><td>0.39</td><td>negative</td></tr>
+<tr><td>49</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_1_negative.wav"></audio></td><td>-0.06</td><td>0.40</td><td>negative</td></tr>
+<tr><td>50</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_2_neutral.wav"></audio></td><td>-0.10</td><td>0.36</td><td>negative</td></tr>
+<tr><td>51</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"The report is due next Tuesday afternoon..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_2_neutral.wav"></audio></td><td>-0.10</td><td>0.40</td><td>neutral</td></tr>
+<tr><td>52</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_1_positive.wav"></audio></td><td>-0.14</td><td>0.36</td><td>negative</td></tr>
+<tr><td>53</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / congruent / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_short_default.wav"></audio></td><td>-0.22</td><td>0.51</td><td>negative</td></tr>
+<tr><td>54</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_1_neutral.wav"></audio></td><td>-0.24</td><td>0.43</td><td>neutral</td></tr>
+<tr><td>55</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / neutral / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_default.wav"></audio></td><td>-0.25</td><td>0.52</td><td>neutral</td></tr>
+<tr><td>56</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_0_negative.wav"></audio></td><td>-0.25</td><td>0.42</td><td>negative</td></tr>
+<tr><td>57</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_short_adjusted_sonic35.wav"></audio></td><td>-0.27</td><td>0.52</td><td>neutral</td></tr>
+<tr><td>58</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_1_positive.wav"></audio></td><td>-0.28</td><td>0.33</td><td>negative</td></tr>
+<tr><td>59</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_short_adjusted.wav"></audio></td><td>-0.31</td><td>0.52</td><td>neutral</td></tr>
+<tr><td>60</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / neutral / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_short_default.wav"></audio></td><td>-0.32</td><td>0.52</td><td>neutral</td></tr>
+<tr><td>61</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_1_neutral.wav"></audio></td><td>-0.33</td><td>0.43</td><td>negative</td></tr>
+<tr><td>62</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"The meeting is scheduled for three o'clo..."</td><td><audio controls src="../data/recorded/e3_speaker1_neutral_0_neutral.wav"></audio></td><td>-0.33</td><td>0.45</td><td>neutral</td></tr>
+<tr><td>63</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_short_adjusted_sonic35.wav"></audio></td><td>-0.33</td><td>0.52</td><td>neutral</td></tr>
+<tr><td>64</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_0_negative.wav"></audio></td><td>-0.35</td><td>0.44</td><td>negative</td></tr>
+<tr><td>65</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / congruent / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_long_adjusted.wav"></audio></td><td>-0.36</td><td>0.45</td><td>positive</td></tr>
+<tr><td>66</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / neutral / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_long_default.wav"></audio></td><td>-0.38</td><td>0.53</td><td>negative</td></tr>
+<tr><td>67</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"I need to pick up groceries later today."</td><td><audio controls src="../data/recorded0/e3_speaker1_neutral_1_neutral.wav"></audio></td><td>-0.40</td><td>0.44</td><td>negative</td></tr>
+<tr><td>68</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_adjusted.wav"></audio></td><td>-0.40</td><td>0.53</td><td>neutral</td></tr>
+<tr><td>69</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / neutral / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_long_default.wav"></audio></td><td>-0.42</td><td>0.53</td><td>negative</td></tr>
+<tr><td>70</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / neutral / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_long_default.wav"></audio></td><td>-0.43</td><td>0.53</td><td>negative</td></tr>
+<tr><td>71</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_short_adjusted.wav"></audio></td><td>-0.45</td><td>0.44</td><td>neutral</td></tr>
+<tr><td>72</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_1_neutral.wav"></audio></td><td>-0.46</td><td>0.47</td><td>negative</td></tr>
+<tr><td>73</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / neutral / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_long_adjusted.wav"></audio></td><td>-0.49</td><td>0.54</td><td>negative</td></tr>
+<tr><td>74</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_short_adjusted.wav"></audio></td><td>-0.52</td><td>0.54</td><td>neutral</td></tr>
+<tr><td>75</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">angry / neutral / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_angry_neutral_long_adjusted.wav"></audio></td><td>-0.56</td><td>0.55</td><td>negative</td></tr>
+<tr><td>76</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_short_adjusted_sonic35.wav"></audio></td><td>-0.59</td><td>0.55</td><td>neutral</td></tr>
+<tr><td>77</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / neutral / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_short_adjusted_sonic35.wav"></audio></td><td>-0.60</td><td>0.55</td><td>neutral</td></tr>
+<tr><td>78</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / neutral / short / speed=default</td><td><audio controls src="../data/probes/d1/d1_calm_neutral_short_default.wav"></audio></td><td>-0.61</td><td>0.55</td><td>neutral</td></tr>
+<tr><td>79</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">sad / neutral / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_sad_neutral_long_adjusted.wav"></audio></td><td>-0.62</td><td>0.55</td><td>neutral</td></tr>
+<tr><td>80</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"This turned out to be the best day of my..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_1_negative.wav"></audio></td><td>-0.65</td><td>0.48</td><td>negative</td></tr>
+<tr><td>81</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_0_positive.wav"></audio></td><td>-0.67</td><td>0.27</td><td>negative</td></tr>
+<tr><td>82</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_2_neutral.wav"></audio></td><td>-0.76</td><td>0.50</td><td>negative</td></tr>
+<tr><td>83</td><td>D1 (Cartesia)</td><td>negative</td><td class="detail">frustrated / neutral / long / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_frustrated_neutral_long_adjusted.wav"></audio></td><td>-0.76</td><td>0.57</td><td>negative</td></tr>
+<tr><td>84</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_1_neutral.wav"></audio></td><td>-0.81</td><td>0.23</td><td>neutral</td></tr>
+<tr><td>85</td><td>E3 human (e3b)</td><td>negative</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_2_negative.wav"></audio></td><td>-0.86</td><td>0.55</td><td>negative</td></tr>
+<tr><td>86</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_0_positive.wav"></audio></td><td>-0.87</td><td>0.22</td><td>negative</td></tr>
+<tr><td>87</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"I'm so disappointed in how this went."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_1_neutral.wav"></audio></td><td>-0.90</td><td>0.24</td><td>negative</td></tr>
+<tr><td>88</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_0_neutral.wav"></audio></td><td>-0.93</td><td>0.53</td><td>negative</td></tr>
+<tr><td>89</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"I'm thrilled about the good news today."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_0_neutral.wav"></audio></td><td>-1.00</td><td>0.57</td><td>neutral</td></tr>
+<tr><td>90</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / congruent / long / speed=default</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_long_default.wav"></audio></td><td>-1.07</td><td>0.38</td><td>positive</td></tr>
+<tr><td>91</td><td>D1 (Cartesia)</td><td>neutral</td><td class="detail">calm / congruent / short / speed=adjusted</td><td><audio controls src="../data/probes/d1/d1_calm_congruent_short_adjusted.wav"></audio></td><td>-1.08</td><td>0.38</td><td>negative</td></tr>
+<tr><td>92</td><td>E3 human (e3a)</td><td>negative</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded0/e3_speaker1_positive_2_negative.wav"></audio></td><td>-1.17</td><td>0.57</td><td>negative</td></tr>
+<tr><td>93</td><td>E3 human (e3b)</td><td>positive</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_2_positive.wav"></audio></td><td>-1.25</td><td>0.15</td><td>negative</td></tr>
+<tr><td>94</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_0_neutral.wav"></audio></td><td>-1.27</td><td>0.15</td><td>negative</td></tr>
+<tr><td>95</td><td>E3 human (e3a)</td><td>positive</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_2_positive.wav"></audio></td><td>-1.28</td><td>0.18</td><td>negative</td></tr>
+<tr><td>96</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"I really appreciate everything you've do..."</td><td><audio controls src="../data/recorded/e3_speaker1_positive_2_neutral.wav"></audio></td><td>-1.56</td><td>0.68</td><td>negative</td></tr>
+<tr><td>97</td><td>E3 human (e3b)</td><td>neutral</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded/e3_speaker1_negative_2_neutral.wav"></audio></td><td>-1.58</td><td>0.09</td><td>negative</td></tr>
+<tr><td>98</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"This is terrible, I can't believe it hap..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_0_neutral.wav"></audio></td><td>-1.71</td><td>0.11</td><td>neutral</td></tr>
+<tr><td>99</td><td>E3 human (e3a)</td><td>neutral</td><td class="detail">"Everything about this situation is awful..."</td><td><audio controls src="../data/recorded0/e3_speaker1_negative_2_neutral.wav"></audio></td><td>-1.83</td><td>0.09</td><td>negative</td></tr>
+</table>
+</body>
+</html>

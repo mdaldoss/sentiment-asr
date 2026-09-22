@@ -1,0 +1,262 @@
+{
+  "solution": "A:lexical(small+twitter-roberta-base-sentiment-latest)",
+  "dataset": "e6_test",
+  "split_type": "all",
+  "n_clips": 20,
+  "n_incongruent": 14,
+  "uar": 0.35555555555555557,
+  "macro_f1": 0.34920634920634913,
+  "accuracy": 0.35,
+  "ece": 0.4493582499844465,
+  "psi_contested": 0.18181818181818182,
+  "psi_strict": 0.14285714285714285,
+  "confusion_matrix": [
+    [
+      2,
+      1,
+      3
+    ],
+    [
+      4,
+      3,
+      2
+    ],
+    [
+      2,
+      1,
+      2
+    ]
+  ],
+  "confusion_labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "abstention_rate": 0.0,
+  "latency_p50_ms": 1671.876045999852,
+  "latency_p95_ms": 1865.400659699867,
+  "git_sha": "a5049cf2d4e21506f7d555bde004f87c8afef178",
+  "timestamp": "2026-09-20T20:42:31.132597+00:00",
+  "predictions": [
+    {
+      "clip_id": "e6_zurich_matteo_c7974cb0",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8336695991681993,
+      "abstained": false,
+      "latency_ms": 1680.5008010001075,
+      "transcript": "We'll need to talk about this."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_0d1d2a38",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.9093430756878136,
+      "abstained": false,
+      "latency_ms": 1660.2567069999168,
+      "transcript": "Deadwood cab better than I hoped."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_d0115741",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6190558971752474,
+      "abstained": false,
+      "latency_ms": 1691.154595000171,
+      "transcript": "I didn't expect that."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_ca8b0dc0",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.9190206071695054,
+      "abstained": false,
+      "latency_ms": 1794.950661999792,
+      "transcript": "Can we discuss this tomorrow?"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_7f4dfc85",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.9796522483243422,
+      "abstained": false,
+      "latency_ms": 1981.867594999585,
+      "transcript": "This is my favorite part."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_e2af3752",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6595383735104269,
+      "abstained": false,
+      "latency_ms": 1859.2708209998818,
+      "transcript": "I have no idea what you mean."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_a09ad786",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.6119742898348824,
+      "abstained": false,
+      "latency_ms": 1696.0452580001402,
+      "transcript": "Honestly, I spent more."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_85a1e718",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.9340282996110925,
+      "abstained": false,
+      "latency_ms": 1519.141904999742,
+      "transcript": "Thanks for happening"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_38e5dbf5",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.48005837380907823,
+      "abstained": false,
+      "latency_ms": 1663.1136209998658,
+      "transcript": "I told you, this would happen."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_49a1b8aa",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.49278702414059966,
+      "abstained": false,
+      "latency_ms": 1665.9297319997677,
+      "transcript": "Okay, I'll do it."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_5f35d260",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.920220953496943,
+      "abstained": false,
+      "latency_ms": 1583.5166599999866,
+      "transcript": "This is completely unacceptable."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_f0f8c41e",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8423703854003989,
+      "abstained": false,
+      "latency_ms": 1857.7748060001795,
+      "transcript": "I can't believe this happened"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_eabace3f",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.9797116438870676,
+      "abstained": false,
+      "latency_ms": 1764.7288709999884,
+      "transcript": "I'm so glad you called."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_4b22ca99",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "positive",
+      "confidence": 0.6221584613958904,
+      "abstained": false,
+      "latency_ms": 1640.9045509999487,
+      "transcript": "Everything is ready to go"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_37a20630",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6647799611091614,
+      "abstained": false,
+      "latency_ms": 1677.8223599999365,
+      "transcript": "This is going to take a while."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_14de08e1",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6490282670214653,
+      "abstained": false,
+      "latency_ms": 1738.6795070001426,
+      "transcript": "I would rather not talk about it"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_38e3e9f4",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.6425248111564106,
+      "abstained": false,
+      "latency_ms": 1574.0488850001384,
+      "transcript": "Whatever, it's fine."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_662dfadd",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.8983949416461998,
+      "abstained": false,
+      "latency_ms": 1631.0574250001082,
+      "transcript": "It looks like the media was moved."
+    },
+    {
+      "clip_id": "e6_zurich_matteo_793efcac",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.790612168522665,
+      "abstained": false,
+      "latency_ms": 1546.1796399999912,
+      "transcript": "Why didn't nobody tell me?"
+    },
+    {
+      "clip_id": "e6_zurich_matteo_7a9a323c",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.5160735864791035,
+      "abstained": false,
+      "latency_ms": 1550.9570399999575,
+      "transcript": "It's just another normal day."
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+clip_id,path,speaker_id,source,text,text_sentiment,prosody_sentiment,emotion_tag,voice_id,is_congruent,split
+e5_ava_song_positive0_positive,data/hume_e5/e5_ava_song_positive0_positive.wav,hume_ava_song,hume,I'm thrilled about the good news today.,positive,positive,,Ava Song,True,test
+e5_ava_song_positive0_neutral,data/hume_e5/e5_ava_song_positive0_neutral.wav,hume_ava_song,hume,I'm thrilled about the good news today.,positive,neutral,,Ava Song,False,test
+e5_ava_song_positive0_negative,data/hume_e5/e5_ava_song_positive0_negative.wav,hume_ava_song,hume,I'm thrilled about the good news today.,positive,negative,,Ava Song,False,test
+e5_ava_song_positive1_positive,data/hume_e5/e5_ava_song_positive1_positive.wav,hume_ava_song,hume,This turned out to be the best day of my life.,positive,positive,,Ava Song,True,test
+e5_ava_song_positive1_neutral,data/hume_e5/e5_ava_song_positive1_neutral.wav,hume_ava_song,hume,This turned out to be the best day of my life.,positive,neutral,,Ava Song,False,test
+e5_ava_song_positive1_negative,data/hume_e5/e5_ava_song_positive1_negative.wav,hume_ava_song,hume,This turned out to be the best day of my life.,positive,negative,,Ava Song,False,test
+e5_ava_song_positive2_positive,data/hume_e5/e5_ava_song_positive2_positive.wav,hume_ava_song,hume,I really appreciate everything you've done for me.,positive,positive,,Ava Song,True,test
+e5_ava_song_positive2_neutral,data/hume_e5/e5_ava_song_positive2_neutral.wav,hume_ava_song,hume,I really appreciate everything you've done for me.,positive,neutral,,Ava Song,False,test
+e5_ava_song_positive2_negative,data/hume_e5/e5_ava_song_positive2_negative.wav,hume_ava_song,hume,I really appreciate everything you've done for me.,positive,negative,,Ava Song,False,test
+e5_ava_song_positive3_positive,data/hume_e5/e5_ava_song_positive3_positive.wav,hume_ava_song,hume,What a wonderful surprise this has been.,positive,positive,,Ava Song,True,test
+e5_ava_song_positive3_neutral,data/hume_e5/e5_ava_song_positive3_neutral.wav,hume_ava_song,hume,What a wonderful surprise this has been.,positive,neutral,,Ava Song,False,test
+e5_ava_song_positive3_negative,data/hume_e5/e5_ava_song_positive3_negative.wav,hume_ava_song,hume,What a wonderful surprise this has been.,positive,negative,,Ava Song,False,test
+e5_ava_song_positive4_positive,data/hume_e5/e5_ava_song_positive4_positive.wav,hume_ava_song,hume,I'm so proud of how this all turned out.,positive,positive,,Ava Song,True,test
+e5_ava_song_positive4_neutral,data/hume_e5/e5_ava_song_positive4_neutral.wav,hume_ava_song,hume,I'm so proud of how this all turned out.,positive,neutral,,Ava Song,False,test
+e5_ava_song_positive4_negative,data/hume_e5/e5_ava_song_positive4_negative.wav,hume_ava_song,hume,I'm so proud of how this all turned out.,positive,negative,,Ava Song,False,test
+e5_ava_song_neutral0_positive,data/hume_e5/e5_ava_song_neutral0_positive.wav,hume_ava_song,hume,The meeting is scheduled for three o'clock.,neutral,positive,,Ava Song,False,test
+e5_ava_song_neutral0_neutral,data/hume_e5/e5_ava_song_neutral0_neutral.wav,hume_ava_song,hume,The meeting is scheduled for three o'clock.,neutral,neutral,,Ava Song,True,test
+e5_ava_song_neutral0_negative,data/hume_e5/e5_ava_song_neutral0_negative.wav,hume_ava_song,hume,The meeting is scheduled for three o'clock.,neutral,negative,,Ava Song,False,test
+e5_ava_song_neutral1_positive,data/hume_e5/e5_ava_song_neutral1_positive.wav,hume_ava_song,hume,I need to pick up groceries later today.,neutral,positive,,Ava Song,False,test
+e5_ava_song_neutral1_neutral,data/hume_e5/e5_ava_song_neutral1_neutral.wav,hume_ava_song,hume,I need to pick up groceries later today.,neutral,neutral,,Ava Song,True,test
+e5_ava_song_neutral1_negative,data/hume_e5/e5_ava_song_neutral1_negative.wav,hume_ava_song,hume,I need to pick up groceries later today.,neutral,negative,,Ava Song,False,test
+e5_ava_song_neutral2_positive,data/hume_e5/e5_ava_song_neutral2_positive.wav,hume_ava_song,hume,The report is due next Tuesday afternoon.,neutral,positive,,Ava Song,False,test
+e5_ava_song_neutral2_neutral,data/hume_e5/e5_ava_song_neutral2_neutral.wav,hume_ava_song,hume,The report is due next Tuesday afternoon.,neutral,neutral,,Ava Song,True,test
+e5_ava_song_neutral2_negative,data/hume_e5/e5_ava_song_neutral2_negative.wav,hume_ava_song,hume,The report is due next Tuesday afternoon.,neutral,negative,,Ava Song,False,test
+e5_ava_song_neutral3_positive,data/hume_e5/e5_ava_song_neutral3_positive.wav,hume_ava_song,hume,Please turn off the lights when you leave.,neutral,positive,,Ava Song,False,test
+e5_ava_song_neutral3_neutral,data/hume_e5/e5_ava_song_neutral3_neutral.wav,hume_ava_song,hume,Please turn off the lights when you leave.,neutral,neutral,,Ava Song,True,test
+e5_ava_song_neutral3_negative,data/hume_e5/e5_ava_song_neutral3_negative.wav,hume_ava_song,hume,Please turn off the lights when you leave.,neutral,negative,,Ava Song,False,test
+e5_ava_song_neutral4_positive,data/hume_e5/e5_ava_song_neutral4_positive.wav,hume_ava_song,hume,The train departs from platform four.,neutral,positive,,Ava Song,False,test
+e5_ava_song_neutral4_neutral,data/hume_e5/e5_ava_song_neutral4_neutral.wav,hume_ava_song,hume,The train departs from platform four.,neutral,neutral,,Ava Song,True,test
+e5_ava_song_neutral4_negative,data/hume_e5/e5_ava_song_neutral4_negative.wav,hume_ava_song,hume,The train departs from platform four.,neutral,negative,,Ava Song,False,test
+e5_ava_song_negative0_positive,data/hume_e5/e5_ava_song_negative0_positive.wav,hume_ava_song,hume,"This is terrible, I can't believe it happened.",negative,positive,,Ava Song,False,test
+e5_ava_song_negative0_neutral,data/hume_e5/e5_ava_song_negative0_neutral.wav,hume_ava_song,hume,"This is terrible, I can't believe it happened.",negative,neutral,,Ava Song,False,test
+e5_ava_song_negative0_negative,data/hume_e5/e5_ava_song_negative0_negative.wav,hume_ava_song,hume,"This is terrible, I can't believe it happened.",negative,negative,,Ava Song,True,test
+e5_ava_song_negative1_positive,data/hume_e5/e5_ava_song_negative1_positive.wav,hume_ava_song,hume,I'm so disappointed in how this went.,negative,positive,,Ava Song,False,test
+e5_ava_song_negative1_neutral,data/hume_e5/e5_ava_song_negative1_neutral.wav,hume_ava_song,hume,I'm so disappointed in how this went.,negative,neutral,,Ava Song,False,test
+e5_ava_song_negative1_negative,data/hume_e5/e5_ava_song_negative1_negative.wav,hume_ava_song,hume,I'm so disappointed in how this went.,negative,negative,,Ava Song,True,test
+e5_ava_song_negative2_positive,data/hume_e5/e5_ava_song_negative2_positive.wav,hume_ava_song,hume,Everything about this situation is awful.,negative,positive,,Ava Song,False,test
+e5_ava_song_negative2_neutral,data/hume_e5/e5_ava_song_negative2_neutral.wav,hume_ava_song,hume,Everything about this situation is awful.,negative,neutral,,Ava Song,False,test
+e5_ava_song_negative2_negative,data/hume_e5/e5_ava_song_negative2_negative.wav,hume_ava_song,hume,Everything about this situation is awful.,negative,negative,,Ava Song,True,test
+e5_ava_song_negative3_positive,data/hume_e5/e5_ava_song_negative3_positive.wav,hume_ava_song,hume,I hate how things turned out this time.,negative,positive,,Ava Song,False,test
+e5_ava_song_negative3_neutral,data/hume_e5/e5_ava_song_negative3_neutral.wav,hume_ava_song,hume,I hate how things turned out this time.,negative,neutral,,Ava Song,False,test
+e5_ava_song_negative3_negative,data/hume_e5/e5_ava_song_negative3_negative.wav,hume_ava_song,hume,I hate how things turned out this time.,negative,negative,,Ava Song,True,test
+e5_ava_song_negative4_positive,data/hume_e5/e5_ava_song_negative4_positive.wav,hume_ava_song,hume,This has been a complete disaster for us.,negative,positive,,Ava Song,False,test
+e5_ava_song_negative4_neutral,data/hume_e5/e5_ava_song_negative4_neutral.wav,hume_ava_song,hume,This has been a complete disaster for us.,negative,neutral,,Ava Song,False,test
+e5_ava_song_negative4_negative,data/hume_e5/e5_ava_song_negative4_negative.wav,hume_ava_song,hume,This has been a complete disaster for us.,negative,negative,,Ava Song,True,test
+e5_colton_rivers_positive0_positive,data/hume_e5/e5_colton_rivers_positive0_positive.wav,hume_colton_rivers,hume,I'm thrilled about the good news today.,positive,positive,,Colton Rivers,True,test
+e5_colton_rivers_positive0_neutral,data/hume_e5/e5_colton_rivers_positive0_neutral.wav,hume_colton_rivers,hume,I'm thrilled about the good news today.,positive,neutral,,Colton Rivers,False,test
+e5_colton_rivers_positive0_negative,data/hume_e5/e5_colton_rivers_positive0_negative.wav,hume_colton_rivers,hume,I'm thrilled about the good news today.,positive,negative,,Colton Rivers,False,test
+e5_colton_rivers_positive1_positive,data/hume_e5/e5_colton_rivers_positive1_positive.wav,hume_colton_rivers,hume,This turned out to be the best day of my life.,positive,positive,,Colton Rivers,True,test
+e5_colton_rivers_positive1_neutral,data/hume_e5/e5_colton_rivers_positive1_neutral.wav,hume_colton_rivers,hume,This turned out to be the best day of my life.,positive,neutral,,Colton Rivers,False,test
+e5_colton_rivers_positive1_negative,data/hume_e5/e5_colton_rivers_positive1_negative.wav,hume_colton_rivers,hume,This turned out to be the best day of my life.,positive,negative,,Colton Rivers,False,test
+e5_colton_rivers_positive2_positive,data/hume_e5/e5_colton_rivers_positive2_positive.wav,hume_colton_rivers,hume,I really appreciate everything you've done for me.,positive,positive,,Colton Rivers,True,test
+e5_colton_rivers_positive2_neutral,data/hume_e5/e5_colton_rivers_positive2_neutral.wav,hume_colton_rivers,hume,I really appreciate everything you've done for me.,positive,neutral,,Colton Rivers,False,test
+e5_colton_rivers_positive2_negative,data/hume_e5/e5_colton_rivers_positive2_negative.wav,hume_colton_rivers,hume,I really appreciate everything you've done for me.,positive,negative,,Colton Rivers,False,test
+e5_colton_rivers_positive3_positive,data/hume_e5/e5_colton_rivers_positive3_positive.wav,hume_colton_rivers,hume,What a wonderful surprise this has been.,positive,positive,,Colton Rivers,True,test
+e5_colton_rivers_positive3_neutral,data/hume_e5/e5_colton_rivers_positive3_neutral.wav,hume_colton_rivers,hume,What a wonderful surprise this has been.,positive,neutral,,Colton Rivers,False,test
+e5_colton_rivers_positive3_negative,data/hume_e5/e5_colton_rivers_positive3_negative.wav,hume_colton_rivers,hume,What a wonderful surprise this has been.,positive,negative,,Colton Rivers,False,test
+e5_colton_rivers_positive4_positive,data/hume_e5/e5_colton_rivers_positive4_positive.wav,hume_colton_rivers,hume,I'm so proud of how this all turned out.,positive,positive,,Colton Rivers,True,test
+e5_colton_rivers_positive4_neutral,data/hume_e5/e5_colton_rivers_positive4_neutral.wav,hume_colton_rivers,hume,I'm so proud of how this all turned out.,positive,neutral,,Colton Rivers,False,test
+e5_colton_rivers_positive4_negative,data/hume_e5/e5_colton_rivers_positive4_negative.wav,hume_colton_rivers,hume,I'm so proud of how this all turned out.,positive,negative,,Colton Rivers,False,test
+e5_colton_rivers_neutral0_positive,data/hume_e5/e5_colton_rivers_neutral0_positive.wav,hume_colton_rivers,hume,The meeting is scheduled for three o'clock.,neutral,positive,,Colton Rivers,False,test
+e5_colton_rivers_neutral0_neutral,data/hume_e5/e5_colton_rivers_neutral0_neutral.wav,hume_colton_rivers,hume,The meeting is scheduled for three o'clock.,neutral,neutral,,Colton Rivers,True,test
+e5_colton_rivers_neutral0_negative,data/hume_e5/e5_colton_rivers_neutral0_negative.wav,hume_colton_rivers,hume,The meeting is scheduled for three o'clock.,neutral,negative,,Colton Rivers,False,test
+e5_colton_rivers_neutral1_positive,data/hume_e5/e5_colton_rivers_neutral1_positive.wav,hume_colton_rivers,hume,I need to pick up groceries later today.,neutral,positive,,Colton Rivers,False,test
+e5_colton_rivers_neutral1_neutral,data/hume_e5/e5_colton_rivers_neutral1_neutral.wav,hume_colton_rivers,hume,I need to pick up groceries later today.,neutral,neutral,,Colton Rivers,True,test
+e5_colton_rivers_neutral1_negative,data/hume_e5/e5_colton_rivers_neutral1_negative.wav,hume_colton_rivers,hume,I need to pick up groceries later today.,neutral,negative,,Colton Rivers,False,test
+e5_colton_rivers_neutral2_positive,data/hume_e5/e5_colton_rivers_neutral2_positive.wav,hume_colton_rivers,hume,The report is due next Tuesday afternoon.,neutral,positive,,Colton Rivers,False,test
+e5_colton_rivers_neutral2_neutral,data/hume_e5/e5_colton_rivers_neutral2_neutral.wav,hume_colton_rivers,hume,The report is due next Tuesday afternoon.,neutral,neutral,,Colton Rivers,True,test
+e5_colton_rivers_neutral2_negative,data/hume_e5/e5_colton_rivers_neutral2_negative.wav,hume_colton_rivers,hume,The report is due next Tuesday afternoon.,neutral,negative,,Colton Rivers,False,test
+e5_colton_rivers_neutral3_positive,data/hume_e5/e5_colton_rivers_neutral3_positive.wav,hume_colton_rivers,hume,Please turn off the lights when you leave.,neutral,positive,,Colton Rivers,False,test
+e5_colton_rivers_neutral3_neutral,data/hume_e5/e5_colton_rivers_neutral3_neutral.wav,hume_colton_rivers,hume,Please turn off the lights when you leave.,neutral,neutral,,Colton Rivers,True,test
+e5_colton_rivers_neutral3_negative,data/hume_e5/e5_colton_rivers_neutral3_negative.wav,hume_colton_rivers,hume,Please turn off the lights when you leave.,neutral,negative,,Colton Rivers,False,test
+e5_colton_rivers_neutral4_positive,data/hume_e5/e5_colton_rivers_neutral4_positive.wav,hume_colton_rivers,hume,The train departs from platform four.,neutral,positive,,Colton Rivers,False,test
+e5_colton_rivers_neutral4_neutral,data/hume_e5/e5_colton_rivers_neutral4_neutral.wav,hume_colton_rivers,hume,The train departs from platform four.,neutral,neutral,,Colton Rivers,True,test
+e5_colton_rivers_neutral4_negative,data/hume_e5/e5_colton_rivers_neutral4_negative.wav,hume_colton_rivers,hume,The train departs from platform four.,neutral,negative,,Colton Rivers,False,test
+e5_colton_rivers_negative0_positive,data/hume_e5/e5_colton_rivers_negative0_positive.wav,hume_colton_rivers,hume,"This is terrible, I can't believe it happened.",negative,positive,,Colton Rivers,False,test
+e5_colton_rivers_negative0_neutral,data/hume_e5/e5_colton_rivers_negative0_neutral.wav,hume_colton_rivers,hume,"This is terrible, I can't believe it happened.",negative,neutral,,Colton Rivers,False,test
+e5_colton_rivers_negative0_negative,data/hume_e5/e5_colton_rivers_negative0_negative.wav,hume_colton_rivers,hume,"This is terrible, I can't believe it happened.",negative,negative,,Colton Rivers,True,test
+e5_colton_rivers_negative1_positive,data/hume_e5/e5_colton_rivers_negative1_positive.wav,hume_colton_rivers,hume,I'm so disappointed in how this went.,negative,positive,,Colton Rivers,False,test
+e5_colton_rivers_negative1_neutral,data/hume_e5/e5_colton_rivers_negative1_neutral.wav,hume_colton_rivers,hume,I'm so disappointed in how this went.,negative,neutral,,Colton Rivers,False,test
+e5_colton_rivers_negative1_negative,data/hume_e5/e5_colton_rivers_negative1_negative.wav,hume_colton_rivers,hume,I'm so disappointed in how this went.,negative,negative,,Colton Rivers,True,test
+e5_colton_rivers_negative2_positive,data/hume_e5/e5_colton_rivers_negative2_positive.wav,hume_colton_rivers,hume,Everything about this situation is awful.,negative,positive,,Colton Rivers,False,test
+e5_colton_rivers_negative2_neutral,data/hume_e5/e5_colton_rivers_negative2_neutral.wav,hume_colton_rivers,hume,Everything about this situation is awful.,negative,neutral,,Colton Rivers,False,test
+e5_colton_rivers_negative2_negative,data/hume_e5/e5_colton_rivers_negative2_negative.wav,hume_colton_rivers,hume,Everything about this situation is awful.,negative,negative,,Colton Rivers,True,test
+e5_colton_rivers_negative3_positive,data/hume_e5/e5_colton_rivers_negative3_positive.wav,hume_colton_rivers,hume,I hate how things turned out this time.,negative,positive,,Colton Rivers,False,test
+e5_colton_rivers_negative3_neutral,data/hume_e5/e5_colton_rivers_negative3_neutral.wav,hume_colton_rivers,hume,I hate how things turned out this time.,negative,neutral,,Colton Rivers,False,test
+e5_colton_rivers_negative3_negative,data/hume_e5/e5_colton_rivers_negative3_negative.wav,hume_colton_rivers,hume,I hate how things turned out this time.,negative,negative,,Colton Rivers,True,test
+e5_colton_rivers_negative4_positive,data/hume_e5/e5_colton_rivers_negative4_positive.wav,hume_colton_rivers,hume,This has been a complete disaster for us.,negative,positive,,Colton Rivers,False,test
+e5_colton_rivers_negative4_neutral,data/hume_e5/e5_colton_rivers_negative4_neutral.wav,hume_colton_rivers,hume,This has been a complete disaster for us.,negative,neutral,,Colton Rivers,False,test
+e5_colton_rivers_negative4_negative,data/hume_e5/e5_colton_rivers_negative4_negative.wav,hume_colton_rivers,hume,This has been a complete disaster for us.,negative,negative,,Colton Rivers,True,test

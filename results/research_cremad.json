@@ -1,0 +1,369 @@
+{
+  "thresholds": {
+    "low": 0.4,
+    "high": 0.47500000000000003
+  },
+  "results": {
+    "research": {
+      "val/speaker_disjoint_val": {
+        "dataset": "val",
+        "split_type": "speaker_disjoint_val",
+        "n_clips": 737,
+        "n_incongruent": 630,
+        "uar": 0.4540807496414973,
+        "macro_f1": 0.45495167349775273,
+        "accuracy": 0.5997286295793759,
+        "psi_contested": 0.7518518518518519,
+        "psi_strict": 0.6444444444444445,
+        "per_class_recall": {
+          "negative": 0.7321428571428571,
+          "neutral": 0.3364485981308411,
+          "positive": 0.29365079365079366
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              369,
+              101,
+              34
+            ],
+            [
+              63,
+              36,
+              8
+            ],
+            [
+              56,
+              33,
+              37
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "negative": 0.6621438263229308,
+          "neutral": 0.23066485753052918,
+          "positive": 0.10719131614654002
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.4145623686821105,
+          "hi": 0.49666047466390706
+        },
+        "psi_contested_ci95": {
+          "lo": 0.7153832116788321,
+          "hi": 0.7873563218390804
+        },
+        "n_boot": 2000
+      },
+      "cremad/speaker_disjoint_test": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.43476018406992184,
+        "macro_f1": 0.43983771998847376,
+        "accuracy": 0.5993197278911565,
+        "psi_contested": 0.7680890538033395,
+        "psi_strict": 0.6597609561752988,
+        "per_class_recall": {
+          "negative": 0.7470119521912351,
+          "neutral": 0.24651162790697675,
+          "positive": 0.3107569721115538
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              750,
+              176,
+              78
+            ],
+            [
+              137,
+              53,
+              25
+            ],
+            [
+              99,
+              74,
+              78
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "negative": 0.6707482993197279,
+          "neutral": 0.20612244897959184,
+          "positive": 0.12312925170068027
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.40678291238520314,
+          "hi": 0.464416801552414
+        },
+        "psi_contested_ci95": {
+          "lo": 0.7433541090986975,
+          "hi": 0.7920913033608526
+        },
+        "n_boot": 2000
+      },
+      "cremad/speaker_disjoint_test_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.45018260075648886,
+        "macro_f1": 0.45713838625241837,
+        "accuracy": 0.6133333333333333,
+        "psi_contested": 0.7434782608695653,
+        "psi_strict": 0.66796875,
+        "per_class_recall": {
+          "negative": 0.7609756097560976,
+          "neutral": 0.29545454545454547,
+          "positive": 0.29411764705882354
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              156,
+              40,
+              9
+            ],
+            [
+              26,
+              13,
+              5
+            ],
+            [
+              17,
+              19,
+              15
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "neutral": 0.24,
+          "negative": 0.6633333333333333,
+          "positive": 0.09666666666666666
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.38887788495534215,
+          "hi": 0.5191363644001469
+        },
+        "psi_contested_ci95": {
+          "lo": 0.6877571202531646,
+          "hi": 0.7974151571366216
+        },
+        "n_boot": 2000
+      }
+    },
+    "permissive": {
+      "val/speaker_disjoint_val": {
+        "dataset": "val",
+        "split_type": "speaker_disjoint_val",
+        "n_clips": 737,
+        "n_incongruent": 630,
+        "uar": 0.784428620877219,
+        "macro_f1": 0.7530865358733422,
+        "accuracy": 0.8073270013568521,
+        "psi_contested": 0.899641577060932,
+        "psi_strict": 0.7968253968253968,
+        "per_class_recall": {
+          "negative": 0.8333333333333334,
+          "neutral": 0.8691588785046729,
+          "positive": 0.6507936507936508
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              420,
+              50,
+              34
+            ],
+            [
+              11,
+              93,
+              3
+            ],
+            [
+              38,
+              6,
+              82
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "negative": 0.6363636363636364,
+          "positive": 0.1614654002713704,
+          "neutral": 0.2021709633649932
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.7489264279070489,
+          "hi": 0.8195145910810219
+        },
+        "psi_contested_ci95": {
+          "lo": 0.8745402252614641,
+          "hi": 0.9250467389434928
+        },
+        "n_boot": 2000
+      },
+      "cremad/speaker_disjoint_test": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test",
+        "n_clips": 1470,
+        "n_incongruent": 1255,
+        "uar": 0.7442879644213841,
+        "macro_f1": 0.7442854932256276,
+        "accuracy": 0.8163265306122449,
+        "psi_contested": 0.9451438848920863,
+        "psi_strict": 0.8374501992031872,
+        "per_class_recall": {
+          "negative": 0.8824701195219123,
+          "neutral": 0.6930232558139535,
+          "positive": 0.6573705179282868
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              886,
+              40,
+              78
+            ],
+            [
+              51,
+              149,
+              15
+            ],
+            [
+              65,
+              21,
+              165
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "negative": 0.6816326530612244,
+          "positive": 0.17551020408163265,
+          "neutral": 0.14285714285714285
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.7140923786099441,
+          "hi": 0.774446856420615
+        },
+        "psi_contested_ci95": {
+          "lo": 0.9320373340423342,
+          "hi": 0.9581114494692883
+        },
+        "n_boot": 2000
+      },
+      "cremad/speaker_disjoint_test_subset": {
+        "dataset": "cremad",
+        "split_type": "speaker_disjoint_test_subset",
+        "n_clips": 300,
+        "n_incongruent": 256,
+        "uar": 0.7822688868599915,
+        "macro_f1": 0.7739855562414871,
+        "accuracy": 0.8366666666666667,
+        "psi_contested": 0.9393939393939394,
+        "psi_strict": 0.84765625,
+        "per_class_recall": {
+          "negative": 0.8878048780487805,
+          "neutral": 0.7727272727272727,
+          "positive": 0.6862745098039216
+        },
+        "confusion_matrix": {
+          "labels": [
+            "negative",
+            "neutral",
+            "positive"
+          ],
+          "rows_true_cols_pred": [
+            [
+              182,
+              10,
+              13
+            ],
+            [
+              7,
+              34,
+              3
+            ],
+            [
+              12,
+              4,
+              35
+            ]
+          ]
+        },
+        "predicted_class_share": {
+          "neutral": 0.16,
+          "negative": 0.67,
+          "positive": 0.17
+        },
+        "is_degenerate": false,
+        "uar_ci95": {
+          "lo": 0.7202040600581284,
+          "hi": 0.8407675380407941
+        },
+        "psi_contested_ci95": {
+          "lo": 0.9063829787234042,
+          "hi": 0.9661052706858327
+        },
+        "n_boot": 2000
+      }
+    }
+  },
+  "headline": {
+    "research_test_uar": 0.43476018406992184,
+    "research_test_uar_ci95": {
+      "lo": 0.40678291238520314,
+      "hi": 0.464416801552414
+    },
+    "permissive_test_uar": 0.7442879644213841,
+    "permissive_test_uar_ci95": {
+      "lo": 0.7140923786099441,
+      "hi": 0.774446856420615
+    },
+    "gap_permissive_minus_research": 0.3095277803514623,
+    "research_val_uar": 0.4540807496414973,
+    "research_val_minus_test": 0.019320565571575465
+  },
+  "cache": {
+    "hits": 2507,
+    "misses": 0
+  },
+  "method": "Identical harness, splits and metrics for both backends. The research backend is the audeering model zero-shot, with two valence thresholds fitted on CREMA-D's validation split (low/high, shown above); it is never trained on CREMA-D. The permissive backend is WavLM-base frozen plus a logistic-regression probe trained on CREMA-D's train split. 95% intervals are a percentile bootstrap over clips.",
+  "why_this_exists": "The research backend previously had only a validation number -- the split its thresholds were fitted on -- while the permissive backend had a held-out test number. Every comparison between them, including the licensing trade-off argument, was therefore comparing a fitted score against a held-out one. Both are now measured the same way.",
+  "caveats": [
+    "The research backend is ZERO-SHOT on CREMA-D: a lower score than a probe trained on CREMA-D's own training split is expected, and is the honest cost of the permissive licence rather than evidence that the model is weak.",
+    "It was trained on MSP-Podcast (spontaneous, in-the-wild speech) and CREMA-D is acted studio speech with fixed neutral sentences, so this is itself a cross-corpus measurement -- arguably the harder direction, and not the setting it was built for.",
+    "CREMA-D's carrier text is always neutral, so PSI here is close to vacuous for any acoustic solution: there is no competing lexical signal to resist. Read PSI on E5 and E6 instead, where the words genuinely disagree with the delivery.",
+    "val is the split the two thresholds were fitted on. With only two parameters over 737 clips the fit is not expected to be tight, and the val-minus-test gap in headline is what shows whether that held."
+  ]
+}

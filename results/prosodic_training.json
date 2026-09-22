@@ -1,0 +1,26 @@
+{
+  "selected": "svm_rbf",
+  "selection_criterion": "val_uar",
+  "n_features": 96,
+  "n_train": 5235,
+  "n_val": 737,
+  "all_candidates": {
+    "logreg": {
+      "val_uar": 0.6463927211590763,
+      "val_macro_f1": 0.5011659221240059
+    },
+    "linear_svm": {
+      "val_uar": 0.45695495228205507,
+      "val_macro_f1": 0.48337366560258127
+    },
+    "svm_rbf": {
+      "val_uar": 0.7030794145280126,
+      "val_macro_f1": 0.5914606766799129
+    },
+    "hist_gbdt": {
+      "val_uar": 0.6530621075013597,
+      "val_macro_f1": 0.6016898893987267
+    }
+  },
+  "note": "All four candidates are listed, not only the selected one. Selection on a held-out validation split of speaker-disjoint CREMA-D; the spread between candidates indicates how much of any result is the classifier rather than the features."
+}

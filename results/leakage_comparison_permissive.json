@@ -1,0 +1,9 @@
+{
+  "solution": "B:acoustic(permissive/logreg)",
+  "dataset": "cremad",
+  "split_type": "random_leaky_test",
+  "n_clips": 1488,
+  "n_speakers_overlapping_with_train": 91,
+  "uar": 0.7613171689261112,
+  "macro_f1": 0.7432436432290106
+}

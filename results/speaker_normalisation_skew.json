@@ -1,0 +1,1152 @@
+{
+  "datasets": {
+    "e3a": {
+      "balanced": {
+        "minority_keep": 1.0,
+        "realised_majority_share": {
+          "mean": 0.3333333333333332,
+          "min": 0.3333333333333333,
+          "max": 0.3333333333333333
+        },
+        "clips_per_draw": {
+          "mean": 27.0,
+          "min": 27
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.37037037037037035,
+                "std": 5.551115123125783e-17,
+                "min": 0.3703703703703704,
+                "max": 0.3703703703703704,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5833333333333336,
+                "std": 2.220446049250313e-16,
+                "min": 0.5833333333333334,
+                "max": 0.5833333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5555555555555556,
+                "std": 0.0,
+                "min": 0.5555555555555556,
+                "max": 0.5555555555555556,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.923076923076923,
+                "std": 1.1102230246251565e-16,
+                "min": 0.9230769230769231,
+                "max": 0.9230769230769231,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.18518518518518523
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.37037037037037035,
+                "std": 5.551115123125783e-17,
+                "min": 0.3703703703703704,
+                "max": 0.3703703703703704,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5833333333333336,
+                "std": 2.220446049250313e-16,
+                "min": 0.5833333333333334,
+                "max": 0.5833333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6296296296296294,
+                "std": 2.220446049250313e-16,
+                "min": 0.6296296296296297,
+                "max": 0.6296296296296297,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7999999999999997,
+                "std": 3.3306690738754696e-16,
+                "min": 0.8,
+                "max": 0.8,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2592592592592591
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5,
+                "std": 0.0,
+                "min": 0.5,
+                "max": 0.5,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5925925925925928,
+                "std": 2.220446049250313e-16,
+                "min": 0.5925925925925926,
+                "max": 0.5925925925925926,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7333333333333333,
+                "std": 0.0,
+                "min": 0.7333333333333333,
+                "max": 0.7333333333333333,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2592592592592596
+          }
+        }
+      },
+      "moderate": {
+        "minority_keep": 0.45,
+        "realised_majority_share": {
+          "mean": 0.5294117647058825,
+          "min": 0.5294117647058824,
+          "max": 0.5294117647058824
+        },
+        "clips_per_draw": {
+          "mean": 17.0,
+          "min": 17
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.36651234567901236,
+                "std": 0.033053163565746765,
+                "min": 0.3333333333333333,
+                "max": 0.4166666666666667,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5603150553150553,
+                "std": 0.1462782283858026,
+                "min": 0.2857142857142857,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.4166666666666667
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5845679012345679,
+                "std": 0.08202795609709072,
+                "min": 0.3611111111111111,
+                "max": 0.7592592592592592,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.8962950937950935,
+                "std": 0.06112261091670997,
+                "min": 0.75,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.21805555555555556
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.37345679012345673,
+                "std": 0.034090620423417484,
+                "min": 0.3333333333333333,
+                "max": 0.4166666666666667,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5700372775372776,
+                "std": 0.15276974925518794,
+                "min": 0.2857142857142857,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.3333333333333333
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6200617283950617,
+                "std": 0.0819146501367513,
+                "min": 0.35185185185185186,
+                "max": 0.8055555555555555,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.8075943963443964,
+                "std": 0.07934179538736881,
+                "min": 0.6666666666666666,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.24660493827160496
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4792827080327079,
+                "std": 0.16953550862000474,
+                "min": 0.2,
+                "max": 0.8571428571428571,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6003086419753086,
+                "std": 0.08160356081092168,
+                "min": 0.4444444444444444,
+                "max": 0.7777777777777777,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7324795574795575,
+                "std": 0.1291744163061913,
+                "min": 0.4,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.26697530864197544
+          }
+        }
+      },
+      "strong": {
+        "minority_keep": 0.22,
+        "realised_majority_share": {
+          "mean": 0.6923076923076924,
+          "min": 0.6923076923076923,
+          "max": 0.6923076923076923
+        },
+        "clips_per_draw": {
+          "mean": 13.0,
+          "min": 13
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.3623456790123456,
+                "std": 0.04892145691623351,
+                "min": 0.3333333333333333,
+                "max": 0.5,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5255357142857142,
+                "std": 0.27198194643314677,
+                "min": 0.0,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.5666666666666667
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5364197530864198,
+                "std": 0.1733557106303957,
+                "min": 0.1111111111111111,
+                "max": 0.8888888888888888,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.834887566137566,
+                "std": 0.10909492775118798,
+                "min": 0.6666666666666666,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.17407407407407416
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3817901234567901,
+                "std": 0.06424722079808119,
+                "min": 0.3333333333333333,
+                "max": 0.5,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5431415343915343,
+                "std": 0.282875280852606,
+                "min": 0.0,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.45
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6391975308641976,
+                "std": 0.14508766513597057,
+                "min": 0.27777777777777773,
+                "max": 0.8888888888888888,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.8403439153439152,
+                "std": 0.10496822283135396,
+                "min": 0.6,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.25740740740740753
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.43980158730158725,
+                "std": 0.3137965444201027,
+                "min": 0.0,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5746913580246912,
+                "std": 0.16058757945495644,
+                "min": 0.20370370370370372,
+                "max": 0.9259259259259259,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6748214285714287,
+                "std": 0.2206915635795754,
+                "min": 0.25,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.24135802469135798
+          }
+        }
+      }
+    },
+    "e3b": {
+      "balanced": {
+        "minority_keep": 1.0,
+        "realised_majority_share": {
+          "mean": 0.3333333333333332,
+          "min": 0.3333333333333333,
+          "max": 0.3333333333333333
+        },
+        "clips_per_draw": {
+          "mean": 27.0,
+          "min": 27
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.4074074074074075,
+                "std": 5.551115123125783e-17,
+                "min": 0.40740740740740744,
+                "max": 0.40740740740740744,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5833333333333336,
+                "std": 2.220446049250313e-16,
+                "min": 0.5833333333333334,
+                "max": 0.5833333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6296296296296294,
+                "std": 1.1102230246251565e-16,
+                "min": 0.6296296296296295,
+                "max": 0.6296296296296295,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.625,
+                "std": 0.0,
+                "min": 0.625,
+                "max": 0.625,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.22222222222222193
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.37037037037037035,
+                "std": 5.551115123125783e-17,
+                "min": 0.3703703703703704,
+                "max": 0.3703703703703704,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5454545454545454,
+                "std": 0.0,
+                "min": 0.5454545454545454,
+                "max": 0.5454545454545454,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6296296296296294,
+                "std": 2.220446049250313e-16,
+                "min": 0.6296296296296297,
+                "max": 0.6296296296296297,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.625,
+                "std": 0.0,
+                "min": 0.625,
+                "max": 0.625,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2592592592592591
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5454545454545454,
+                "std": 0.0,
+                "min": 0.5454545454545454,
+                "max": 0.5454545454545454,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6666666666666664,
+                "std": 2.220446049250313e-16,
+                "min": 0.6666666666666666,
+                "max": 0.6666666666666666,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7058823529411763,
+                "std": 2.220446049250313e-16,
+                "min": 0.7058823529411765,
+                "max": 0.7058823529411765,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.3333333333333332
+          }
+        }
+      },
+      "moderate": {
+        "minority_keep": 0.45,
+        "realised_majority_share": {
+          "mean": 0.5294117647058825,
+          "min": 0.5294117647058824,
+          "max": 0.5294117647058824
+        },
+        "clips_per_draw": {
+          "mean": 17.0,
+          "min": 17
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.4163580246913581,
+                "std": 0.06908273426221878,
+                "min": 0.25,
+                "max": 0.5833333333333334,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6084854497354496,
+                "std": 0.1481366815467496,
+                "min": 0.3333333333333333,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5503086419753086,
+                "std": 0.10777351751510961,
+                "min": 0.35185185185185186,
+                "max": 0.7962962962962963,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5827392977392978,
+                "std": 0.13025909372668812,
+                "min": 0.3333333333333333,
+                "max": 0.8888888888888888,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.13395061728395052
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3790123456790123,
+                "std": 0.09302163970516202,
+                "min": 0.1851851851851852,
+                "max": 0.6018518518518519,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5583994708994708,
+                "std": 0.12585906546681605,
+                "min": 0.3333333333333333,
+                "max": 0.8571428571428571,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6384259259259258,
+                "std": 0.09462922193142587,
+                "min": 0.35185185185185186,
+                "max": 0.8518518518518517,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7017743367743369,
+                "std": 0.08662314929532086,
+                "min": 0.5,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2594135802469135
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5551587301587302,
+                "std": 0.17893485944729165,
+                "min": 0.16666666666666666,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.38333333333333336
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6060185185185184,
+                "std": 0.09188658306430626,
+                "min": 0.34259259259259256,
+                "max": 0.7685185185185185,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7161604136604136,
+                "std": 0.1012206968920019,
+                "min": 0.2857142857142857,
+                "max": 0.9,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2726851851851852
+          }
+        }
+      },
+      "strong": {
+        "minority_keep": 0.22,
+        "realised_majority_share": {
+          "mean": 0.6923076923076924,
+          "min": 0.6923076923076923,
+          "max": 0.6923076923076923
+        },
+        "clips_per_draw": {
+          "mean": 13.0,
+          "min": 13
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.4496913580246914,
+                "std": 0.12741008407084023,
+                "min": 0.25925925925925924,
+                "max": 0.6666666666666666,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5957341269841269,
+                "std": 0.21230825812839627,
+                "min": 0.2,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.03333333333333333
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5009259259259259,
+                "std": 0.12831899159169416,
+                "min": 0.27777777777777773,
+                "max": 0.7222222222222222,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5219246031746031,
+                "std": 0.11167270267283684,
+                "min": 0.2857142857142857,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.051234567901234485
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3679012345679012,
+                "std": 0.16828659480529004,
+                "min": 0.07407407407407407,
+                "max": 0.7407407407407408,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5289285714285714,
+                "std": 0.15430645742882182,
+                "min": 0.25,
+                "max": 0.8333333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6277777777777778,
+                "std": 0.15477833464695875,
+                "min": 0.1851851851851852,
+                "max": 0.8518518518518517,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6841534391534392,
+                "std": 0.09025039897258758,
+                "min": 0.5,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2598765432098766
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4871428571428572,
+                "std": 0.28262422936905995,
+                "min": 0.2,
+                "max": 1.0,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.5333333333333333
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5200617283950617,
+                "std": 0.15174234483684124,
+                "min": 0.25925925925925924,
+                "max": 0.8148148148148149,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6527447089947089,
+                "std": 0.1210856912407937,
+                "min": 0.3333333333333333,
+                "max": 0.8888888888888888,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.1867283950617285
+          }
+        }
+      }
+    },
+    "e5_hume": {
+      "balanced": {
+        "minority_keep": 1.0,
+        "realised_majority_share": {
+          "mean": 0.3333333333333332,
+          "min": 0.3333333333333333,
+          "max": 0.3333333333333333
+        },
+        "clips_per_draw": {
+          "mean": 90.0,
+          "min": 90
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.27777777777777773,
+                "std": 0.0,
+                "min": 0.27777777777777773,
+                "max": 0.27777777777777773,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.37837837837837845,
+                "std": 5.551115123125783e-17,
+                "min": 0.3783783783783784,
+                "max": 0.3783783783783784,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6111111111111113,
+                "std": 2.220446049250313e-16,
+                "min": 0.611111111111111,
+                "max": 0.611111111111111,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.75,
+                "std": 0.0,
+                "min": 0.75,
+                "max": 0.75,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.33333333333333354
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5,
+                "std": 0.0,
+                "min": 0.5,
+                "max": 0.5,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6111111111111113,
+                "std": 2.220446049250313e-16,
+                "min": 0.611111111111111,
+                "max": 0.611111111111111,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7450980392156861,
+                "std": 2.220446049250313e-16,
+                "min": 0.7450980392156863,
+                "max": 0.7450980392156863,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.27777777777777807
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.5,
+                "std": 0.0,
+                "min": 0.5,
+                "max": 0.5,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6000000000000001,
+                "std": 1.1102230246251565e-16,
+                "min": 0.6,
+                "max": 0.6,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7291666666666665,
+                "std": 1.1102230246251565e-16,
+                "min": 0.7291666666666666,
+                "max": 0.7291666666666666,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2666666666666669
+          }
+        }
+      },
+      "moderate": {
+        "minority_keep": 0.45,
+        "realised_majority_share": {
+          "mean": 0.5172413793103449,
+          "min": 0.5172413793103449,
+          "max": 0.5172413793103449
+        },
+        "clips_per_draw": {
+          "mean": 58.0,
+          "min": 58
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.27394179894179893,
+                "std": 0.03249421480338939,
+                "min": 0.19999999999999998,
+                "max": 0.3634920634920635,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.37335423553901814,
+                "std": 0.08810750924801017,
+                "min": 0.2,
+                "max": 0.6190476190476191,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.6030423280423279,
+                "std": 0.04287212325552517,
+                "min": 0.5222222222222223,
+                "max": 0.7015873015873016,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7280601307195494,
+                "std": 0.040358979066879505,
+                "min": 0.6451612903225806,
+                "max": 0.8181818181818182,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.329100529100529
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4918073934417739,
+                "std": 0.1429654385262945,
+                "min": 0.3181818181818182,
+                "max": 0.8,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5878306878306879,
+                "std": 0.08316292309981438,
+                "min": 0.4396825396825397,
+                "max": 0.7444444444444445,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7184937313982379,
+                "std": 0.07768128365573837,
+                "min": 0.5666666666666667,
+                "max": 0.875,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.2544973544973547
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4918073934417739,
+                "std": 0.1429654385262945,
+                "min": 0.3181818181818182,
+                "max": 0.8,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5972486772486774,
+                "std": 0.04650898988158865,
+                "min": 0.4698412698412699,
+                "max": 0.6873015873015872,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.7590781285290135,
+                "std": 0.06874361692191416,
+                "min": 0.5925925925925926,
+                "max": 0.9032258064516129,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.26391534391534416
+          }
+        }
+      },
+      "strong": {
+        "minority_keep": 0.22,
+        "realised_majority_share": {
+          "mean": 0.7142857142857143,
+          "min": 0.7142857142857143,
+          "max": 0.7142857142857143
+        },
+        "clips_per_draw": {
+          "mean": 42.0,
+          "min": 42
+        },
+        "n_draws": 60,
+        "models": {
+          "logreg": {
+            "raw": {
+              "uar": {
+                "mean": 0.2675925925925926,
+                "std": 0.06704496576807428,
+                "min": 0.1111111111111111,
+                "max": 0.4444444444444445,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.3687210413855151,
+                "std": 0.17648296607182487,
+                "min": 0.07142857142857142,
+                "max": 0.6666666666666666,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5362962962962963,
+                "std": 0.07308224879656644,
+                "min": 0.39999999999999997,
+                "max": 0.7222222222222223,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6494378962248124,
+                "std": 0.06323867274673403,
+                "min": 0.47619047619047616,
+                "max": 0.8095238095238095,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.26870370370370367
+          },
+          "svm_rbf": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4571261215209761,
+                "std": 0.2795961232556512,
+                "min": 0.06666666666666667,
+                "max": 0.9523809523809523,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.5233333333333333,
+                "std": 0.12519449888649392,
+                "min": 0.3222222222222222,
+                "max": 0.8000000000000002,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6413213340691803,
+                "std": 0.10338245957155053,
+                "min": 0.4117647058823529,
+                "max": 0.8333333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.1900000000000001
+          },
+          "hist_gbdt": {
+            "raw": {
+              "uar": {
+                "mean": 0.3333333333333332,
+                "std": 1.1102230246251565e-16,
+                "min": 0.3333333333333333,
+                "max": 0.3333333333333333,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.4571261215209761,
+                "std": 0.2795961232556512,
+                "min": 0.06666666666666667,
+                "max": 0.9523809523809523,
+                "n_draws": 60
+              },
+              "degenerate_rate": 1.0
+            },
+            "speaker_z": {
+              "uar": {
+                "mean": 0.555,
+                "std": 0.06747732434241538,
+                "min": 0.3666666666666667,
+                "max": 0.6666666666666666,
+                "n_draws": 60
+              },
+              "psi_contested": {
+                "mean": 0.6985684202683294,
+                "std": 0.13081489916220781,
+                "min": 0.42857142857142855,
+                "max": 0.9583333333333334,
+                "n_draws": 60
+              },
+              "degenerate_rate": 0.0
+            },
+            "speaker_z_minus_raw_uar": 0.22166666666666685
+          }
+        }
+      }
+    }
+  },
+  "method": "Class-imbalanced subsamples drawn per speaker at three skew levels, 20 seeds x 3 choices of majority class = 60 draws per level. Each draw is scored by every scheme and model, so a difference between them is never a difference in which clips were drawn. Models are fitted once on speaker-disjoint CREMA-D train and applied cold; only the evaluation set's composition changes.",
+  "question": "Per-speaker mean removal uses no labels but implicitly assumes a label DISTRIBUTION: under balance, a speaker's mean sits near the average of the three class centroids, which is what lets a boundary fitted elsewhere land correctly. Every evaluation set in this repo is balanced per speaker by construction, so the gain reported in results/speaker_normalisation.json was measured in the most favourable case available. This measures how much of it survives skew.",
+  "caveats": [
+    "Subsampling shrinks the sets: a strong-skew draw of E3 is ~13 clips from one speaker. Per-draw UAR is accordingly noisy, which is why means over 60 draws and their spread are reported rather than single numbers.",
+    "UAR is class-balanced by construction, so it stays comparable across skew levels; the minority classes get noisier but the estimator does not tilt toward the majority. Plain accuracy would not be comparable here and is not reported.",
+    "Only the SPEAKER's balance is varied. CREMA-D's training-side balance is left alone because it is a fixed, known property of the training corpus -- the deployment question is about the user's clips, not the corpus's.",
+    "Still transductive: this measures whether the gain survives imbalance, not whether the method can run per-clip. It cannot."
+  ]
+}

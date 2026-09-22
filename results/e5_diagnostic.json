@@ -1,0 +1,135 @@
+{
+  "dataset": "e5_hume",
+  "n_clips": 90,
+  "chance": 0.3333333333333333,
+  "all_clips": {
+    "label": "all",
+    "n": 90,
+    "recoverability_cv": {
+      "accuracy": 0.8111111111111111,
+      "n": 90,
+      "chance": 0.3333333333333333,
+      "n_dropped_missing_features": 0
+    },
+    "f0_span_hz": 89.22454345476096,
+    "mean_f0_by_intended": {
+      "negative": 115.28,
+      "neutral": 126.15,
+      "positive": 204.5
+    },
+    "f0_rank_consistency": {
+      "chance_mean_rank": 2.0,
+      "mean_rank_by_sentiment": {
+        "positive": 1.0,
+        "neutral": 2.0,
+        "negative": 3.0
+      }
+    }
+  },
+  "congruent_only": {
+    "label": "congruent (delivery agrees with words)",
+    "n": 30,
+    "recoverability_cv": {
+      "accuracy": 0.7,
+      "n": 30,
+      "chance": 0.3333333333333333,
+      "n_dropped_missing_features": 0
+    },
+    "f0_span_hz": 93.08336289651014,
+    "mean_f0_by_intended": {
+      "negative": 114.85,
+      "neutral": 128.2,
+      "positive": 207.93
+    },
+    "f0_rank_consistency": {
+      "chance_mean_rank": 2.0,
+      "mean_rank_by_sentiment": {
+        "negative": 1.0,
+        "neutral": 1.0,
+        "positive": 1.0
+      }
+    }
+  },
+  "incongruent_only": {
+    "label": "incongruent (delivery contradicts words)",
+    "n": 60,
+    "recoverability_cv": {
+      "accuracy": 0.7833333333333333,
+      "n": 60,
+      "chance": 0.3333333333333333,
+      "n_dropped_missing_features": 0
+    },
+    "f0_span_hz": 87.29513373388643,
+    "mean_f0_by_intended": {
+      "negative": 115.49,
+      "neutral": 125.12,
+      "positive": 202.79
+    },
+    "f0_rank_consistency": {
+      "chance_mean_rank": 2.0,
+      "mean_rank_by_sentiment": {
+        "positive": 1.0,
+        "neutral": 1.5,
+        "negative": 2.0
+      }
+    }
+  },
+  "per_voice": {
+    "Ava Song": {
+      "label": "voice=Ava Song",
+      "n": 45,
+      "recoverability_cv": {
+        "accuracy": 0.8888888888888888,
+        "n": 45,
+        "chance": 0.3333333333333333,
+        "n_dropped_missing_features": 0
+      },
+      "f0_span_hz": 114.22072580717918,
+      "mean_f0_by_intended": {
+        "negative": 147.22,
+        "neutral": 153.15,
+        "positive": 261.44
+      },
+      "f0_rank_consistency": {
+        "chance_mean_rank": 2.0,
+        "mean_rank_by_sentiment": {
+          "positive": 1.0,
+          "negative": 2.7333333333333334,
+          "neutral": 2.2666666666666666
+        }
+      }
+    },
+    "Colton Rivers": {
+      "label": "voice=Colton Rivers",
+      "n": 45,
+      "recoverability_cv": {
+        "accuracy": 0.8,
+        "n": 45,
+        "chance": 0.3333333333333333,
+        "n_dropped_missing_features": 0
+      },
+      "f0_span_hz": 64.22836110234277,
+      "mean_f0_by_intended": {
+        "negative": 83.33,
+        "neutral": 99.14,
+        "positive": 147.56
+      },
+      "f0_rank_consistency": {
+        "chance_mean_rank": 2.0,
+        "mean_rank_by_sentiment": {
+          "positive": 1.0,
+          "neutral": 2.0,
+          "negative": 3.0
+        }
+      }
+    }
+  },
+  "reference_points": {
+    "cartesia_d1_recoverability": 0.175,
+    "cartesia_d1_chance": 0.2,
+    "human_e3a_recoverability": 0.667,
+    "human_e3b_recoverability": 0.741,
+    "human_e3_chance": 0.3333333333333333
+  },
+  "interpretation": "Separates the two explanations for E5's middling PSI. These numbers involve no trained emotion model at all -- just raw acoustic descriptors and a logistic regression -- so they measure whether the requested delivery is PRESENT in the audio, independently of whether our models can use it. Compare against the same instruments on Cartesia (0.175 vs 0.200 chance: delivery absent) and on real human speech (0.667/0.741 vs 0.333 chance: delivery clearly present). The congruent-vs-incongruent contrast is the key cut: a large drop on the incongruent clips would mean Hume softened the delivery when it contradicted the transcript, making the audio the limiting factor; similar values would mean the delivery is equally present in both and the models are the limiting factor."
+}

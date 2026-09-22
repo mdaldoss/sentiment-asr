@@ -1,0 +1,94 @@
+{
+  "datasets": {
+    "e3_both_takes": {
+      "n_clips": 54,
+      "n_carriers": 9,
+      "representations": {
+        "prosodic": {
+          "uar": 0.8703703703703703,
+          "chance": 0.3333333333333333,
+          "n": 54,
+          "n_groups": 9,
+          "predicted_class_share": {
+            "negative": 0.3333333333333333,
+            "neutral": 0.3333333333333333,
+            "positive": 0.3333333333333333
+          }
+        },
+        "wavlm": {
+          "uar": 0.7592592592592594,
+          "chance": 0.3333333333333333,
+          "n": 54,
+          "n_groups": 9,
+          "predicted_class_share": {
+            "negative": 0.37037037037037035,
+            "neutral": 0.2777777777777778,
+            "positive": 0.35185185185185186
+          }
+        },
+        "combined": {
+          "uar": 0.7962962962962964,
+          "chance": 0.3333333333333333,
+          "n": 54,
+          "n_groups": 9,
+          "predicted_class_share": {
+            "negative": 0.37037037037037035,
+            "neutral": 0.24074074074074073,
+            "positive": 0.3888888888888889
+          }
+        }
+      },
+      "dims": {
+        "prosodic": 96,
+        "wavlm": 1536,
+        "combined": 1632
+      }
+    },
+    "e5_hume": {
+      "n_clips": 90,
+      "n_carriers": 15,
+      "representations": {
+        "prosodic": {
+          "uar": 0.7999999999999999,
+          "chance": 0.3333333333333333,
+          "n": 90,
+          "n_groups": 15,
+          "predicted_class_share": {
+            "negative": 0.3333333333333333,
+            "neutral": 0.34444444444444444,
+            "positive": 0.32222222222222224
+          }
+        },
+        "wavlm": {
+          "uar": 0.7888888888888889,
+          "chance": 0.3333333333333333,
+          "n": 90,
+          "n_groups": 15,
+          "predicted_class_share": {
+            "negative": 0.3111111111111111,
+            "neutral": 0.28888888888888886,
+            "positive": 0.4
+          }
+        },
+        "combined": {
+          "uar": 0.8555555555555555,
+          "chance": 0.3333333333333333,
+          "n": 90,
+          "n_groups": 15,
+          "predicted_class_share": {
+            "negative": 0.32222222222222224,
+            "neutral": 0.3333333333333333,
+            "positive": 0.34444444444444444
+          }
+        }
+      },
+      "dims": {
+        "prosodic": 96,
+        "wavlm": 1536,
+        "combined": 1632
+      }
+    }
+  },
+  "method": "Logistic regression, leave-one-carrier-out, fitted within each dataset. Identical classifier, CV scheme and labels across representations -- only the input features differ, so the comparison isolates the representation.",
+  "interpretation": "A ceiling measurement, not a deployable score: fitting inside the evaluation set is what a shipped model cannot do. It answers whether the prosodic signal is REACHABLE from each representation, which the earlier comparison between an in-domain fit (0.811) and a CREMA-D-trained transfer (0.278) could not, because those are different problems. If the representations land close together, the bottleneck is the training corpus rather than the features or the encoder."
+}

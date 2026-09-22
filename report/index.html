@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Speech Sentiment Analyzer — Results</title>
+<style>
+    :root {
+      color-scheme: light;
+      --surface: #fcfcfb; --surface-2: #f5f4f1; --text: #0b0b0b; --text-2: #52514e;
+      --border: #e2e0da; --good: #0ca30c; --warn: #fab219;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+        --border: #3a3936; --good: #0ca30c; --warn: #fab219;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --surface: #1a1a19; --surface-2: #242422; --text: #ffffff; --text-2: #c3c2b7;
+      --border: #3a3936; --good: #0ca30c; --warn: #fab219;
+    }
+    body { background: var(--surface); color: var(--text); font-family: -apple-system, BlinkMacSystemFont,
+           "Segoe UI", sans-serif; max-width: 980px; margin: 0 auto; padding: 24px 16px 80px;
+           line-height: 1.5; }
+    h1 { font-size: 1.6rem; } h2 { font-size: 1.25rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border);
+         padding-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    thead th { color: var(--text-2); font-weight: 600; font-size: 0.82rem; text-transform: uppercase; }
+    .caption { color: var(--text-2); font-size: 0.86rem; }
+    .finding { background: var(--surface-2); border-left: 3px solid #eda100; padding: 10px 14px; border-radius: 4px; }
+    .unmeasured { background: var(--surface-2); border-left: 3px solid var(--text-2); padding: 10px 14px;
+                  border-radius: 4px; font-style: italic; }
+    .pending { color: var(--text-2); font-style: italic; }
+    .scatter { width: 100%; max-width: 480px; display: block; }
+    .axis { stroke: var(--border); stroke-width: 1; }
+    .axis-label { fill: var(--text-2); font-size: 11px; }
+    .status-list { list-style: none; padding: 0; }
+    .status-list li { padding: 4px 0; }
+    .status-list li.done { color: var(--good); }
+    .status-list li.pending { color: var(--warn); }
+    header { border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+<header>
+  <h1>Speech Sentiment Analyzer — Results Dashboard</h1>
+  <p class="caption">Generated from <code>results/*.json</code> by <code>ssa/report.py</code> &mdash;
+  every number here traces to a committed result file. See <code>DESIGN.md</code> for the
+  full write-up.</p>
+</header>
+
+<h2>What this is, and the one idea</h2>
+<p>Sentiment (positive / neutral / negative) from <strong>raw speech audio</strong>, not
+a handed-over transcript. The question that matters isn't "what accuracy?" but
+<strong>"does the model hear the tone, or is it just reading the words?"</strong>
+&mdash; an audio model can cheat by reading text sentiment instead of prosody, which
+published work confirms is the default failure mode (arXiv 2510.10444, arXiv
+2510.25054). Every dataset and metric here (PSI above all) exists to catch that.</p>
+
+<h2>Architecture</h2>
+<p>Three solutions on the lexical&harr;acoustic axis, one interface
+(<code>ssa.types.Solution</code>), so the evaluation harness treats them identically:</p>
+<table>
+  <thead><tr><th></th><th>Solution</th><th>Reads</th><th>License</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A</strong></td><td>Lexical &mdash; ASR (faster-whisper) &rarr; text sentiment</td><td>the words</td><td>MIT</td></tr>
+    <tr><td><strong>B</strong></td><td>Acoustic &mdash; frozen encoder + trained probe</td><td>the tone</td><td>permissive (WavLM) or research (audeering, CC-BY-NC-SA-4.0)</td></tr>
+    <tr><td><strong>C</strong></td><td>Fusion &mdash; calibrated late fusion + abstention</td><td>both</td><td>recommended default</td></tr>
+  </tbody>
+</table>
+<p class="caption">Shared internal representation: valence-arousal-dominance (VAD).
+Sentiment is a threshold read-out of valence. Late fusion (not joint) deliberately
+sacrifices some accuracy to keep PSI computable per branch &mdash; see DESIGN.md's
+Key trade-offs.</p>
+
+<h2>Which model actually extracts prosody/emotion</h2>
+
+    <p>A common point of confusion, worth stating precisely: <strong>WavLM does not
+    transcribe or recognize emotion by itself</strong> &mdash; two different models do
+    two different jobs.</p>
+    <table>
+      <thead><tr><th></th><th>Model</th><th>What it actually is</th><th>Paper</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription (Solution A only)</td><td><code>faster-whisper</code></td>
+            <td>OpenAI's Whisper ASR, CTranslate2-optimized. Nothing to do with WavLM.</td>
+            <td>&mdash;</td></tr>
+        <tr><td>Acoustic, <strong>permissive</strong> backend</td>
+            <td><code>microsoft/wavlm-base</code></td>
+            <td>A general-purpose self-supervised speech encoder &mdash; trained to
+            reconstruct masked/overlapping speech, never on an emotion label. We pool its
+            hidden states (mean+std) and train <em>our own</em> logistic regression on top
+            (fit on CREMA-D). WavLM supplies the representation; the emotion mapping is
+            ours, not WavLM's.</td>
+            <td>Chen et al. 2022,
+            <a href="https://arxiv.org/abs/2110.13900">arXiv:2110.13900</a></td></tr>
+        <tr><td>Acoustic, <strong>research</strong> backend</td>
+            <td><code>audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim</code></td>
+            <td>A wav2vec2-large-robust backbone <strong>fine-tuned end-to-end</strong> on
+            MSP-Podcast to directly regress valence/arousal/dominance (VAD). This is the
+            model that actually extracts prosody/emotion &mdash; no probe needed, it
+            outputs VAD directly, and is what the sample plot below uses.</td>
+            <td>Wagner et al. 2023, "Dawn of the Transformer Era in Speech Emotion
+            Recognition: Closing the Valence Gap",
+            <a href="https://arxiv.org/abs/2203.07378">arXiv:2203.07378</a></td></tr>
+      </tbody>
+    </table>
+    <p class="unmeasured">A caveat straight from the research-backend paper, stated
+    rather than glossed over (CLAUDE.md rule 6): its authors report that the model's
+    strong valence performance comes partly from <strong>implicit linguistic
+    information learned during fine-tuning</strong>, not from prosody alone. Even this
+    "acoustic" model may not be as prosody-pure as its name implies &mdash; it doesn't
+    undermine this project's core comparisons (Solution A genuinely never sees audio;
+    the D1-vs-E3 Cartesia finding holds regardless), but it belongs in the record.</p>
+    
+
+<h2>Method</h2>
+<p>Speaker-disjoint splits always (a parallel leaky split exists only to quantify the
+leakage gap, see below). <strong>UAR</strong> (unweighted average recall), not plain
+accuracy, is the headline metric &mdash; CREMA-D is imbalanced enough that a
+majority-class predictor would look good on accuracy alone. <strong>PSI</strong>
+(Prosody Sensitivity Index): on clips where words and tone disagree, the fraction of
+predictions that follow the tone (1.0) vs. the words (0.0). Full definitions in
+<code>ssa/eval/metrics.py</code>.</p>
+
+<h2>Status</h2>
+<ul class='status-list'><li class='done'>&check; E1 (CREMA-D, public benchmark)</li><li class='done'>&check; D0 (Cartesia emotion-space probe)</li><li class='done'>&check; D1 (Cartesia emotion-rendering factorial probe)</li><li class='done'>&check; E2 (synthetic incongruence set)</li><li class='done'>&check; E3 (human recordings, both takes recorded + evaluated)</li><li class='done'>&check; Hume Octave falsification probe</li></ul>
+
+<h2>Main comparison: solutions &times; datasets</h2>
+
+    <table>
+      <thead><tr>
+        <th>Solution</th><th>Dataset / split</th><th>n</th>
+        <th>UAR</th><th>Macro-F1</th><th>Accuracy</th>
+        <th>PSI<sub>contested</sub></th><th>PSI<sub>strict</sub></th><th>Abstention</th>
+      </tr></thead>
+      <tbody><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.744</td><td class='num'>0.744</td><td class='num'>0.816</td><td class='num'>0.945</td><td class='num'>0.837</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.744</td><td class='num'>0.744</td><td class='num'>0.816</td><td class='num'>0.945</td><td class='num'>0.837</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.435</td><td class='num'>0.440</td><td class='num'>0.599</td><td class='num'>0.768</td><td class='num'>0.660</td><td class='num'>0.0%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>cremad / speaker_disjoint_test</td><td>1470</td><td class='num'>0.557</td><td class='num'>0.601</td><td class='num'>0.759</td><td class='num'>0.965</td><td class='num'>0.822</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.360</td><td class='num'>0.264</td><td class='num'>0.360</td><td class='num'>0.090</td><td class='num'>0.085</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.782</td><td class='num'>0.774</td><td class='num'>0.837</td><td class='num'>0.939</td><td class='num'>0.848</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.450</td><td class='num'>0.457</td><td class='num'>0.613</td><td class='num'>0.743</td><td class='num'>0.668</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.797</td><td class='num'>0.796</td><td class='num'>0.797</td><td class='num'>0.891</td><td class='num'>0.775</td><td class='num'>10.3%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>cremad / speaker_disjoint_test_subset</td><td>300</td><td class='num'>0.566</td><td class='num'>0.614</td><td class='num'>0.763</td><td class='num'>0.982</td><td class='num'>0.832</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e3a / all</td><td>27</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.000</td><td class='num'>0.000</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.370</td><td class='num'>0.444</td><td class='num'>0.643</td><td class='num'>0.500</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.432</td><td class='num'>0.444</td><td class='num'>0.294</td><td class='num'>0.278</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e3a / all</td><td>27</td><td class='num'>0.444</td><td class='num'>0.370</td><td class='num'>0.444</td><td class='num'>0.643</td><td class='num'>0.500</td><td class='num'>7.4%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e3a / all</td><td>27</td><td class='num'>0.333</td><td class='num'>0.167</td><td class='num'>0.333</td><td class='num'>0.500</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e3b / all</td><td>27</td><td class='num'>0.370</td><td class='num'>0.369</td><td class='num'>0.370</td><td class='num'>0.056</td><td class='num'>0.056</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e3b / all</td><td>27</td><td class='num'>0.519</td><td class='num'>0.432</td><td class='num'>0.519</td><td class='num'>0.615</td><td class='num'>0.444</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e3b / all</td><td>27</td><td class='num'>0.593</td><td class='num'>0.576</td><td class='num'>0.593</td><td class='num'>0.444</td><td class='num'>0.444</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e3b / all</td><td>27</td><td class='num'>0.556</td><td class='num'>0.505</td><td class='num'>0.556</td><td class='num'>0.615</td><td class='num'>0.444</td><td class='num'>11.1%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e3b / all</td><td>27</td><td class='num'>0.333</td><td class='num'>0.167</td><td class='num'>0.333</td><td class='num'>0.500</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e5_hume / all</td><td>90</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'>0.000</td><td class='num'>0.000</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e5_hume / all</td><td>90</td><td class='num'>0.511</td><td class='num'>0.493</td><td class='num'>0.511</td><td class='num'>0.682</td><td class='num'>0.500</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e5_hume / all</td><td>90</td><td class='num'>0.400</td><td class='num'>0.367</td><td class='num'>0.400</td><td class='num'>0.211</td><td class='num'>0.200</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e5_hume / all</td><td>90</td><td class='num'>0.489</td><td class='num'>0.467</td><td class='num'>0.489</td><td class='num'>0.605</td><td class='num'>0.433</td><td class='num'>15.6%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e5_hume / all</td><td>90</td><td class='num'>0.333</td><td class='num'>0.167</td><td class='num'>0.333</td><td class='num'>0.500</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e6_all / all</td><td>160</td><td class='num'>0.314</td><td class='num'>0.312</td><td class='num'>0.312</td><td class='num'>0.104</td><td class='num'>0.090</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e6_all / all</td><td>160</td><td class='num'>0.396</td><td class='num'>0.360</td><td class='num'>0.388</td><td class='num'>0.584</td><td class='num'>0.405</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e6_all / all</td><td>160</td><td class='num'>0.356</td><td class='num'>0.330</td><td class='num'>0.350</td><td class='num'>0.366</td><td class='num'>0.270</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e6_all / all</td><td>160</td><td class='num'>0.402</td><td class='num'>0.360</td><td class='num'>0.394</td><td class='num'>0.557</td><td class='num'>0.396</td><td class='num'>6.9%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e6_all / all</td><td>160</td><td class='num'>0.333</td><td class='num'>0.161</td><td class='num'>0.319</td><td class='num'>0.521</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e6_test / all</td><td>20</td><td class='num'>0.356</td><td class='num'>0.349</td><td class='num'>0.350</td><td class='num'>0.182</td><td class='num'>0.143</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e6_test / all</td><td>20</td><td class='num'>0.278</td><td class='num'>0.133</td><td class='num'>0.250</td><td class='num'>0.444</td><td class='num'>0.286</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e6_test / all</td><td>20</td><td class='num'>0.289</td><td class='num'>0.200</td><td class='num'>0.250</td><td class='num'>0.364</td><td class='num'>0.286</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e6_test / all</td><td>20</td><td class='num'>0.222</td><td class='num'>0.111</td><td class='num'>0.200</td><td class='num'>0.333</td><td class='num'>0.214</td><td class='num'>0.0%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e6_test / all</td><td>20</td><td class='num'>0.333</td><td class='num'>0.154</td><td class='num'>0.300</td><td class='num'>0.500</td><td class='num'>0.357</td><td class='num'>0.0%</td></tr><tr><td>A: Lexical (ASR + text)</td><td>e6_val / all</td><td>40</td><td class='num'>0.253</td><td class='num'>0.246</td><td class='num'>0.250</td><td class='num'>0.111</td><td class='num'>0.100</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>e6_val / all</td><td>40</td><td class='num'>0.330</td><td class='num'>0.298</td><td class='num'>0.325</td><td class='num'>0.500</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>e6_val / all</td><td>40</td><td class='num'>0.381</td><td class='num'>0.350</td><td class='num'>0.375</td><td class='num'>0.409</td><td class='num'>0.300</td><td class='num'>0.0%</td></tr><tr><td>C: Fusion — permissive</td><td>e6_val / all</td><td>40</td><td class='num'>0.355</td><td class='num'>0.315</td><td class='num'>0.350</td><td class='num'>0.500</td><td class='num'>0.367</td><td class='num'>7.5%</td></tr><tr><td>D: D:prosodic(egemaps+contour/svm_rbf)</td><td>e6_val / all</td><td>40</td><td class='num'>0.333</td><td class='num'>0.164</td><td class='num'>0.325</td><td class='num'>0.526</td><td class='num'>0.333</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — permissive</td><td>val / speaker_disjoint_val</td><td>737</td><td class='num'>0.784</td><td class='num'>0.753</td><td class='num'>0.807</td><td class='num'>0.900</td><td class='num'>0.797</td><td class='num'>0.0%</td></tr><tr><td>B: Acoustic — research</td><td>val / speaker_disjoint_val</td><td>737</td><td class='num'>0.454</td><td class='num'>0.455</td><td class='num'>0.600</td><td class='num'>0.752</td><td class='num'>0.644</td><td class='num'>0.0%</td></tr></tbody>
+    </table>
+    <p class="caption">UAR is the headline accuracy-family metric (class-imbalance robust). PSI is the
+    headline prosody metric: 1.0 = follows tone, 0.0 = follows words, 0.5/0.33 = chance
+    (contested/strict respectively). See DESIGN.md for the full metric definitions.</p>
+    
+
+<h2>The leakage exposé (Solution B, permissive backend)</h2>
+
+    <table>
+      <thead><tr><th>Split</th><th>n test</th><th>Speakers overlapping train/test</th><th>UAR</th><th>Macro-F1</th></tr></thead>
+      <tbody>
+        <tr><td>Speaker-disjoint (honest)</td><td>1470</td><td>0</td>
+            <td class="num">0.744</td><td class="num">0.744</td></tr>
+        <tr><td>Random (leaky)</td><td>1488</td>
+            <td>91</td>
+            <td class="num">0.761</td><td class="num">0.743</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">Leakage inflation on this dataset+model: <strong>+0.017 UAR points</strong>.
+    Smaller than the 10&ndash;40 point swings reported for cross-corpus generalisation in the
+    literature (arXiv 2207.02104) &mdash; plausibly because WavLM's pretrained representation is
+    already fairly speaker-invariant, and CREMA-D's 91 actors all read the same 12 sentences, so
+    within-speaker variation may be less dominant here than in less controlled corpora. Reported as
+    measured, not adjusted to match the expected range.</p>
+    
+
+<h2>D0: Cartesia emotion-space probe</h2>
+
+    <svg viewBox="0 0 480 320" class="scatter" role="img"
+         aria-label="Valence-arousal scatter of 116 Cartesia clips across 58 tags">
+      <line x1="40" y1="280" x2="440" y2="280" class="axis"/>
+      <line x1="40" y1="40" x2="40" y2="280" class="axis"/>
+      <text x="240.0" y="312" class="axis-label" text-anchor="middle">Valence &rarr;</text>
+      <text x="12" y="160.0" class="axis-label" text-anchor="middle"
+            transform="rotate(-90 12 160.0)">Arousal &rarr;</text>
+      <circle cx="218.5" cy="194.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>affectionate (weather) v=0.463 a=0.378</title></circle><circle cx="388.7" cy="130.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>affectionate (report) v=0.555 a=0.449</title></circle><circle cx="150.1" cy="237.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>agitated (weather) v=0.426 a=0.331</title></circle><circle cx="440.0" cy="40.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>agitated (report) v=0.582 a=0.548</title></circle><circle cx="89.2" cy="267.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>alarmed (weather) v=0.393 a=0.298</title></circle><circle cx="400.9" cy="131.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>alarmed (report) v=0.561 a=0.448</title></circle><circle cx="246.5" cy="208.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>amazed (weather) v=0.478 a=0.363</title></circle><circle cx="383.1" cy="135.7" r="4" fill="#eb6834" fill-opacity="0.75"><title>amazed (report) v=0.552 a=0.443</title></circle><circle cx="192.4" cy="218.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>angry (weather) v=0.448 a=0.352</title></circle><circle cx="357.8" cy="188.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>angry (report) v=0.538 a=0.385</title></circle><circle cx="157.1" cy="221.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anticipation (weather) v=0.429 a=0.349</title></circle><circle cx="274.8" cy="203.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anticipation (report) v=0.493 a=0.369</title></circle><circle cx="197.4" cy="206.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>anxious (weather) v=0.451 a=0.365</title></circle><circle cx="372.0" cy="111.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>anxious (report) v=0.546 a=0.469</title></circle><circle cx="155.6" cy="234.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>apologetic (weather) v=0.429 a=0.334</title></circle><circle cx="293.3" cy="237.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>apologetic (report) v=0.503 a=0.331</title></circle><circle cx="159.3" cy="202.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>bored (weather) v=0.431 a=0.370</title></circle><circle cx="217.4" cy="208.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>bored (report) v=0.462 a=0.363</title></circle><circle cx="136.4" cy="215.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>calm (weather) v=0.418 a=0.356</title></circle><circle cx="387.9" cy="155.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>calm (report) v=0.554 a=0.422</title></circle><circle cx="233.9" cy="186.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>confident (weather) v=0.471 a=0.387</title></circle><circle cx="236.9" cy="158.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>confident (report) v=0.472 a=0.418</title></circle><circle cx="152.7" cy="255.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>confused (weather) v=0.427 a=0.312</title></circle><circle cx="289.5" cy="150.7" r="4" fill="#eb6834" fill-opacity="0.75"><title>confused (report) v=0.501 a=0.426</title></circle><circle cx="149.3" cy="226.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>contemplative (weather) v=0.425 a=0.343</title></circle><circle cx="334.2" cy="107.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>contemplative (report) v=0.525 a=0.473</title></circle><circle cx="212.5" cy="208.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>contempt (weather) v=0.459 a=0.363</title></circle><circle cx="366.3" cy="100.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>contempt (report) v=0.542 a=0.481</title></circle><circle cx="197.4" cy="202.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>content (weather) v=0.451 a=0.370</title></circle><circle cx="330.5" cy="204.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>content (report) v=0.523 a=0.368</title></circle><circle cx="212.7" cy="174.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>curious (weather) v=0.459 a=0.400</title></circle><circle cx="406.3" cy="60.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>curious (report) v=0.564 a=0.526</title></circle><circle cx="200.1" cy="207.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>dejected (weather) v=0.453 a=0.365</title></circle><circle cx="213.0" cy="215.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>dejected (report) v=0.460 a=0.355</title></circle><circle cx="140.8" cy="266.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>determined (weather) v=0.421 a=0.299</title></circle><circle cx="346.8" cy="161.2" r="4" fill="#eb6834" fill-opacity="0.75"><title>determined (report) v=0.532 a=0.415</title></circle><circle cx="130.6" cy="262.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disappointed (weather) v=0.415 a=0.304</title></circle><circle cx="342.3" cy="160.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>disappointed (report) v=0.529 a=0.415</title></circle><circle cx="192.5" cy="213.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disgusted (weather) v=0.448 a=0.358</title></circle><circle cx="299.3" cy="221.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>disgusted (report) v=0.506 a=0.349</title></circle><circle cx="198.9" cy="204.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>distant (weather) v=0.452 a=0.367</title></circle><circle cx="326.7" cy="168.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>distant (report) v=0.521 a=0.406</title></circle><circle cx="194.3" cy="248.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>elated (weather) v=0.449 a=0.319</title></circle><circle cx="352.9" cy="131.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>elated (report) v=0.535 a=0.447</title></circle><circle cx="151.7" cy="227.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>enthusiastic (weather) v=0.426 a=0.342</title></circle><circle cx="228.9" cy="215.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>enthusiastic (report) v=0.468 a=0.356</title></circle><circle cx="170.9" cy="229.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>envious (weather) v=0.437 a=0.340</title></circle><circle cx="331.2" cy="163.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>envious (report) v=0.523 a=0.413</title></circle><circle cx="180.5" cy="210.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>euphoric (weather) v=0.442 a=0.361</title></circle><circle cx="235.2" cy="234.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>euphoric (report) v=0.472 a=0.334</title></circle><circle cx="199.6" cy="256.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>excited (weather) v=0.452 a=0.310</title></circle><circle cx="290.1" cy="202.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>excited (report) v=0.501 a=0.370</title></circle><circle cx="229.6" cy="209.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>flirtatious (weather) v=0.469 a=0.362</title></circle><circle cx="383.8" cy="144.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>flirtatious (report) v=0.552 a=0.433</title></circle><circle cx="311.3" cy="182.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>frustrated (weather) v=0.513 a=0.392</title></circle><circle cx="430.1" cy="173.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>frustrated (report) v=0.577 a=0.401</title></circle><circle cx="150.8" cy="233.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>grateful (weather) v=0.426 a=0.336</title></circle><circle cx="318.7" cy="198.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>grateful (report) v=0.517 a=0.374</title></circle><circle cx="91.4" cy="268.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>guilty (weather) v=0.394 a=0.297</title></circle><circle cx="315.3" cy="218.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>guilty (report) v=0.515 a=0.352</title></circle><circle cx="272.3" cy="190.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>happy (weather) v=0.492 a=0.383</title></circle><circle cx="351.6" cy="136.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>happy (report) v=0.534 a=0.442</title></circle><circle cx="149.0" cy="240.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hesitant (weather) v=0.425 a=0.328</title></circle><circle cx="274.8" cy="234.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hesitant (report) v=0.493 a=0.334</title></circle><circle cx="181.1" cy="232.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hurt (weather) v=0.442 a=0.336</title></circle><circle cx="259.7" cy="224.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>hurt (report) v=0.485 a=0.346</title></circle><circle cx="159.9" cy="197.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>insecure (weather) v=0.431 a=0.376</title></circle><circle cx="363.4" cy="127.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>insecure (report) v=0.541 a=0.451</title></circle><circle cx="165.7" cy="195.9" r="4" fill="#2a78d6" fill-opacity="0.75"><title>ironic (weather) v=0.434 a=0.377</title></circle><circle cx="350.3" cy="138.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>ironic (report) v=0.534 a=0.440</title></circle><circle cx="185.3" cy="274.2" r="4" fill="#2a78d6" fill-opacity="0.75"><title>mad (weather) v=0.445 a=0.291</title></circle><circle cx="398.2" cy="110.1" r="4" fill="#eb6834" fill-opacity="0.75"><title>mad (report) v=0.560 a=0.471</title></circle><circle cx="145.4" cy="187.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>melancholic (weather) v=0.423 a=0.386</title></circle><circle cx="260.8" cy="205.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>melancholic (report) v=0.485 a=0.367</title></circle><circle cx="239.1" cy="187.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>mysterious (weather) v=0.474 a=0.387</title></circle><circle cx="375.0" cy="122.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>mysterious (report) v=0.547 a=0.457</title></circle><circle cx="99.7" cy="263.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>neutral (weather) v=0.398 a=0.304</title></circle><circle cx="327.0" cy="163.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>neutral (report) v=0.521 a=0.412</title></circle><circle cx="178.1" cy="232.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>nostalgic (weather) v=0.441 a=0.337</title></circle><circle cx="275.2" cy="171.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>nostalgic (report) v=0.493 a=0.404</title></circle><circle cx="178.7" cy="220.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>outraged (weather) v=0.441 a=0.350</title></circle><circle cx="365.4" cy="137.2" r="4" fill="#eb6834" fill-opacity="0.75"><title>outraged (report) v=0.542 a=0.441</title></circle><circle cx="212.2" cy="204.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>panicked (weather) v=0.459 a=0.368</title></circle><circle cx="323.6" cy="101.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>panicked (report) v=0.519 a=0.480</title></circle><circle cx="221.9" cy="204.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>peaceful (weather) v=0.464 a=0.367</title></circle><circle cx="318.7" cy="153.6" r="4" fill="#eb6834" fill-opacity="0.75"><title>peaceful (report) v=0.517 a=0.423</title></circle><circle cx="223.3" cy="280.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>proud (weather) v=0.465 a=0.285</title></circle><circle cx="312.8" cy="168.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>proud (report) v=0.514 a=0.407</title></circle><circle cx="118.4" cy="223.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>rejected (weather) v=0.408 a=0.347</title></circle><circle cx="298.6" cy="138.5" r="4" fill="#eb6834" fill-opacity="0.75"><title>rejected (report) v=0.506 a=0.440</title></circle><circle cx="248.2" cy="196.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>resigned (weather) v=0.479 a=0.377</title></circle><circle cx="325.6" cy="164.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>resigned (report) v=0.520 a=0.411</title></circle><circle cx="40.0" cy="274.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sad (weather) v=0.366 a=0.291</title></circle><circle cx="358.0" cy="144.4" r="4" fill="#eb6834" fill-opacity="0.75"><title>sad (report) v=0.538 a=0.433</title></circle><circle cx="196.3" cy="228.7" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sarcastic (weather) v=0.451 a=0.341</title></circle><circle cx="243.2" cy="180.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sarcastic (report) v=0.476 a=0.393</title></circle><circle cx="127.9" cy="205.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>scared (weather) v=0.414 a=0.367</title></circle><circle cx="434.0" cy="69.0" r="4" fill="#eb6834" fill-opacity="0.75"><title>scared (report) v=0.579 a=0.516</title></circle><circle cx="182.0" cy="197.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>serene (weather) v=0.443 a=0.375</title></circle><circle cx="391.4" cy="131.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>serene (report) v=0.556 a=0.448</title></circle><circle cx="180.3" cy="273.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>skeptical (weather) v=0.442 a=0.292</title></circle><circle cx="383.0" cy="154.8" r="4" fill="#eb6834" fill-opacity="0.75"><title>skeptical (report) v=0.551 a=0.422</title></circle><circle cx="252.2" cy="208.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>surprised (weather) v=0.481 a=0.363</title></circle><circle cx="347.4" cy="139.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>surprised (report) v=0.532 a=0.438</title></circle><circle cx="145.3" cy="226.8" r="4" fill="#2a78d6" fill-opacity="0.75"><title>sympathetic (weather) v=0.423 a=0.343</title></circle><circle cx="318.3" cy="198.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>sympathetic (report) v=0.516 a=0.374</title></circle><circle cx="224.1" cy="171.6" r="4" fill="#2a78d6" fill-opacity="0.75"><title>threatened (weather) v=0.466 a=0.404</title></circle><circle cx="382.8" cy="118.9" r="4" fill="#eb6834" fill-opacity="0.75"><title>threatened (report) v=0.551 a=0.461</title></circle><circle cx="194.8" cy="210.4" r="4" fill="#2a78d6" fill-opacity="0.75"><title>tired (weather) v=0.450 a=0.361</title></circle><circle cx="306.2" cy="156.5" r="4" fill="#eb6834" fill-opacity="0.75"><title>tired (report) v=0.510 a=0.420</title></circle><circle cx="182.0" cy="230.1" r="4" fill="#2a78d6" fill-opacity="0.75"><title>triumphant (weather) v=0.443 a=0.340</title></circle><circle cx="275.8" cy="194.0" r="4" fill="#2a78d6" fill-opacity="0.75"><title>triumphant (report) v=0.494 a=0.379</title></circle><circle cx="254.0" cy="238.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>trust (weather) v=0.482 a=0.331</title></circle><circle cx="346.4" cy="151.3" r="4" fill="#eb6834" fill-opacity="0.75"><title>trust (report) v=0.532 a=0.426</title></circle><circle cx="111.5" cy="268.5" r="4" fill="#2a78d6" fill-opacity="0.75"><title>wistful (weather) v=0.405 a=0.297</title></circle><circle cx="297.8" cy="255.3" r="4" fill="#2a78d6" fill-opacity="0.75"><title>wistful (report) v=0.505 a=0.312</title></circle>
+    </svg>
+    <p class="caption">
+      116 clips, 58 tags, k=2 clusters
+      (silhouette=0.561), valence span=0.216.
+      Hover a point for its tag.
+    </p>
+    <p class="finding"><strong>Finding:</strong> Duration/RMS vary substantially by tag (confirmed manually -- Cartesia is responding to the emotion parameter), but the measured valence range across all 58 tags spans only 0.216 on a [0,1] scale, clustered near 0.5. This is read as a DOMAIN-GAP finding: the audeering VAD model (trained on real naturalistic speech, MSP-Podcast) does not reliably decode valence from synthetic TTS prosody, not as evidence Cartesia's tags are inert. Consequently, E2/E4 tag selection is NOT gated by this clustering (it was too degenerate to trust as a filter) -- instead it draws a deliberately diverse tag set directly from ssa.mapping.CARTESIA_MAP, with ground-truth prosody labels coming from TTS INTENT (the requested tag), following the EMIS precedent (arXiv 2510.25054), not from re-verifying with this or any other classifier. This finding is itself reported as a caveat on any acoustic-solution result measured on synthetic data, and strengthens the case for E3 (human recordings) as the necessary validity anchor for E2.</p>
+    
+
+<h2>Extracted prosody/emotion on real samples: CREMA-D + your recordings</h2>
+
+    <p>12 clips from CREMA-D (public dataset, circles) and 8
+    from your own E3 recordings (squares), extracted with the same instrument
+    (audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (Wagner et al. 2023, arXiv:2203.07378)). Color = mapped sentiment (blue=positive, gray=neutral, red=negative).</p>
+    <svg viewBox="0 0 560 360" class="scatter" role="img"
+         aria-label="Valence-arousal scatter of 20 sample clips from CREMA-D and E3">
+      <line x1="44" y1="316" x2="516" y2="316" class="axis"/>
+      <line x1="44" y1="44" x2="44" y2="316" class="axis"/>
+      <text x="280.0" y="352" class="axis-label" text-anchor="middle">Valence &rarr;</text>
+      <text x="12" y="180.0" class="axis-label" text-anchor="middle"
+            transform="rotate(-90 12 180.0)">Arousal &rarr;</text>
+      <circle cx="245.0" cy="147.1" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1067_ITH_ANG_XX &mdash; CREMA-D (public), label=ANG v=0.295 a=0.445 f0=165Hz</title></circle><circle cx="326.0" cy="98.0" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1010_IEO_ANG_MD &mdash; CREMA-D (public), label=ANG v=0.377 a=0.574 f0=278Hz</title></circle><circle cx="294.8" cy="166.6" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1082_IWW_DIS_XX &mdash; CREMA-D (public), label=DIS v=0.346 a=0.394 f0=178Hz</title></circle><circle cx="264.4" cy="282.9" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1034_WSI_DIS_XX &mdash; CREMA-D (public), label=DIS v=0.315 a=0.087 f0=128Hz</title></circle><circle cx="220.3" cy="119.3" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1042_TSI_FEA_XX &mdash; CREMA-D (public), label=FEA v=0.270 a=0.518 f0=218Hz</title></circle><circle cx="271.5" cy="157.4" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1012_IWW_FEA_XX &mdash; CREMA-D (public), label=FEA v=0.322 a=0.418 f0=207Hz</title></circle><circle cx="362.6" cy="231.8" r="6" fill="#2a78d6" fill-opacity="0.75"><title>cremad_1022_IWW_HAP_XX &mdash; CREMA-D (public), label=HAP v=0.415 a=0.222 f0=149Hz</title></circle><circle cx="447.2" cy="44.0" r="6" fill="#2a78d6" fill-opacity="0.75"><title>cremad_1001_IEO_HAP_HI &mdash; CREMA-D (public), label=HAP v=0.501 a=0.716 f0=214Hz</title></circle><circle cx="296.6" cy="234.5" r="6" fill="#8a897f" fill-opacity="0.75"><title>cremad_1057_MTI_NEU_XX &mdash; CREMA-D (public), label=NEU v=0.347 a=0.215 f0=146Hz</title></circle><circle cx="373.5" cy="254.0" r="6" fill="#8a897f" fill-opacity="0.75"><title>cremad_1081_IOM_NEU_XX &mdash; CREMA-D (public), label=NEU v=0.426 a=0.163 f0=113Hz</title></circle><circle cx="291.8" cy="173.5" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1082_IWW_SAD_XX &mdash; CREMA-D (public), label=SAD v=0.343 a=0.375 f0=185Hz</title></circle><circle cx="208.3" cy="316.0" r="6" fill="#e34948" fill-opacity="0.75"><title>cremad_1090_ITS_SAD_XX &mdash; CREMA-D (public), label=SAD v=0.257 a=0.000 f0=91Hz</title></circle><rect x="217.4" y="130.2" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_negative_0_positive &mdash; E3 (mine, e3a), label=positive v=0.274 a=0.471 f0=142Hz</title></rect><rect x="37.0" y="243.6" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_negative_2_neutral &mdash; E3 (mine, e3a), label=neutral v=0.090 a=0.172 f0=104Hz</title></rect><rect x="279.4" y="227.1" width="14" height="14" fill="#e34948" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_neutral_1_negative &mdash; E3 (mine, e3a), label=negative v=0.337 a=0.216 f0=98Hz</title></rect><rect x="376.9" y="139.5" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3a_speaker1_neutral_0_positive &mdash; E3 (mine, e3a), label=positive v=0.436 a=0.446 f0=151Hz</title></rect><rect x="95.8" y="127.1" width="14" height="14" fill="#2a78d6" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_negative_2_positive &mdash; E3 (mine, e3b), label=positive v=0.150 a=0.479 f0=135Hz</title></rect><rect x="509.0" y="206.6" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_positive_0_neutral &mdash; E3 (mine, e3b), label=neutral v=0.571 a=0.270 f0=110Hz</title></rect><rect x="483.8" y="209.2" width="14" height="14" fill="#e34948" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_positive_2_negative &mdash; E3 (mine, e3b), label=negative v=0.545 a=0.263 f0=98Hz</title></rect><rect x="368.8" y="164.9" width="14" height="14" fill="#8a897f" fill-opacity="0.85" stroke="#333" stroke-width="0.5"><title>e3b_speaker1_neutral_1_neutral &mdash; E3 (mine, e3b), label=neutral v=0.428 a=0.379 f0=115Hz</title></rect>
+    </svg>
+    <p class="caption">Circle = CREMA-D (public), square = E3 (mine). Hover a point for its
+    clip id, label, exact VAD and F0. Full table, sorted by valence:</p>
+    <table>
+      <thead><tr><th>Clip</th><th>Source</th><th>Label</th><th>Valence</th><th>Arousal</th><th>F0 mean</th></tr></thead>
+      <tbody><tr><td>e3b_speaker1_positive_0_neutral</td><td>E3 (mine, e3b)</td><td>neutral</td><td class='num'>0.571</td><td class='num'>0.270</td><td class='num'>110 Hz</td></tr><tr><td>e3b_speaker1_positive_2_negative</td><td>E3 (mine, e3b)</td><td>negative</td><td class='num'>0.545</td><td class='num'>0.263</td><td class='num'>98 Hz</td></tr><tr><td>cremad_1001_IEO_HAP_HI</td><td>CREMA-D (public)</td><td>HAP</td><td class='num'>0.501</td><td class='num'>0.716</td><td class='num'>214 Hz</td></tr><tr><td>e3a_speaker1_neutral_0_positive</td><td>E3 (mine, e3a)</td><td>positive</td><td class='num'>0.436</td><td class='num'>0.446</td><td class='num'>151 Hz</td></tr><tr><td>e3b_speaker1_neutral_1_neutral</td><td>E3 (mine, e3b)</td><td>neutral</td><td class='num'>0.428</td><td class='num'>0.379</td><td class='num'>115 Hz</td></tr><tr><td>cremad_1081_IOM_NEU_XX</td><td>CREMA-D (public)</td><td>NEU</td><td class='num'>0.426</td><td class='num'>0.163</td><td class='num'>113 Hz</td></tr><tr><td>cremad_1022_IWW_HAP_XX</td><td>CREMA-D (public)</td><td>HAP</td><td class='num'>0.415</td><td class='num'>0.222</td><td class='num'>149 Hz</td></tr><tr><td>cremad_1010_IEO_ANG_MD</td><td>CREMA-D (public)</td><td>ANG</td><td class='num'>0.377</td><td class='num'>0.574</td><td class='num'>278 Hz</td></tr><tr><td>cremad_1057_MTI_NEU_XX</td><td>CREMA-D (public)</td><td>NEU</td><td class='num'>0.347</td><td class='num'>0.215</td><td class='num'>146 Hz</td></tr><tr><td>cremad_1082_IWW_DIS_XX</td><td>CREMA-D (public)</td><td>DIS</td><td class='num'>0.346</td><td class='num'>0.394</td><td class='num'>178 Hz</td></tr><tr><td>cremad_1082_IWW_SAD_XX</td><td>CREMA-D (public)</td><td>SAD</td><td class='num'>0.343</td><td class='num'>0.375</td><td class='num'>185 Hz</td></tr><tr><td>e3a_speaker1_neutral_1_negative</td><td>E3 (mine, e3a)</td><td>negative</td><td class='num'>0.337</td><td class='num'>0.216</td><td class='num'>98 Hz</td></tr><tr><td>cremad_1012_IWW_FEA_XX</td><td>CREMA-D (public)</td><td>FEA</td><td class='num'>0.322</td><td class='num'>0.418</td><td class='num'>207 Hz</td></tr><tr><td>cremad_1034_WSI_DIS_XX</td><td>CREMA-D (public)</td><td>DIS</td><td class='num'>0.315</td><td class='num'>0.087</td><td class='num'>128 Hz</td></tr><tr><td>cremad_1067_ITH_ANG_XX</td><td>CREMA-D (public)</td><td>ANG</td><td class='num'>0.295</td><td class='num'>0.445</td><td class='num'>165 Hz</td></tr><tr><td>e3a_speaker1_negative_0_positive</td><td>E3 (mine, e3a)</td><td>positive</td><td class='num'>0.274</td><td class='num'>0.471</td><td class='num'>142 Hz</td></tr><tr><td>cremad_1042_TSI_FEA_XX</td><td>CREMA-D (public)</td><td>FEA</td><td class='num'>0.270</td><td class='num'>0.518</td><td class='num'>218 Hz</td></tr><tr><td>cremad_1090_ITS_SAD_XX</td><td>CREMA-D (public)</td><td>SAD</td><td class='num'>0.257</td><td class='num'>0.000</td><td class='num'>91 Hz</td></tr><tr><td>e3b_speaker1_negative_2_positive</td><td>E3 (mine, e3b)</td><td>positive</td><td class='num'>0.150</td><td class='num'>0.479</td><td class='num'>135 Hz</td></tr><tr><td>e3a_speaker1_negative_2_neutral</td><td>E3 (mine, e3a)</td><td>neutral</td><td class='num'>0.090</td><td class='num'>0.172</td><td class='num'>104 Hz</td></tr></tbody>
+    </table>
+    <p class="caption">CREMA-D's HAP samples read highest-valence and SAD lowest in this
+    20-clip draw &mdash; a sane ordering on real acted speech from a model that has
+    actually seen emotion labels (contrast with D0/D1's scrambled ordering on Cartesia's
+    synthetic output, above). Regenerate with <code>make prosody-samples</code>; the
+    selection is seeded/deterministic but small (n=20) &mdash; illustrative, not a
+    benchmark.</p>
+    
+
+<h2>D1: does Cartesia render these emotions audibly?</h2>
+
+    <p>Factorial probe: 5 emotions (happy/sad/angry/calm/frustrated) &times; text condition
+    (neutral/congruent) &times; length (short/long) &times; speed (default/adjusted) =
+    40 clips, plus a 5-clip sonic-3 vs sonic-3.5
+    comparison on the cell with the widest F0 spread. Measured with 4 independent
+    instruments (F0, eGeMAPS, our WavLM probe, the audeering VAD model).</p>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Chance</th></tr></thead>
+      <tbody>
+        <tr><td>Intended-emotion recoverability (leave-one-carrier-out)</td>
+            <td class="num">0.175</td><td class="num">0.200</td></tr>
+        <tr><td>F0 span across the 5 emotions (averaged over all 8 conditions)</td>
+            <td class="num">8.0 Hz</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">F0 rank of each emotion, averaged across the 8 conditions
+    (1 = highest pitch; chance = 3.0 for 5 classes):</p>
+    <table><thead><tr><th>Emotion</th><th>Mean rank</th></tr></thead><tbody><tr><td>happy</td><td class='num'>2.75</td></tr><tr><td>sad</td><td class='num'>3.12</td></tr><tr><td>angry</td><td class='num'>2.88</td></tr><tr><td>calm</td><td class='num'>3.00</td></tr><tr><td>frustrated</td><td class='num'>3.25</td></tr></tbody></table>
+    <p class="caption">Valence ordering (positive &gt; neutral &gt; negative) recovered?
+    Permissive (our WavLM probe): <strong>False</strong>.
+    Research (audeering): <strong>True</strong>.</p>
+    <p class="finding"><strong>Finding:</strong> Coarse, ~40-clip synthetic probe (CLAUDE.md rule 6: not claimed as more than that). recoverability_cv's accuracy is a leave-one-carrier-out logistic regression on no-fitting descriptive/eGeMAPS features (chance=0.20, 5-way); per_emotion_summary's F0/valence means are the primary descriptive evidence and need no fitting. f0_rank_consistency is a second, robustness check on f0_span_across_emotions_hz: averaging raw F0 across cells can wash out a real but sign-flipping effect, so mean rank per emotion (chance=3.0 for 5 items) is reported alongside it -- a mean rank near 3.0 for every emotion means no emotion is consistently higher- or lower-pitched than the others across conditions, which raw span alone cannot rule out. Listen at report/d1_listening.html -- it is the real arbiter this probe exists to produce, since measurement can be wrong in ways listening isn't (see D0's own domain-gap finding, results/d0_emotion_space.json).</p>
+    <p class="caption">Listen for yourself: <code>report/d1_listening.html</code>
+    (matched A/B pairs) and <code>report/listening_sorted.html</code>
+    (all D1+E3 clips, ranked by detection score).</p>
+    
+
+<h2>Hume Octave: a falsification test of the D1 finding</h2>
+
+    <p>Same design as D1, same scale: 40 clips, 5 emotions, the exact same
+    carrier texts D1 used on Cartesia (<code>ssa.carriers.D1_NEUTRAL_TEXT</code> and
+    <code>D1_CONGRUENT_TEXT</code>, both lengths), one fixed voice ("Ava Song") &mdash;
+    so the comparison is apples-to-apples, and this time with genuine carrier diversity
+    (12 groups, same as D1) for an honest leave-one-carrier-out recoverability classifier.</p>
+    <table>
+      <thead><tr><th>Condition</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
+      <th>Valence ordering (pos&gt;neu&gt;neg)?</th></tr></thead>
+      <tbody>
+        <tr><td>With <code>description</code></td>
+            <td class="num">0.500</td>
+            <td class="num">0.200</td>
+            <td class="num">124.1 Hz</td>
+            <td><strong>True</strong></td></tr>
+        <tr><td>Without <code>description</code></td>
+            <td class="num">0.200</td>
+            <td class="num">0.200</td>
+            <td class="num">37.7 Hz</td>
+            <td><strong>True</strong></td></tr>
+        <tr><td><em>Cartesia (D1), for comparison</em></td>
+            <td class="num">0.175</td><td class="num">0.200</td>
+            <td class="num">~8 Hz</td><td>scrambled (see above)</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">The harder cut &mdash; does <code>description</code> work even on
+    <strong>neutral</strong> text, isolating prosody from wording entirely (this project's
+    gold-label rule)? Neutral valence range:
+    0.112, F0 span 134.8 Hz
+    (n=10) vs. congruent valence range
+    0.721, F0 span
+    174.6 Hz (n=10).</p>
+    <p class="caption">With <code>description</code>, per emotion (averaged over all 4
+    text/length carriers):</p>
+    <table><thead><tr><th>Emotion</th><th>F0 mean</th><th>Valence</th></tr></thead>
+    <tbody><tr><td>happy</td><td class='num'>200 Hz</td><td class='num'>0.681</td></tr><tr><td>sad</td><td class='num'>148 Hz</td><td class='num'>0.437</td></tr><tr><td>angry</td><td class='num'>272 Hz</td><td class='num'>0.326</td></tr><tr><td>calm</td><td class='num'>159 Hz</td><td class='num'>0.486</td></tr><tr><td>frustrated</td><td class='num'>235 Hz</td><td class='num'>0.401</td></tr></tbody></table>
+    <p class="finding"><strong>Finding:</strong> Enlarged falsification test of D1's Cartesia finding (results/d1_emotion_probe.json), at D1's own grid scale (40 clips, same carrier texts, 12 carrier groups) so the recoverability classifier is honest rather than descriptive-only. summary.with_description.recoverability_cv is the number directly comparable to D1's 0.175 (vs 0.200 chance); summary.without_description is the control. summary.neutral_text_with_description isolates the harder case -- does `description` work even when the words carry no emotional content, which is what this project's gold-label rule (prosody_sentiment, not text_sentiment) actually requires.</p>
+    
+
+<h2>E3: human recordings, and a control on the D1 finding</h2>
+
+    <p>The exact instruments and method D1 used on Cartesia TTS (leave-one-carrier-out
+    recoverability, F0 rank consistency), re-run on real human speech &mdash; the same
+    27 prompts, spoken by the same person, recorded twice independently
+    (<code>data/recorded0</code>, <code>data/recorded</code>).</p>
+    <table>
+      <thead><tr><th>Source</th><th>Recoverability</th><th>Chance</th><th>F0 span</th>
+      <th>"positive" mean F0 rank (1=highest)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cartesia (D1)</strong></td>
+            <td class="num">0.175</td>
+            <td class="num">0.200</td>
+            <td class="num">8.0 Hz</td><td class="num">&mdash;</td></tr>
+        <tr><td>e3a</td><td class='num'>0.667</td><td class='num'>0.333</td><td class='num'>32.9 Hz</td><td class='num'>1.00</td></tr><tr><td>e3b</td><td class='num'>0.741</td><td class='num'>0.333</td><td class='num'>33.9 Hz</td><td class='num'>1.00</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">Test-retest correlation between the two human takes (same prompts,
+    same speaker, independent recordings) &mdash; how consistent is each instrument's own
+    reading of itself? F0 mean: r=0.79. Research-backend valence:
+    r=0.92. Permissive-backend valence proxy:
+    r=-0.19 &mdash; our shipped probe barely
+    correlates with itself across two takes of the same prompts.</p>
+    <p class="finding"><strong>Finding:</strong> Same instruments, same method as D1 (scripts/gen_emotion_probe_d1.py), run on real human recordings instead of Cartesia TTS. If recoverability/F0-span/rank come out well above chance here while D1 was at or below chance, that rules out the instruments as the explanation for D1's negative result -- the audio itself is what differs. Replicated across two independent takes by the same speaker; see test_retest_correlation_take0_vs_take1 for how consistent each instrument's own readings are across takes, which bears on Solution B's reliability, not just its accuracy. n=1 speaker -- this is a controlled instrument check, not a claim about speech-emotion recognition in general.</p>
+    
+
+<h2>E5: words vs delivery, on a set built to disagree</h2>
+
+    <p>90 clips across 2 synthetic voice(s) &mdash;
+    60 of them (67%)
+    with the words and the delivery deliberately disagreeing. Delivery was set through Hume
+    Octave's <code>description</code> field, which acts independently of the transcript; that
+    independence is what E2 (Cartesia) could not provide and is why this set exists.
+    <strong>PSI is the metric here, not UAR</strong>: the gold label is the delivery, so on a
+    set built to contradict its own transcript, a model that reads words scores near 0 by
+    construction and a model that hears tone scores high.</p>
+    <table>
+      <thead><tr><th>Solution</th><th>UAR</th><th>Macro-F1</th>
+      <th>PSI<sub>contested</sub></th><th>PSI<sub>strict</sub></th></tr></thead>
+      <tbody><tr><td>A &mdash; Lexical (words only)</td><td class='num'>0.333</td><td class='num'>0.333</td><td class='num'><strong>0.000</strong></td><td class='num'>0.000</td></tr><tr><td>B &mdash; Acoustic, permissive</td><td class='num'>0.511</td><td class='num'>0.493</td><td class='num'><strong>0.682</strong></td><td class='num'>0.500</td></tr><tr><td>B &mdash; Acoustic, research</td><td class='num'>0.400</td><td class='num'>0.367</td><td class='num'><strong>0.211</strong></td><td class='num'>0.200</td></tr><tr><td>C &mdash; Fusion</td><td class='num'>0.489</td><td class='num'>0.467</td><td class='num'><strong>0.605</strong></td><td class='num'>0.433</td></tr></tbody>
+    </table>
+    <p class="caption">Voices: Ava Song (45), Colton Rivers (45). Synthetic and eval-only &mdash; E5
+    measures prosody sensitivity under controlled contradiction, not performance on real
+    speech; E3 remains the only real-speaker evidence in this repo.</p>
+    <p class="finding"><strong>Reading it:</strong> E5 is the incongruence set E2 could not be: two thirds of clips have words and delivery deliberately disagreeing, with delivery set independently of the text via Hume Octave's `description` field (validated first at 40 clips in results/hume_probe.json: 0.5 vs 0.2 chance emotion recoverability with that field, exactly chance without it). PSI is the metric to read here, not UAR: the gold label is prosody_sentiment, so on a set built to contradict the transcript, a model that reads words scores near 0 by construction and a model that hears tone scores high. Solution A is the floor and exists to prove the labels behave. Synthetic and eval-only: one TTS vendor, a small number of voices, so this measures prosody sensitivity under controlled contradiction, not performance on real speech -- E3 remains the only real-speaker evidence in this repo.</p>
+    
+
+<h2>Backend x training-data comparison: WavLM+probe vs audeering/wav2vec2</h2>
+
+    <p>Direct comparison requested by the user: does adding the user's own recordings (E3) and/or the Hume Octave synthetic probe to training change either backend's CREMA-D-test performance, and what happens on E3 itself when it's held out entirely (cremad_only, cremad_hume) vs folded into training (cremad_e3, cremad_e3_hume, where E3 eval is excluded -- CLAUDE.md rule 1). Cartesia is excluded throughout per the user's request; see d1_emotion_probe.json for why it wouldn't have added signal anyway. n is small for the added sources (E3: 1 speaker, 2 takes; Hume: 1 pseudo-speaker) relative to CREMA-D's 91 actors, so any shift in permissive numbers here should be read as a directional signal, not a robust generalisation claim.</p>
+    <table>
+      <thead><tr><th>Combo</th><th>Backend</th>
+      <th>CREMA-D test UAR</th><th>CREMA-D test macro-F1</th>
+      <th>E3 UAR</th><th>E3 macro-F1</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><code>cremad_only</code><br/><span class="caption">n_train=5235</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.782</td>
+            <td class="num">0.774</td>
+            <td class='num'>0.481</td>
+            <td class='num'>0.421</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_e3</code><br/><span class="caption">n_train=5289</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.782</td>
+            <td class="num">0.771</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_e3_hume</code><br/><span class="caption">n_train=5309</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.783</td>
+            <td class="num">0.775</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td>
+            <td class='num' title="trained on this speaker, see note below">excl.*</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        
+        <tr><td rowspan="2"><code>cremad_hume</code><br/><span class="caption">n_train=5255</span></td>
+            <td>B &mdash; permissive (WavLM+probe)</td>
+            <td class="num">0.785</td>
+            <td class="num">0.778</td>
+            <td class='num'>0.481</td>
+            <td class='num'>0.440</td></tr>
+        <tr><td>B &mdash; research (audeering, shared&dagger;)</td>
+            <td class="num">0.450</td>
+            <td class="num">0.457</td>
+            <td class='num'>0.519</td>
+            <td class='num'>0.507</td></tr>
+        </tbody>
+    </table>
+    <p class="caption">Eval subset: 300-clip stratified sample of
+    CREMA-D test (seed=0, fixed across every combo), plus both
+    E3 takes where evaluating on E3 doesn't put a training speaker on both sides of the
+    split. <strong>excl.*</strong> = that combo trained on E3's speaker, so E3 cannot also be
+    its eval set (CLAUDE.md rule 1) &mdash; not missing data, a deliberate exclusion.</p>
+    <p class="caption"><strong>&dagger;</strong> The research backend (audeering/wav2vec2, CC-BY-NC-SA-4.0) has no trainable encoder -- only two valence thresholds, fit once from CREMA-D's own held-out validation split (ssa.train.train_research), which none of the extra sources ever enters in this design. Its numbers are therefore identical across all four combos by construction, computed once and reused here -- this is a real architectural property being reported, not a shortcut standing in for missing results. The permissive backend (WavLM + our own trained probe) is the one that actually differs by combo below.</p>
+    <ul class="caption"><li><code>cremad_only</code> &mdash; CREMA-D train split only -- the baseline.</li><li><code>cremad_e3</code> &mdash; CREMA-D train + both E3 takes (the user's own recordings).</li><li><code>cremad_e3_hume</code> &mdash; CREMA-D train + both E3 takes + Hume with-description clips.</li><li><code>cremad_hume</code> &mdash; CREMA-D train + Hume with-description clips (no E3).</li></ul>
+    
+
+<h2>What didn't work, and why</h2>
+
+    <p>The project's thesis made visible &mdash; failures kept in, not buried:</p>
+    <ul>
+      <li><strong>D0</strong> &mdash; Cartesia's emotion-tag clustering (audeering VAD
+      embedding) was too degenerate to trust as a tag filter for E2.</li>
+      <li><strong>D1</strong> &mdash; the user's proposed 5-emotion set was not
+      measurably audible in Cartesia's output on any tested text/length/speed
+      condition (recoverability below chance). See the D1 section above.</li>
+      <li><strong>E2</strong> &mdash; the 76-clip synthetic incongruence set is flat
+      and inexpressive, consistent with D0/D1; kept committed as the historical
+      exhibit for that finding rather than deleted or completed.</li>
+      <li><strong>Solution B (permissive) on E3</strong> &mdash; UAR 0.444/0.519 on a
+      new, real speaker, never predicting "positive" at all on one take, and barely
+      self-consistent across two independent recordings of the same prompts
+      (r=&minus;0.19). See the E3 section above.</li>
+      <li><strong>Per-speaker recalibration</strong> &mdash; tried on E3
+      (leave-one-carrier-out threshold fitting), helped in 1 of 4 backend&times;take
+      combinations and hurt in the other 3. Reported as a negative result at this
+      sample size, not shipped as a feature &mdash; see DESIGN.md.</li>
+      <li><strong>Live browser demo</strong> &mdash; not built in this session
+      (time/budget constraint, stated plainly rather than silently dropped). The CLI
+      (<code>uv run python -m ssa.cli --audio &lt;file&gt;</code>) gives the same
+      end-to-end prediction on any local recording today.</li>
+    </ul>
+    <p class="finding"><strong>One thing that did work:</strong> the Hume Octave
+    falsification probe (below) shows real emotion differentiation on the same
+    carrier text D1 used on Cartesia &mdash; the synthetic-TTS story isn't "no
+    vendor can do this," it's "this vendor, on this content, couldn't."</p>
+    
+
+<h2>Voice-health demo</h2>
+
+    <p>Extraction implemented and verified against synthetic signals (see ssa/voicehealth.py,
+    ssa/paralinguistic.py): CPPS, HNR, jitter, shimmer, and an AVQI composite via
+    praat-parselmouth; whisper/breathiness detection via openSMILE eGeMAPS.</p>
+    <p class="unmeasured">The per-speaker longitudinal baseline gate (separating presbyphonia &mdash;
+    a trait drifting over years &mdash; from acute illness &mdash; a state deviating from a personal
+    baseline over days) is a <strong>design proposal, argued from literature, not measured in this study</strong>: no longitudinal
+    single-speaker data exists to validate it against. See DESIGN.md's roadmap.</p>
+    
+
+<footer class="caption">
+  <p>🤖 Report generator: <code>ssa/report.py</code>. Regenerate with <code>make report</code>.</p>
+</footer>
+</body>
+</html>

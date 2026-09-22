@@ -1,0 +1,339 @@
+{
+  "solution": "C:fusion(A:lexical(small+twitter-roberta-base-sentiment-latest)+B:acoustic(permissive/logreg))",
+  "dataset": "e3a",
+  "split_type": "all",
+  "n_clips": 27,
+  "n_incongruent": 18,
+  "uar": 0.4444444444444445,
+  "macro_f1": 0.36969696969696964,
+  "accuracy": 0.4444444444444444,
+  "ece": 0.4249781745320217,
+  "psi_contested": 0.6428571428571429,
+  "psi_strict": 0.5,
+  "confusion_matrix": [
+    [
+      9,
+      0,
+      0
+    ],
+    [
+      8,
+      1,
+      0
+    ],
+    [
+      7,
+      0,
+      2
+    ]
+  ],
+  "confusion_labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "abstention_rate": 0.07407407407407407,
+  "latency_p50_ms": 1649.8180599999728,
+  "latency_p95_ms": 1813.9478458000099,
+  "git_sha": "d0cdeda46f01f5f58052e0cc3b8a126b768161e6",
+  "timestamp": "2026-09-18T09:36:03.050519+00:00",
+  "predictions": [
+    {
+      "clip_id": "e3a_speaker1_positive_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9179634371362091,
+      "abstained": false,
+      "latency_ms": 2711.806473999957,
+      "transcript": "I'm cheered about how good the news is today."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6660589874278134,
+      "abstained": false,
+      "latency_ms": 1724.7756280000317,
+      "transcript": "I'm Trill about the good news today."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8268442650662549,
+      "abstained": false,
+      "latency_ms": 1660.2623919999928,
+      "transcript": "I'm treat about the good news today."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9319813255773937,
+      "abstained": false,
+      "latency_ms": 1602.0714470000144,
+      "transcript": "This turned out to be the best day of my life."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.5112839710827307,
+      "abstained": true,
+      "latency_ms": 1649.8180599999728,
+      "transcript": "This turned out to be the best day of my life."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8828456671968669,
+      "abstained": false,
+      "latency_ms": 1799.8714800000357,
+      "transcript": "This turned out to be the best day of my life."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.928077248852548,
+      "abstained": false,
+      "latency_ms": 1713.6760449999997,
+      "transcript": "I really appreciate everything you've done for me."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "positive",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9275915454193835,
+      "abstained": false,
+      "latency_ms": 1681.1171250000143,
+      "transcript": "I really appreciate everything you have done for me."
+    },
+    {
+      "clip_id": "e3a_speaker1_positive_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "positive",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7051645162790227,
+      "abstained": false,
+      "latency_ms": 1655.0599109999666,
+      "transcript": "I really appreciate everything you have done for me."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9365204522429447,
+      "abstained": false,
+      "latency_ms": 1665.4043460000025,
+      "transcript": "The meeting is scheduled for 3 o'clock."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9339204499171931,
+      "abstained": false,
+      "latency_ms": 1819.9805739999988,
+      "transcript": "The meeting is scheduled for 3 o'clock."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.6559309216018208,
+      "abstained": false,
+      "latency_ms": 1614.7193060000404,
+      "transcript": "The meeting is scheduled for 3 o'clock."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9134351686120519,
+      "abstained": false,
+      "latency_ms": 1626.7715509999903,
+      "transcript": "I need to pick up groceries later today."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.7542266286211122,
+      "abstained": false,
+      "latency_ms": 1572.1095860000105,
+      "transcript": "I need to pick up groceries later today."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "positive",
+      "confidence": 0.6091117049419522,
+      "abstained": false,
+      "latency_ms": 1624.642816000005,
+      "transcript": "I need to pick up groceries later today."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8209467509180022,
+      "abstained": false,
+      "latency_ms": 1604.1975090000165,
+      "transcript": "This report is due next Tuesday afternoon."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "neutral",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9330615146597322,
+      "abstained": false,
+      "latency_ms": 1715.4730770000128,
+      "transcript": "This report is due next Tuesday afternoon."
+    },
+    {
+      "clip_id": "e3a_speaker1_neutral_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "neutral",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9330615146597322,
+      "abstained": false,
+      "latency_ms": 1627.3364390000324,
+      "transcript": "This report is due next Tuesday afternoon."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_0_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9665290395673117,
+      "abstained": false,
+      "latency_ms": 1677.6270350000004,
+      "transcript": "This is terrible. I can't believe it happened."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_0_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "neutral",
+      "confidence": 0.4765213084538844,
+      "abstained": true,
+      "latency_ms": 1705.5107190000172,
+      "transcript": "This is terrible. I can't believe it happened."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_0_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9374674677669715,
+      "abstained": false,
+      "latency_ms": 1641.8341140000052,
+      "transcript": "This is terrible! I can't believe it happened!"
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_1_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9501974680610343,
+      "abstained": false,
+      "latency_ms": 1572.6370650000376,
+      "transcript": "I'm so disappointed how this is went."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_1_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.8035658248139126,
+      "abstained": false,
+      "latency_ms": 1663.1746020000264,
+      "transcript": "I'm so disappointed in how this went."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_1_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9479025858727778,
+      "abstained": false,
+      "latency_ms": 1642.7695959999937,
+      "transcript": "I'm so disappointed in how this went."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_2_negative",
+      "prosody_sentiment": "negative",
+      "text_sentiment": "negative",
+      "is_congruent": true,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9554099994178371,
+      "abstained": false,
+      "latency_ms": 1518.5539749999748,
+      "transcript": "Everything about this situation is awful."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_2_neutral",
+      "prosody_sentiment": "neutral",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.6640633493114202,
+      "abstained": false,
+      "latency_ms": 1534.728919000031,
+      "transcript": "Everything about this situation is awful."
+    },
+    {
+      "clip_id": "e3a_speaker1_negative_2_positive",
+      "prosody_sentiment": "positive",
+      "text_sentiment": "negative",
+      "is_congruent": false,
+      "predicted_sentiment": "negative",
+      "confidence": 0.9377702157944402,
+      "abstained": false,
+      "latency_ms": 1489.6807459999764,
+      "transcript": "Everything about this situation is awful."
+    }
+  ]
+}

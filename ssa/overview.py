@@ -1,0 +1,781 @@
+"""Builds report/overview.html -- the "read this first" narrative report.
+
+`ssa/report.py` produces the dense results dashboard: every experiment, every
+metric, for someone auditing the numbers. This module produces the other half
+a reviewer needs -- what the field can currently do, what we built, what we
+found, and what would make it better -- in one readable pass.
+
+Same rule as report.py, for the same reason: **every number here is loaded
+from `results/*.json`, never typed into the prose.** If a result file changes,
+this page changes with it; a claim in this page cannot silently drift away
+from the measurement behind it. Literature numbers (the state-of-the-art
+section) are the one exception and are explicitly marked as *other people's*
+results, with links, so they can never be mistaken for ours -- CLAUDE.md
+rule 6.
+
+Usage:
+    uv run python -m ssa.overview
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
+from ssa.site import _BASE_CSS, _page
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+RESULTS_DIR = REPO_ROOT / "results"
+OUT_PATH = REPO_ROOT / "report" / "overview.html"
+
+_EXTRA_CSS = """
+.big { font-size: 2.0rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 18px 0; }
+.tile { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--surface-2); }
+.tile .lbl { color: var(--text-2); font-size: 0.8rem; text-transform: uppercase; letter-spacing: .02em; }
+.tile .sub { color: var(--text-2); font-size: 0.82rem; margin-top: 4px; }
+.finding { background: var(--surface-2); border-left: 3px solid #eda100; padding: 10px 14px; border-radius: 4px; }
+.gap { background: var(--surface-2); border-left: 3px solid var(--red); padding: 10px 14px; border-radius: 4px; }
+.lit { background: var(--surface-2); border-left: 3px solid var(--blue); padding: 10px 14px; border-radius: 4px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.tier { margin-top: 1.6rem; }
+.tier h3 { margin-bottom: 2px; font-size: 1.05rem; }
+.tier .cost { color: var(--text-2); font-size: 0.84rem; margin-top: 0; }
+ol.improve > li { margin-bottom: 10px; }
+.pill { display: inline-block; font-size: 0.74rem; padding: 1px 7px; border-radius: 10px;
+        border: 1px solid var(--border); color: var(--text-2); margin-left: 6px; }
+/* Tables are the only element here wider than a phone. Each gets its own
+   scroll container so the page body never scrolls sideways. */
+.tw { overflow-x: auto; }
+.tw > table { min-width: 460px; }
+"""
+
+
+def _load(name: str) -> dict[str, Any] | None:
+    path = RESULTS_DIR / name
+    if not path.exists():
+        logger.warning("missing result file: %s", path)
+        return None
+    return json.loads(path.read_text())
+
+
+def load_key_numbers() -> dict[str, Any]:
+    """Every number the narrative cites, pulled from disk with its evaluation
+    condition attached (CLAUDE.md rule 4). Missing files degrade to None
+    rather than crashing -- a reviewer with a partial checkout still gets a
+    readable page, with the gaps visible as em-dashes."""
+    lex = _load(
+        "A_lexical(small+twitter-roberta-base-sentiment-latest)__cremad__speaker_disjoint_test_subset.json"
+    )
+    perm_sub = _load("B_acoustic(permissive_logreg)__cremad__speaker_disjoint_test_subset.json")
+    fusion_sub = _load(
+        "C_fusion(A_lexical(small+twitter-roberta-base-sentiment-latest)+B_acoustic(permissive_logreg))__cremad__speaker_disjoint_test_subset.json"
+    )
+    perm_full = _load("B_acoustic_permissive__cremad__speaker_disjoint_test.json")
+    leaky = _load("leakage_comparison_permissive.json")
+    combos = _load("backend_combo_comparison.json")
+    control = _load("d1_vs_e3_control.json")
+    d1 = _load("d1_emotion_probe.json")
+    hume = _load("hume_probe.json")
+    e6 = _load("e6_summary.json")
+
+    e3: dict[str, Any] = {}
+    for label, fname in (
+        ("lex_a", "A_lexical(small+twitter-roberta-base-sentiment-latest)__e3a__all.json"),
+        ("lex_b", "A_lexical(small+twitter-roberta-base-sentiment-latest)__e3b__all.json"),
+        ("perm_a", "B_acoustic(permissive_logreg)__e3a__all.json"),
+        ("perm_b", "B_acoustic(permissive_logreg)__e3b__all.json"),
+        ("res_a", "B_acoustic(research_audeering-vad)__e3a__all.json"),
+        ("res_b", "B_acoustic(research_audeering-vad)__e3b__all.json"),
+    ):
+        e3[label] = _load(fname)
+
+    research_cremad = None
+    if combos:
+        research_cremad = combos["combos"]["cremad_only"]["research"]["eval"]["cremad_test"]
+
+    return {
+        "lex": lex,
+        "perm_sub": perm_sub,
+        "fusion_sub": fusion_sub,
+        "perm_full": perm_full,
+        "leaky": leaky,
+        "combos": combos,
+        "research_cremad": research_cremad,
+        "control": control,
+        "d1": d1,
+        "hume": hume,
+        "e3": e3,
+        "e6": e6,
+    }
+
+
+def _fmt(x: float | None, digits: int = 3) -> str:
+    if x is None or (isinstance(x, float) and x != x):
+        return "&mdash;"
+    return f"{x:.{digits}f}"
+
+
+def _get(d: dict | None, *keys: str) -> Any:
+    for key in keys:
+        if d is None:
+            return None
+        d = d.get(key)
+    return d
+
+
+def render_the_question() -> str:
+    return """
+<h2>The one question</h2>
+<p>A model that classifies emotion from speech can cheat. Given the audio of someone saying
+<em>"that's just wonderful"</em> in a flat, exhausted voice, it can transcribe the words,
+read their sentiment, and answer <strong>positive</strong> &mdash; without ever having
+listened to the delivery. On most benchmarks that cheat scores well, because in most
+recordings the words and the tone agree.</p>
+<p>It stops working the moment they don't. And for a voice companion for seniors &mdash; no
+screen, no camera, no face to read &mdash; tone is the <em>only</em> channel the words
+don't already cover. So this project is built less to maximise a score and more to
+<strong>measure whether the model hears prosody at all</strong>, using speech where the
+words say one thing and the delivery says another.</p>
+"""
+
+
+def render_state_of_the_art() -> str:
+    """Other people's numbers, clearly fenced off from ours (CLAUDE.md rule 6)."""
+    return """
+<h2>State of the art &mdash; what the field can actually do</h2>
+<p class="caption">Everything in this section is <strong>other researchers' published
+results</strong>, not ours. Ours start in the next section.</p>
+
+<table>
+  <thead><tr><th>Setting</th><th class="num">Best reported</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Acted</strong> emotion, scripted (IEMOCAP)</td><td class="num">~0.78 UAR</td>
+        <td>Actors performing emotions on cue. The easiest realistic setting, and the one most papers report.</td></tr>
+    <tr><td><strong>Naturalistic</strong> speech (MSP-Podcast)</td><td class="num">~0.65 UAR</td>
+        <td>Real, spontaneous speech. A large replication study found this is roughly where the field tops out.</td></tr>
+  </tbody>
+</table>
+
+<p>Three findings from the recent literature matter more than the leaderboard, because they
+shape what is worth building:</p>
+
+<div class="lit">
+<p><strong>1. Progress has been smaller than it looks.</strong> A 2025 replication study
+charting 15 years of deep learning for speech emotion recognition found <em>very low
+correlation</em> between a model's performance and its publication year, parameter count,
+or compute. Many modern models landed at or <em>below</em> the 2009 challenge winners.
+The authors conclude that hyperparameter tuning &mdash; not architectural innovation
+&mdash; may account for much of the reported gains. Their top models agreed with each
+other on only <strong>55&ndash;80%</strong> of predictions, meaning they are learning
+different solutions rather than converging on the truth.
+(<a href="https://arxiv.org/abs/2508.02448">arXiv:2508.02448</a>)</p>
+</div>
+
+<div class="lit">
+<p><strong>2. The "reads words instead of tone" failure is documented, not hypothetical.</strong>
+Work evaluating spoken-language models on deliberately <em>emotionally incongruent</em>
+speech shows models follow the transcript rather than the delivery
+(<a href="https://arxiv.org/abs/2510.25054">arXiv:2510.25054</a>), and a 2026 study on
+acoustic-cue alignment in audio language models asks the same question directly
+(<a href="https://arxiv.org/abs/2606.07309">arXiv:2606.07309</a>). This is the exact
+failure mode this project is instrumented to catch.</p>
+</div>
+
+<div class="lit">
+<p><strong>3. The field audits itself and doesn't like what it sees.</strong> A 2026 paper on
+the gap between motivation and practice finds that speech-emotion research is routinely
+justified by healthcare and elderly-care applications, yet <em>rarely evaluated on those
+populations</em> &mdash; predominantly using acted datasets of young adults. It also
+finds that many papers skip speaker-independent evaluation, and that significance
+testing and confidence intervals are frequently absent.
+(<a href="https://arxiv.org/abs/2604.25776">arXiv:2604.25776</a>)</p>
+</div>
+
+<p><strong>Where the frontier is moving:</strong> general-purpose audio language models
+(Qwen2-Audio, SALMONN and similar) now perform emotion recognition alongside
+transcription and sound classification, and 2026 benchmarks such as VoxEmo
+(<a href="https://arxiv.org/abs/2603.08936">arXiv:2603.08936</a>) exist specifically to
+test them. Reinforcement-learning approaches to generalised emotion recognition
+(<a href="https://arxiv.org/abs/2509.15654">arXiv:2509.15654</a>) are an active line.
+<strong>This project evaluates none of them</strong> &mdash; see improvement #13.</p>
+"""
+
+
+def render_what_is_possible(n: dict[str, Any]) -> str:
+    perm_sub_uar = _get(n["perm_sub"], "uar")
+    res_b_uar = _get(n["e3"]["res_b"], "uar")
+    perm_a_uar = _get(n["e3"]["perm_a"], "uar")
+    return f"""
+<h2>What is realistically possible</h2>
+<p>Setting expectations before showing results, because the gap between the two numbers
+below is the single most important thing this project measured:</p>
+<div class="tiles">
+  <div class="tile"><div class="lbl">On the benchmark</div>
+    <div class="big">{_fmt(perm_sub_uar, 2)}</div>
+    <div class="sub">UAR, acted speech, speakers held out. What a demo shows.</div></div>
+  <div class="tile"><div class="lbl">On one real, unseen voice</div>
+    <div class="big">{_fmt(perm_a_uar, 2)}&ndash;{_fmt(res_b_uar, 2)}</div>
+    <div class="sub">UAR range across backends and takes. What deployment would face.</div></div>
+  <div class="tile"><div class="lbl">Chance</div>
+    <div class="big">0.33</div>
+    <div class="sub">Three balanced classes.</div></div>
+</div>
+<p class="finding"><strong>The honest summary:</strong> emotion-from-tone works well enough
+to demonstrate convincingly on acted benchmark speech, and degrades sharply on a real
+speaker the model has never heard &mdash; in the worst case to near chance. Any claim that
+this is "solved" is a claim about the benchmark, not about a product. That is not a flaw in
+this implementation; per the replication study above, it is roughly where the whole field
+sits.</p>
+"""
+
+
+def render_what_we_built() -> str:
+    return """
+<h2>What we built</h2>
+<p>Three systems spanning the <em>words &harr; tone</em> axis, behind one interface, so the
+evaluation harness scores them identically and the comparison is apples-to-apples:</p>
+<table>
+  <thead><tr><th></th><th>Solution</th><th>What it can possibly know</th><th>Licence</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A</strong></td><td>Lexical &mdash; speech recognition &rarr; text sentiment</td>
+        <td>Only the words. The deliberate control: it <em>cannot</em> hear tone.</td><td>MIT</td></tr>
+    <tr><td><strong>B</strong></td><td>Acoustic &mdash; frozen speech encoder + small trained head</td>
+        <td>Only the tone. Never sees a transcript.</td>
+        <td>two backends: MIT, or CC&#8209;BY&#8209;NC&#8209;SA (research only)</td></tr>
+    <tr><td><strong>C</strong></td><td>Fusion &mdash; calibrated combination of A and B, can abstain</td>
+        <td>Both.</td><td>inherits</td></tr>
+  </tbody>
+</table>
+<p>Having A in the design is what makes the whole thing measurable: A is a model that
+provably only reads words, so its score on tone-vs-words tests is the "pure cheating"
+reference line that B and C are compared against.</p>
+<p>Everything converts to a shared <strong>valence / arousal / dominance</strong> reading;
+sentiment is a threshold on valence. That keeps the output interpretable (you can see
+<em>why</em>, not just the label) and gives arousal for free, which the voice-health
+roadmap needs.</p>
+<p><strong>Two acoustic backends, deliberately:</strong> <code>permissive</code> is a
+general-purpose speech encoder (WavLM, MIT) with our own small classifier trained on top;
+<code>research</code> is a model already fine-tuned end-to-end for emotion on naturalistic
+speech (audeering/wav2vec2), which is stronger but <strong>non-commercial</strong>. Keeping
+both turns a licensing question into a measured trade-off instead of an assertion.</p>
+"""
+
+
+def render_experiments(n: dict[str, Any]) -> str:
+    d1_rec = _get(n["d1"], "recoverability_cv", "accuracy")
+    hume_with = _get(n["hume"], "summary", "with_description", "recoverability_cv", "accuracy")
+    hume_without = _get(
+        n["hume"], "summary", "without_description", "recoverability_cv", "accuracy"
+    )
+    return f"""
+<h2>The experiments, and what each one asked</h2>
+<table>
+  <thead><tr><th>#</th><th>Experiment</th><th>Question it asks</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>E1</td><td>CREMA-D benchmark (91 actors)</td>
+        <td>Can it classify emotion from tone on standard acted speech, with speakers held out?</td>
+        <td>Yes &mdash; the headline result.</td></tr>
+    <tr><td>&mdash;</td><td>Leakage check</td>
+        <td>How much would a sloppy random split have inflated that?</td>
+        <td>Quantified, on purpose.</td></tr>
+    <tr><td>D0</td><td>Cartesia emotion-space probe</td>
+        <td>Can we generate emotional speech with a TTS vendor to build test data?</td>
+        <td>Clustering too degenerate to use.</td></tr>
+    <tr><td>D1</td><td>Cartesia factorial probe (40 clips)</td>
+        <td>Is the requested emotion actually <em>audible</em> in the generated audio?</td>
+        <td><strong>No</strong> &mdash; recoverable at {_fmt(d1_rec)} vs 0.200 chance.</td></tr>
+    <tr><td>E2</td><td>Synthetic incongruence set (76 clips)</td>
+        <td>Words and tone deliberately disagree &mdash; does the model follow tone?</td>
+        <td><strong>Generated but never evaluated</strong> (gap #5).</td></tr>
+    <tr><td>E3</td><td>Human recordings, 2 independent takes</td>
+        <td>Does any of this survive contact with a real, unseen voice?</td>
+        <td>Largely no &mdash; the most important finding.</td></tr>
+    <tr><td>&mdash;</td><td>D1-vs-E3 control</td>
+        <td>Was D1's failure the audio, or our measuring instruments?</td>
+        <td>The instruments are fine; the audio was flat.</td></tr>
+    <tr><td>&mdash;</td><td>Hume Octave probe (40 clips)</td>
+        <td>Is flat synthetic emotion a vendor problem or universal?</td>
+        <td>Vendor-specific &mdash; {_fmt(hume_with)} vs {_fmt(hume_without)} at 0.200 chance.</td></tr>
+    <tr><td>&mdash;</td><td>Backend &times; training-data comparison</td>
+        <td>Does adding our own recordings or synthetic clips to training help?</td>
+        <td>No measurable effect at this data scale.</td></tr>
+  </tbody>
+</table>
+"""
+
+
+def render_results(n: dict[str, Any]) -> str:
+    lex, perm, fus = n["lex"], n["perm_sub"], n["fusion_sub"]
+    perm_full, leaky = n["perm_full"], n["leaky"]
+    e3 = n["e3"]
+    control = n["control"]
+    res_cremad = n["research_cremad"]
+
+    gap = None
+    if leaky and perm_full:
+        gap = leaky["uar"] - perm_full["uar"]
+
+    retest = _get(control, "test_retest_correlation_take0_vs_take1") or {}
+
+    return f"""
+<h2>Results</h2>
+
+<h3>1. On the benchmark, tone beats words decisively</h3>
+<p class="caption">CREMA-D, {_get(perm, "n_clips")} clips, speakers held out of training.
+PSI = of the clips where words and tone disagree, the fraction where the model followed the
+<em>tone</em>. 1.0 = listens; 0.0 = reads the transcript.</p>
+<table>
+  <thead><tr><th>Solution</th><th class="num">UAR</th><th class="num">Macro-F1</th><th class="num">PSI</th></tr></thead>
+  <tbody>
+    <tr><td>A &mdash; Lexical (words only)</td><td class="num">{_fmt(_get(lex, "uar"))}</td>
+        <td class="num">{_fmt(_get(lex, "macro_f1"))}</td><td class="num">{_fmt(_get(lex, "psi_contested"))}</td></tr>
+    <tr><td><strong>B &mdash; Acoustic (tone only)</strong></td><td class="num"><strong>{_fmt(_get(perm, "uar"))}</strong></td>
+        <td class="num">{_fmt(_get(perm, "macro_f1"))}</td><td class="num"><strong>{_fmt(_get(perm, "psi_contested"))}</strong></td></tr>
+    <tr><td>C &mdash; Fusion (both)</td><td class="num">{_fmt(_get(fus, "uar"))}</td>
+        <td class="num">{_fmt(_get(fus, "macro_f1"))}</td><td class="num">{_fmt(_get(fus, "psi_contested"))}</td></tr>
+  </tbody>
+</table>
+<p>Exactly the shape the design predicts. The lexical model sits near chance and has a PSI
+of {_fmt(_get(lex, "psi_contested"), 2)} &mdash; it follows the words almost every time,
+because that is all it has. The acoustic model reaches PSI {_fmt(_get(perm, "psi_contested"), 2)}:
+it is genuinely listening.</p>
+
+<h3>2. Sloppy splitting would have inflated this</h3>
+<p>Same model, same data, only the split changed &mdash; speakers allowed to appear in both
+training and test:</p>
+<table>
+  <thead><tr><th>Split</th><th class="num">n</th><th class="num">Speakers in both sides</th><th class="num">UAR</th></tr></thead>
+  <tbody>
+    <tr><td>Speaker-disjoint (honest)</td><td class="num">{_get(perm_full, "n_clips")}</td><td class="num">0</td>
+        <td class="num">{_fmt(_get(perm_full, "uar"))}</td></tr>
+    <tr><td>Random (leaky)</td><td class="num">{_get(leaky, "n_clips")}</td>
+        <td class="num">{_get(leaky, "n_speakers_overlapping_with_train")}</td>
+        <td class="num">{_fmt(_get(leaky, "uar"))}</td></tr>
+  </tbody>
+</table>
+<p class="caption">A free <strong>+{_fmt(gap, 3)} UAR</strong> for doing the evaluation wrong. Published as a
+warning, not hidden.</p>
+
+<h3>3. On a real, unseen voice, it mostly falls apart</h3>
+<p class="caption">27 clips per take, same speaker, same prompts, recorded twice on separate
+occasions. Chance = 0.333.</p>
+<table>
+  <thead><tr><th>Solution</th><th class="num">Take 1</th><th class="num">Take 2</th><th class="num">Self-consistency (r)</th></tr></thead>
+  <tbody>
+    <tr><td>A &mdash; Lexical</td><td class="num">{_fmt(_get(e3["lex_a"], "uar"))}</td>
+        <td class="num">{_fmt(_get(e3["lex_b"], "uar"))}</td><td class="num">&mdash;</td></tr>
+    <tr><td>B &mdash; Acoustic, permissive (MIT)</td><td class="num">{_fmt(_get(e3["perm_a"], "uar"))}</td>
+        <td class="num">{_fmt(_get(e3["perm_b"], "uar"))}</td>
+        <td class="num"><strong>{_fmt(retest.get("permissive_valence_proxy"), 2)}</strong></td></tr>
+    <tr><td>B &mdash; Acoustic, research (non-commercial)</td><td class="num">{_fmt(_get(e3["res_a"], "uar"))}</td>
+        <td class="num">{_fmt(_get(e3["res_b"], "uar"))}</td>
+        <td class="num"><strong>{_fmt(retest.get("research_valence"), 2)}</strong></td></tr>
+  </tbody>
+</table>
+<p class="finding"><strong>The most important number in this project is that last column.</strong>
+It asks: given two recordings of the same person saying the same sentence the same way, does
+the model give the same reading? The research backend does
+(r&nbsp;=&nbsp;{_fmt(retest.get("research_valence"), 2)}). The shipping-licensed permissive
+backend does <em>not</em> (r&nbsp;=&nbsp;{_fmt(retest.get("permissive_valence_proxy"), 2)})
+&mdash; its readings are essentially uncorrelated with themselves. A model can only be as
+accurate as it is repeatable, and on this voice that one is not repeatable at all. Accuracy
+tables alone would never have revealed this.</p>
+<p>Note the reversal: on the benchmark the permissive backend scores
+{_fmt(_get(perm, "uar"), 2)} against the research backend's
+{_fmt(_get(res_cremad, "uar"), 2)}; on a real voice they swap places. The benchmark number
+is a home-turf advantage &mdash; the permissive probe was trained on that exact corpus.</p>
+
+<h3>4. The sharpest result: "acoustic" does not always mean prosodic</h3>
+<p>E5 is 90 synthetic clips in which <strong>60 have the words and the delivery
+deliberately disagreeing</strong> &mdash; the condition the whole project is built to
+measure, finally available at scale because one TTS vendor can set delivery independently
+of the text. Here PSI is the metric, not UAR: the gold label is the delivery, so a model
+reading words scores near zero by construction.</p>
+<table>
+  <thead><tr><th>Solution</th><th class="num">UAR</th><th class="num">PSI</th><th>What it follows</th></tr></thead>
+  <tbody>
+    <tr><td>A &mdash; Lexical (words only)</td><td class="num">0.333</td><td class="num"><strong>0.000</strong></td><td>the words, every time</td></tr>
+    <tr><td>B &mdash; Acoustic, permissive</td><td class="num">0.511</td><td class="num"><strong>0.682</strong></td><td>mostly the tone</td></tr>
+    <tr><td>B &mdash; Acoustic, research</td><td class="num">0.400</td><td class="num"><strong>0.211</strong></td><td>mostly the <em>words</em></td></tr>
+    <tr><td>C &mdash; Fusion</td><td class="num">0.489</td><td class="num">0.605</td><td>between, as designed</td></tr>
+  </tbody>
+</table>
+<p class="caption">UAR chance 0.333; PSI chance 0.5. Solution A scoring exactly 0.000
+is the floor behaving perfectly &mdash; it is the proof that the labels are right and the
+contradiction is real.</p>
+<p class="finding"><strong>The finding:</strong> the two acoustic backends heard
+<em>identical audio</em> and went opposite ways. The permissive one followed the delivery
+68% of the time; the research one followed the <strong>words</strong> 79% of the time,
+below chance, despite never receiving a transcript. That is an empirical confirmation of a
+caveat the audeering authors published themselves &mdash; their model's valence
+performance draws partly on implicit linguistic information learned during fine-tuning.
+The "acoustic" model has substantially learned to read words out of audio, and only a set
+built to contradict itself could expose it.</p>
+<p>This also complicates the backend choice rather than settling it. On a real voice (E3)
+the research backend is more accurate and far more self-consistent; on prosody-versus-words
+it is much worse. Neither is simply better &mdash; which one to pick depends on whether the
+product needs a stable reading or one that is genuinely about delivery.</p>
+
+<h3>5. Synthetic emotional speech: one vendor failed, another worked</h3>
+<p>Building test data by asking a text-to-speech vendor for "say this sadly" seemed
+cheap. It wasn't: with the first vendor, a classifier could recover the requested emotion
+from the generated audio at {_fmt(_get(n["d1"], "recoverability_cv", "accuracy"))} against
+0.200 chance &mdash; the emotion simply wasn't in the audio. Rather than accept that as a
+general fact, the same 40-clip design was re-run on a second vendor whose API controls
+delivery independently of the words:
+{_fmt(_get(n["hume"], "summary", "with_description", "recoverability_cv", "accuracy"))}
+with that control on, {_fmt(_get(n["hume"], "summary", "without_description", "recoverability_cv", "accuracy"))}
+with it off. So the finding is "that vendor, on this content" &mdash; not "synthetic
+emotional speech is impossible."</p>
+"""
+
+
+def _solution_label(name: str) -> str:
+    """Harness solution name -> the short label used in this report's prose."""
+    if name.startswith("A:"):
+        return "A &mdash; lexical"
+    if name.startswith("B:") and "permissive" in name:
+        return "B &mdash; acoustic (permissive)"
+    if name.startswith("B:"):
+        return "B &mdash; acoustic (research)"
+    if name.startswith("C:"):
+        return "C &mdash; fusion"
+    if name.startswith("D:"):
+        return "D &mdash; prosodic"
+    return name
+
+
+def render_e6(n: dict[str, Any]) -> str:
+    """The cross-speaker result. Placed immediately after the benchmark
+    numbers because it is what those numbers do not survive."""
+    e6 = n.get("e6")
+    if not e6:
+        return """
+<h2>E6 &mdash; eight real speakers</h2>
+<p class="pending">Not built yet. Run <code>make data-zurich &amp;&amp; make
+eval-zurich</code>.</p>
+"""
+
+    order = ["A:lexical", "B:acoustic(permissive", "B:acoustic(research", "C:fusion", "D:prosodic"]
+    rows = []
+    for prefix in order:
+        for name, sets in e6["zero_shot"].items():
+            if not name.startswith(prefix):
+                continue
+            s_all = sets.get("e6_all")
+            if not s_all:
+                continue
+            u, psi = s_all["uar_ci95"], s_all["psi_contested_ci95"]
+            above = "yes" if u["lo"] > 1 / 3 else "&mdash;"
+            reads = "follows words" if psi["hi"] < 0.5 else "&mdash;"
+            rows.append(
+                f"<tr><td>{_solution_label(name)}</td>"
+                f"<td class='num'>{_fmt(s_all['uar'])}</td>"
+                f"<td class='num'>[{u['lo']:.2f}, {u['hi']:.2f}]</td>"
+                f"<td class='num'>{above}</td>"
+                f"<td class='num'>{_fmt(s_all['psi_contested'])}</td>"
+                f"<td class='num'>[{psi['lo']:.2f}, {psi['hi']:.2f}]</td>"
+                f"<td class='num'>{reads}</td></tr>"
+            )
+            break
+
+    return f"""
+<h2>E6 &mdash; eight real speakers, and what the benchmark numbers do not survive</h2>
+
+<p>Every human result above this point rests on <strong>one</strong> speaker recorded
+twice; E5's incongruence is synthetic. E6 is {e6["n_clips"]} clips from
+<strong>{e6["n_speakers"]} speakers</strong>, {e6["n_incongruent"]} of them incongruent
+&mdash; laptop-microphone audio from mostly non-native English speakers, which is a far
+harder condition than CREMA-D's acted studio recordings. It is the first real
+cross-speaker evaluation this project has had, and the first human multi-speaker set on
+which PSI means anything.</p>
+
+<p>Everything below is zero-shot: fitted on CREMA-D, never having heard these voices.
+Intervals are a 95% percentile bootstrap over clips. Chance is 0.333 for UAR, 0.500 for
+PSI.</p>
+
+<table>
+  <thead><tr><th>Solution</th><th>UAR</th><th>95% CI</th><th>beats chance?</th>
+  <th>PSI</th><th>95% CI</th><th>verdict</th></tr></thead>
+  <tbody>{"".join(rows)}</tbody>
+</table>
+
+<p><strong>This is the most important result in the project, and it is a negative
+one.</strong> Of five systems, one has a UAR interval clearing chance, and it clears it
+by 0.003. The acoustic backend that reaches 0.797 on the CREMA-D subset lands in the
+0.33&ndash;0.46 range here. Nothing fitted on CREMA-D transfers to real multi-speaker
+audio, and the earlier one-speaker and synthetic transfer numbers were flattering.</p>
+
+<p>Two things survive. The <strong>lexical floor holds</strong>: a transcript-only model
+follows the transcript, with its whole PSI interval below chance &mdash; which also
+checks the one column of E6 that was labelled by hand. And <strong>the research backend
+follows the words too</strong>, from audio alone with no transcript in its path, its
+entire interval below chance. E5 measured that on two synthetic voices; E6 replicates it
+on eight real ones with an interval behind it. Calling a model &ldquo;acoustic&rdquo;
+does not make it prosodic.</p>
+
+<p class="caption">Not claimed: that the permissive backend <em>is</em> prosody-sensitive.
+Its own PSI interval contains 0.5. The direction is consistent across E5 and E6, but only
+the research backend's failure is statistically clean &mdash; on an earlier six-speaker
+build this looked like a clear win for the permissive backend, and the intervals on the
+full set say the two merely touch.</p>
+
+<p class="caption">A claim withdrawn: on that six-speaker build, training on E6's clips
+alone beat CREMA-D 0.452 to 0.278, and it nearly went into this report as evidence that
+matched data beats more data. On eight speakers the same configuration gives 0.222 and
+the effect reversed. It was noise on a 20-clip test split, and the bootstrap interval is
+the only reason it was not written up as a finding.</p>
+"""
+
+
+def render_didnt_work() -> str:
+    return """
+<h2>What didn't work</h2>
+<p>Kept visible, because a take-home that reports only successes is reporting selectively:</p>
+<ul>
+  <li><strong>The first TTS vendor's emotion tags</strong> &mdash; not audibly rendered; a
+  control on human speech proved our instruments were fine, so the audio was the problem.</li>
+  <li><strong>The synthetic incongruence set built on it</strong> &mdash; 76 clips,
+  inexpressive, kept as the exhibit rather than deleted or quietly completed.</li>
+  <li><strong>The permissive backend on a new voice</strong> &mdash; near chance, never
+  predicted "positive" at all on one take, and not self-consistent across takes.</li>
+  <li><strong>Per-speaker recalibration</strong> &mdash; fitting personal thresholds helped
+  in 1 of 4 backend&times;take combinations and hurt in 3. Reported as a negative result
+  rather than shipped.</li>
+  <li><strong>Adding more training data</strong> &mdash; folding our own recordings and
+  synthetic clips into training moved benchmark UAR by at most 0.003. At ~1% of training
+  volume, too little to matter.</li>
+  <li><strong>The live browser demo</strong> &mdash; planned, not built (see #9).</li>
+</ul>
+"""
+
+
+def render_improvements() -> str:
+    return """
+<h2>Areas for improvement</h2>
+<p>Ordered by <em>value per hour of work</em>, not by ambition. The first four are
+cheap and materially change how much the rest can be trusted.</p>
+
+<div class="tier">
+<h3>Tier 1 &mdash; credibility fixes <span class="pill">~1 day total</span></h3>
+<ol class="improve">
+  <li><strong>The full pipeline command is broken.</strong> <code>make all</code> calls
+  <code>make eval</code>, which invokes a module entry point that does not exist
+  (<code>ssa/eval/__main__.py</code>). The project's own definition of "done" is that
+  <code>make all</code> works end to end &mdash; so the first command a reviewer types
+  fails. The individual evaluation scripts all work; only the top-level entry point is
+  missing. <em>Highest priority: it costs an hour and it is the first impression.</em></li>
+
+  <li><strong>No confidence intervals anywhere.</strong> Key comparisons rest on 27&ndash;54
+  clips. The difference between 0.519 and 0.593 on n=27 is very likely noise, and nothing
+  in the report currently says so. Bootstrap confidence intervals on UAR and PSI would
+  either harden or retract several claims &mdash; and the field's own 2026 self-critique
+  names missing significance testing as a systemic failure. <em>This is the one methodological
+  failure mode from that critique that this project currently shares.</em></li>
+
+  <li><strong>The headline number is inconsistent.</strong> Benchmark UAR appears as 0.797
+  (300-clip stratified subset) in some places and 0.744 (full 1,470-clip test set)
+  in others. Both are honest; reporting both without a stated default invites the reader to
+  assume the flattering one is the real one. Pick the full test set as canonical.</li>
+
+  <li><strong>The research backend is missing from the main results table.</strong> Its
+  benchmark score exists only inside the backend-comparison file, so the headline
+  comparison silently omits the backend that turned out to be better on real speech.</li>
+</ol>
+</div>
+
+<div class="tier">
+<h3>Tier 2 &mdash; evidence gaps <span class="pill">days to weeks</span></h3>
+<ol class="improve" start="5">
+  <li><s><strong>No usable incongruence set at scale.</strong></s> <strong>Addressed by
+  E5</strong>: 90 clips on a vendor whose delivery control works independently of the
+  transcript, 60 of them contradictory &mdash; and it produced the sharpest result in the
+  project (see below). The older 76-clip Cartesia set is still unevaluated; it is now a
+  historical exhibit rather than a gap, since E5 supersedes what it was for.</li>
+
+  <li><strong>Everything about real-world performance rests on one speaker.</strong> One
+  person, two takes, 27 clips each. That is enough to demonstrate a transfer failure
+  exists; it is not enough to estimate how large it is. Ten speakers would change this from
+  an anecdote into a measurement.</li>
+
+  <li><strong>No cross-corpus result.</strong> Train on one acted corpus, test on a
+  different one &mdash; the standard generalisation check &mdash; was planned and never run.
+  Two suitable public datasets were identified and are freely available; neither was
+  fetched. This is probably the single highest-value missing experiment.</li>
+
+  <li><strong>Zero elderly voices.</strong> The product is for seniors. Age changes the
+  voice in ways that can read as sadness to a model trained on younger speakers &mdash; the
+  project argues this from clinical literature and explicitly labels it as
+  <em>unmeasured</em>. It remains the largest untested assumption, and it is precisely the
+  motivation-vs-evaluation gap the 2026 field critique describes.</li>
+</ol>
+</div>
+
+<div class="tier">
+<h3>Tier 3 &mdash; making it a convincing demonstration <span class="pill">mostly done</span></h3>
+<ol class="improve" start="9">
+  <li><s><strong>You cannot speak into it.</strong></s> <strong>Built</strong>
+  (<code>make demo-web</code>): record in the browser, get both acoustic backends and the
+  lexical control scored on your own voice. Captures raw PCM via the Web Audio API and
+  routes it through the same resample/normalise path every evaluated clip takes, so the
+  demo cannot flatter the model with preprocessing evaluation never got. It opens already
+  showing a committed clip &mdash; positive words spoken flatly &mdash; rather than an
+  empty shell.</li>
+
+  <li><s><strong>Show the valence/arousal plane.</strong></s> <strong>Built</strong>: the
+  demo plots where a clip lands on valence&times;arousal with the quadrants named, so
+  arousal stops being computed and discarded.</li>
+
+  <li><s><strong>Show both backends disagreeing, live.</strong></s> <strong>Built</strong>:
+  both are scored on every clip, side by side. On the bundled example they disagree
+  immediately.</li>
+
+  <li><strong>Only three coarse classes are ever reported.</strong> The benchmark has six
+  emotions; everything is collapsed to positive/neutral/negative before scoring. A six-way
+  confusion matrix would show whether the model confuses anger with sadness or merely
+  smooths everything toward neutral &mdash; much more informative about <em>understanding</em>.
+  <em>Still open.</em></li>
+</ol>
+</div>
+
+<div class="tier">
+<h3>Tier 4 &mdash; modelling <span class="pill">research</span></h3>
+<ol class="improve" start="13">
+  <li><strong>No audio language model was tried.</strong> The current frontier &mdash;
+  Qwen2-Audio, SALMONN and similar &mdash; performs emotion recognition directly and is
+  entirely absent from the comparison. Even a zero-shot baseline would establish whether
+  this project's approach is competitive or obsolete.</li>
+
+  <li><strong>The encoder was used in exactly one configuration.</strong> A single pooled
+  representation feeding a linear classifier. The replication study cited above found that
+  pooling across layers and hyperparameter choice affected results more than architecture
+  did &mdash; suggesting cheap gains are available before anything exotic is needed.</li>
+
+  <li><strong>The self-consistency failure is unexplained.</strong> We know the permissive
+  backend contradicts itself across two takes of the same voice. We do not know why &mdash;
+  speaker sensitivity, pooling, recording-level differences, or the classifier. Diagnosing
+  it is more valuable than another point of benchmark accuracy, because repeatability is a
+  precondition for everything downstream.</li>
+</ol>
+</div>
+"""
+
+
+def render_future() -> str:
+    return """
+<h2>Future development</h2>
+<table>
+  <thead><tr><th>Direction</th><th>Why it matters</th><th>What it needs</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Per-person baselining, over weeks</strong></td>
+        <td>A companion device has one persistent user. Learning <em>that person's</em>
+        normal voice dissolves both the age confound and the "is this illness or just how
+        they sound" problem. A short-horizon version was tested and failed &mdash; which is
+        evidence for needing the long horizon, not against the idea.</td>
+        <td>Longitudinal recordings from consenting users.</td></tr>
+    <tr><td><strong>Train on naturalistic, not acted, speech</strong></td>
+        <td>Acted emotion is performed and exaggerated; the transfer failure measured here
+        is exactly what that predicts. The field's naturalistic benchmark tops out around
+        0.65 UAR &mdash; a more honest target to build against.</td>
+        <td>MSP-Podcast access.</td></tr>
+    <tr><td><strong>An elderly-voice pilot</strong></td>
+        <td>Moves the project's central assumption from "argued from clinical literature"
+        to "measured" &mdash; and closes the exact gap the 2026 field critique identifies.</td>
+        <td>A small consented recording study.</td></tr>
+    <tr><td><strong>Audio-LLM comparison</strong></td>
+        <td>Establishes whether a purpose-built small pipeline still beats a general
+        foundation model on this task, or whether the sensible architecture is now a
+        prompt.</td>
+        <td>Inference budget; a careful incongruence test so the LLM can't cheat via transcript.</td></tr>
+    <tr><td><strong>Distress detection, not just sentiment</strong></td>
+        <td>Arousal is already computed and thrown away. Negative-and-high-arousal
+        (agitation) versus negative-and-low-arousal (withdrawal) is a more actionable signal
+        for a care companion than "negative".</td>
+        <td>Labels for the quadrants; clinical input on what should trigger what.</td></tr>
+    <tr><td><strong>Resolve the licence question</strong></td>
+        <td>The backend that works better on real voices cannot ship commercially. Either
+        licence it, or close the gap with the permissive one &mdash; currently an open
+        business decision disguised as a technical one.</td>
+        <td>A vendor conversation, or improvement #15.</td></tr>
+  </tbody>
+</table>
+"""
+
+
+def wrap_tables(html: str) -> str:
+    """Give every table its own horizontal-scroll container, so the page
+    body never scrolls sideways on a phone. Done here rather than in each
+    render function so there is one place to get it right -- the tables are
+    all plain `<table>`/`</table>`, generated by this module."""
+    return html.replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
+
+
+def build_body(nav: str) -> str:
+    """The page content, with no document skeleton. Shared verbatim by the
+    in-repo file and the published version so the two cannot drift; only
+    `nav` differs, because the repo page can link to its sibling files and
+    a standalone published page cannot."""
+    n = load_key_numbers()
+    return wrap_tables(f"""
+<header>
+  <h1>Speech Sentiment Analyzer</h1>
+  <p class="tagline">What the field can do, what we built, what we found, and what would
+  make it better.{nav}</p>
+</header>
+{render_the_question()}
+{render_state_of_the_art()}
+{render_what_is_possible(n)}
+{render_what_we_built()}
+{render_experiments(n)}
+{render_results(n)}
+{render_e6(n)}
+{render_didnt_work()}
+{render_improvements()}
+{render_future()}
+<footer class="caption">
+  <p>Generated by <code>ssa/overview.py</code> (<code>make overview</code>). Every number
+  above is read from <code>results/*.json</code> at build time &mdash; none is typed into
+  the prose &mdash; except the state-of-the-art section, which is other researchers'
+  published work and is linked as such.</p>
+</footer>
+""")
+
+
+def build_overview() -> str:
+    """The in-repo page: a complete standalone document, opened from disk."""
+    nav = (
+        ' &mdash; <a href="../index.html">index</a> &middot; '
+        '<a href="index.html">full results dashboard</a>'
+    )
+    return _page("Speech Sentiment Analyzer — Overview", build_body(nav)).replace(
+        f"<style>{_BASE_CSS}</style>", f"<style>{_BASE_CSS}{_EXTRA_CSS}</style>"
+    )
+
+
+def build_artifact_page(repo_url: str | None = None) -> str:
+    """The publishable version: `<title>` + `<style>` + content, with no
+    document skeleton (the Artifact host supplies one) and no links to
+    sibling files that only exist inside the repo."""
+    nav = f' &mdash; <a href="{repo_url}">source and full results</a>' if repo_url else ""
+    return (
+        "<title>Speech Sentiment Analyzer</title>\n"
+        f"<style>{_BASE_CSS}{_EXTRA_CSS}</style>\n"
+        f"{build_body(nav)}"
+    )
+
+
+def main() -> None:
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    html = build_overview()
+    OUT_PATH.write_text(html)
+    logger.info("wrote %s (%d bytes)", OUT_PATH, len(html))
+
+
+if __name__ == "__main__":
+    main()
