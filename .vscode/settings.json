@@ -1,0 +1,20 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "true": true,
+        "git rebase": true,
+        "git rev-parse": true,
+        "git checkout": true,
+        "/^cd /Users/marcod/dev_main/sentiment-asr && python3 - <<'PY'\nfrom pathlib import Path\np = Path\\('report\\.md'\\)\ntext = p\\.read_text\\(\\)\nprint\\('title_ok', text\\.startswith\\('# Speech Sentiment Analyzer'\\)\\)\nprint\\('other_tests_anchor', '## 8\\. Other tests and validation story' in text\\)\nprint\\('final_section_ok', '## 9\\. Final conclusion' in text\\)\nprint\\('report_size', len\\(text\\.splitlines\\(\\)\\)\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /Users/marcod/dev_main/sentiment-asr && python3 - <<'PY'\nfrom pathlib import Path\ntext = Path\\('report\\.md'\\)\\.read_text\\(\\)\nchecks = \\{\n    'summary': '## 1\\. Summary' in text,\n    'systems': '## 2\\. Systems' in text,\n    'data': '## 3\\. Data and evaluation' in text,\n    'results': '## 4\\. Results' in text,\n    'lessons': '## 5\\. What the experiments taught me' in text,\n    'limitations': '## 6\\. Limitations and corrections' in text,\n    'next_steps': '## 7\\. Next steps' in text,\n    'other_tests': '## 8\\. Other tests and validation story' in text,\n    'final_conclusion': '## 9\\. Final conclusion' in text,\n    'usage_block': '### Usage and installation' in text,\n    'make_help': 'make help' in text,\n\\}\nfor k,v in checks\\.items\\(\\):\n    print\\(f'\\{k\\}: \\{v\\}'\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /Users/marcod/dev_main/sentiment-asr && python3 - <<'PY'\nfrom pathlib import Path\ntext = Path\\('report\\.md'\\)\\.read_text\\(\\)\nchecks = \\{\n    'summary': '## 1\\. Summary' in text,\n    'systems': '## 2\\. Systems' in text,\n    'data': '## 3\\. Data and evaluation' in text,\n    'results': '## 4\\. Results' in text,\n    'lessons': '## 5\\. What the experiments taught me' in text,\n    'results_mean': '## 6\\. What the results mean' in text,\n    'limitations': '## 7\\. Limitations and corrections' in text,\n    'next_steps': '## 8\\. Next steps' in text,\n    'other_tests': '## 9\\. Other tests and validation story' in text,\n    'final_conclusion': '## 10\\. Final conclusion' in text,\n    'usage_block': '### Usage and installation' in text,\n    'make_help': 'make help' in text,\n\\}\nfor k,v in checks\\.items\\(\\):\n    print\\(f'\\{k\\}: \\{v\\}'\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
