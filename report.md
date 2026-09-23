@@ -2,479 +2,327 @@
 
 ### AI/ML Systems Engineer Take-Home Assignment
 
-## 1. Overview
+## 1. Summary
 
-I built a local Python pipeline that takes raw speech audio and predicts **positive, neutral, or negative sentiment**. The main goal was not to maximize a single benchmark score, but to understand a harder practical question:
+This project investigates whether sentiment can be inferred from raw speech audio alone, without relying on a transcript. The goal is to build a system that can classify a speaker as positive, neutral, or negative while remaining sensitive to the difference between the words spoken and the prosody used to deliver them.
 
-> **Can sentiment be inferred from how something is said, rather than simply what is said?**
+This matters because the same sentence can convey very different emotional intentions depending on tone. A phrase such as "that's wonderful" can sound warm and sincere, or tired, sarcastic or angry. A useful voice companion should be able to detect when the wording and the delivery disagree, rather than blindly trusting the textual content.
 
-I therefore evaluated several complementary approaches:
+The project compares three system families: a lexical baseline, two acoustic models and an explicit prosody model. The central lesson is not that a model can achieve perfect sentiment classification, but that it must be evaluated speaker-disjoint and on separate datasets that reflect a realistic scenario. In this setting the hardest challenge is not classification accuracy, but generalization to real multi-speaker audio that differs from the training distribution.
 
-* **Lexical:** ASR with Whisper followed by a text sentiment model.
-* **Acoustic:** a frozen speech representation with a lightweight classifier.
-* **Fusion:** calibrated late fusion of lexical and acoustic predictions, with abstention.
-* **Prosodic:** explicit acoustic/prosodic features such as pitch, energy and eGeMAPS.
+### Usage and installation
 
-The pipeline includes speaker-disjoint evaluation, calibration metrics, robustness experiments, and specifically designed **incongruent speech tests**, where the words and delivery express conflicting sentiment.
+The code, tests, evaluation scripts, result files, and browser demo are included in this repository. Evaluation uses speaker-disjoint splits throughout.
 
-The main findings were:
+To see all options, run:
 
-1. **Nothing trained on CREMA-D generalizes to real multi-speaker audio.** On 160 clips
-   from eight speakers recording through laptop microphones, only one of five systems has
-   a UAR confidence interval clearing chance, and it clears it by 0.003. The acoustic
-   system that reaches 0.797 on the benchmark reaches 0.396 [0.33, 0.46] there. This is
-   the central result and it is a negative one.
-2. **The training corpus is a far larger bottleneck than the choice of model,
-   representation or feature set.** Fitting within a dataset reaches 0.76–0.87;
-   transferring from CREMA-D costs 0.24–0.52 UAR — more than any architectural difference
-   measured here.
-3. **An "acoustic" model is not necessarily a prosodic one.** One pretrained speech
-   representation follows the *words* rather than the delivery on deliberately
-   contradictory clips, from audio alone with no transcript in its path. On the
-   eight-speaker set its entire confidence interval sits below chance. This replicates
-   across two independent datasets and is the sharpest diagnostic finding in the project.
-4. **Detecting a tone/words mismatch is easier than naming the sentiment**, and the two
-   come apart in the results. For an assistant that should ask rather than assume under
-   ambiguity, the mismatch detector may be the more useful and more attainable component.
-5. **Per-speaker feature normalization reliably stops models collapsing to a single
-   class, but its accuracy benefit shrank by a factor of three to four once eight real
-   speakers were available** (+0.05 to +0.09 UAR, against +0.19 to +0.33 measured on one
-   speaker and two synthetic voices). It is also transductive, requiring a pool of the
-   speaker's audio that a single-clip classifier does not have. It is reported as an
-   experiment, not a shipped feature.
-6. Synthetic emotional speech is useful as a diagnostic, but not as a substitute for
-   diverse real conversational speech — one vendor's emotion tags proved not to be
-   reliably audible at all.
-
-Two results in this report were **withdrawn or narrowed when more data arrived**, and
-both are described where they occur rather than quietly dropped. Small held-out sets
-produce confident-looking numbers that do not survive, which is why every figure on the
-multi-speaker set carries a confidence interval.
-
-The current implementation runs locally, with an automated test suite, a command-line
-evaluation pipeline, and a browser-based FastAPI demo with microphone capture.
+```bash
+make help
+```
 
 ---
 
-# 2. Problem framing and approach
+## 2. Systems
 
-A speech sentiment system can exploit several sources of information:
+These models were implemented and evaluated.
 
-$$
-\text{Audio} \rightarrow
-\begin{cases}
-\text{linguistic content} \\
-\text{prosody/acoustics} \\
-\text{speaker characteristics}
-\end{cases}
-\rightarrow \text{sentiment}
-$$
+0. **Lexical** — Whisper transcription followed by a text sentiment classifier.
+1. **Explicit prosody** — handcrafted acoustic features (pitch, loudness, eGeMAPS).
+2. **WavLM** — also referred to as the permissive acoustic model.
+3. **audEERING** — also referred to as the research acoustic model.
 
-This creates an important ambiguity for the intended product.
+A **late fusion** system combining the lexical and permissive acoustic models, with calibration and abstention, is also evaluated.
 
-If a user says *"That's great"* in an angry voice, a system that predicts positive sentiment purely from the words is not necessarily useful for a conversational assistant. Conversely, a system that relies only on pitch or energy may fail when sentiment is primarily expressed linguistically.
+### 0 — Lexical model
 
-I therefore treated the assignment as both a **classification problem** and a **signal attribution problem**.
+The lexical model acts as a reference system for measuring whether a model follows prosody or wording. It first transcribes speech with Faster-Whisper Small, then classifies the transcript with CardiffNLP's Twitter RoBERTa sentiment model.
 
-### Solution A — ASR + text sentiment
+This system is deliberately simple: it provides a lower bound on how much sentiment can be recovered from words alone, and it establishes what "following the text" looks like numerically, so the acoustic models can be compared against it.
 
-Audio is transcribed using Whisper and passed to a pretrained RoBERTa sentiment classifier.
+### 1 — Explicit prosody model
 
-This provides a useful baseline and establishes how much of the benchmark can be explained by linguistic content alone.
+The explicit prosody model measures named physical quantities of the waveform: 88 openSMILE **eGeMAPS v02** functionals (F0 statistics, loudness, jitter, shimmer, HNR, spectral balance, voiced-segment rates) plus 8 **contour descriptors** computed in Praat — global F0 and energy slope, dynamic ranges, pause structure and CPPS — which the functionals summarise only locally or not at all. 96 features, no embeddings, no pretrained network.
 
-However, it does not satisfy the deeper product requirement by itself: the model effectively sees *what was said*, not *how it was said*.
+Nothing in this path can represent a word. That is a structural guarantee, not a design aspiration, and it is the point: the audEERING backend was measured following the *transcript* on contradictory clips despite receiving only audio. This model cannot do that by construction.
 
-### Solution B — acoustic representation + lightweight classifier
+The features feed a scikit-learn pipeline — median imputation, standardisation, then a classifier. Four candidates are fitted and all four reported, so the results are not the best of four chosen after the fact: logistic regression, a calibrated linear SVM, an RBF SVM (selected on validation UAR, 0.703) and histogram gradient boosting. Because every feature is a named scalar, a prediction can be attributed to measurable quantities rather than to an opaque vector.
 
-I extracted frozen speech representations and trained lightweight classifiers on top of them.
+Its weakness is generalisation, and it is measured rather than assumed (§5). **Speaker identity is a demonstrated part of the problem**: per-speaker normalisation of the features recovers large amounts of performance (§6.6). Microphone, accent, language and health are plausible further confounds but were **not isolated in this study** — all corpora here are English, so language variation was never tested.
 
-Two pretrained backends were evaluated:
+### 2 — WavLM
 
-* a WavLM-based representation with a permissive license suitable for deployment;
-* an audeering speech-emotion representation, used as a research comparison.
+WavLM is not an emotion classifier by itself. It converts audio into a representation embedding that is used downstream for classification.
 
-Keeping the representation frozen made experimentation inexpensive and allowed the comparison to focus on the information contained in the representation rather than on large end-to-end fine-tuning runs.
+`audio → frozen WavLM encoder → embedding → trained classifier → sentiment probabilities`
 
-### Solution C — calibrated late fusion
+Key points:
 
-I combined lexical and acoustic predictions using late fusion.
+- it extracts a 1,536-value embedding per clip (mean + standard deviation pooling);
+- the encoder stays frozen; only a lightweight classifier is trained on top;
+- this keeps training inexpensive and focuses the comparison on the information carried by the representation itself;
+- it outputs probabilities for negative, neutral and positive;
+- MIT-licensed end to end, so it is the only acoustic backend here that could ship commercially.
 
-The motivation was practical: linguistic and acoustic signals are complementary, and a conversational system may benefit from using both.
+This configuration tests how much prosodic information survives in a general-purpose speech representation without task-specific fine-tuning.
 
-I also implemented calibration and an abstention mechanism because a production voice assistant should not necessarily force a sentiment decision when the evidence is ambiguous.
+### 3 — audEERING
 
-### Solution D — explicit prosodic features
+The audEERING model is a zero-shot acoustic encoder with validation-calibrated thresholds. Its CC-BY-NC-SA-4.0 licence is research-only and therefore unsuitable for commercial deployment, but it is useful as an analytical reference.
 
-Finally, I extracted interpretable acoustic features, including eGeMAPS/Praat-derived measurements such as pitch-related and energy-related characteristics, and trained conventional classifiers.
+`audio → frozen audEERING model → continuous VAD values → validation-fitted valence thresholds → sentiment`
 
-This approach is lightweight and interpretable and provides a useful control against relying entirely on large pretrained representations.
+It outputs three continuous values:
 
----
+- **Valence**: pleasantness of the emotion;
+- **Arousal**: energy level;
+- **Dominance**: perceived control or authority in the voice.
 
-# 3. Data
-
-I used several datasets for different purposes rather than treating one benchmark as representative of the complete problem.
-
-### CREMA-D
-
-CREMA-D contains 7,442 clips from 91 speakers and provides the main supervised training/evaluation corpus.
-
-I used a **speaker-disjoint split** so that speakers appearing in the training set do not appear in the test set.
-
-This is important because a random clip-level split can allow a model to exploit speaker-specific characteristics rather than learning sentiment.
-
-The full speaker-disjoint test split contains approximately 1,470 clips.
-
-### Human recordings
-
-I additionally created a small controlled recording set (E3) containing two takes of the same 27 evaluation prompts.
-
-This was intended as a test of whether conclusions from CREMA-D transfer to independently recorded speech and whether predictions are stable across repeated takes.
-
-The current limitation is that E3 contains only one human speaker. Every conclusion
-drawn from it is therefore about one voice, and this was the single largest gap in the
-evaluation until E6 closed it.
-
-### Zurich multi-speaker recordings (E6)
-
-E6 is the evaluation set that makes cross-speaker claims possible at all. It contains
-**160 clips from 8 speakers** reading 35 short sentences, where each sentence was
-recorded with two or three *different intended deliveries*. Because the same wording
-appears under conflicting deliveries, **111 of the 160 clips (69%) are incongruent** —
-making this the first *human, multi-speaker* incongruence set in the project. E5 provided
-incongruence but synthetically; E3 provided real speech but from one person.
-
-The split is speaker-disjoint by construction: five speakers train, two validate, one
-tests. The recordings are laptop-microphone audio from mostly non-native English
-speakers, which is a substantially harder and more realistic condition than CREMA-D's
-acted American studio speech.
-
-Two properties of E6 require disclosure:
-
-* **The lexical valence is assigned by hand.** The dataset labels intended *delivery*
-  only. PSI additionally needs to know what the words say, so all 35 sentences were
-  labelled from the text alone, with genuinely two-sided wordings (*"Whatever, it's
-  fine."*) left neutral rather than forced to a side. Forcing a side would manufacture
-  incongruence the text does not contain, and PSI would then measure the labelling rather
-  than the model. This is the one derived column in the dataset.
-* **One E6 speaker also recorded E3.** He carries the same speaker identifier in both, so
-  the speaker-disjointness assertion can detect the overlap rather than relying on anyone
-  remembering it. No model trained on E6 is evaluated on E3.
-
-### Hume recordings
-
-I created E5 using Hume-generated speech, including **60 deliberately incongruent clips**, where linguistic sentiment and vocal delivery were designed to disagree.
-
-This set was designed primarily as a diagnostic rather than as a conventional benchmark.
-
-It allows the following question to be tested:
-
-> When words and delivery disagree, which signal does the model follow?
-
-### Synthetic TTS experiments
-
-I also tested Cartesia and Hume-generated emotional speech.
-
-These experiments revealed that not all synthetic voices reliably express the requested emotional/prosodic condition. I therefore used synthetic data primarily as a controlled probe rather than assuming that an emotion label attached to generated speech represents ground truth.
+Two valence thresholds are fitted on CREMA-D validation speakers, and the calibrated model is then evaluated on a separate speaker-disjoint CREMA-D test set. Note that this is its **only** learned parameter set — two numbers — which is why its behaviour barely changes when the training data changes (§4, Experiment 3).
 
 ---
 
-# 4. Evaluation methodology
+## 3. Data and evaluation
 
-I used several complementary metrics.
+### CREMA-D (E1)
 
-### Unweighted Average Recall (UAR)
+7,442 acted clips from 91 speakers, reading 12 fixed, emotionally neutral sentences. Useful for supervised training, but its wording is not designed to test the conflict between words and delivery: the words are neutral while the emotion is carried entirely by the performance.
 
-UAR averages recall across classes and is less sensitive to class imbalance than raw accuracy.
+The main test split is speaker-disjoint. A separate random split exists only to measure leakage and was never used for a shipped model.
 
-Chance performance for the three-class problem is approximately:
+### Synthetic recordings
 
-$$
-UAR_{chance}=0.333
-$$
+Two text-to-speech providers were used to generate expressive audio with emotion tags:
 
-### Macro-F1
+- **Cartesia**: did not reliably render the requested emotional tags, especially when those tags conflicted with the sentiment of the words. It was therefore not treated as ground truth (§6.4).
+- **Hume (E5)**: 90 clips from two voices, including 60 where wording and delivery deliberately disagree.
 
-Macro-F1 provides another class-balanced measure of classification performance.
+### Human recordings (E3)
 
-### Calibration
+Two independent takes by one human speaker (me), same prompts, sentiment-laden wording with instructed delivery styles. This tests transfer from acted studio speech to a real voice, but with one speaker it cannot support a generalisation claim.
 
-Expected Calibration Error (ECE) was used to evaluate whether predicted probabilities correspond reasonably to observed correctness.
+### Zurich recordings (E6)
 
-This matters because a conversational system may use sentiment probabilities to determine how strongly it should adapt its response.
+**160 clips from eight real speakers** (7 Italian, 1 Turkish; ages 30–40), collected with a custom tool I built for laptop and smartphone microphones ([link](https://voice-emotions-hub.lovable.app)). 35 sentences, **111 incongruent clips (69%)** in which the same wording appears with different intended deliveries.
 
-### Prosody-vs-language diagnostic
+Average clip duration 3.39 s (median 3.38 s; range 1.61–5.52 s). The split is speaker-disjoint by construction: five speakers train, two validate, one tests.
 
-For the incongruent sets (E5 and E6) I introduced a simple **Prosody Sensitivity Index
-(PSI)**:
+### Metrics
 
-* 1.0 = prediction follows the intended vocal delivery;
-* 0.0 = prediction follows the linguistic sentiment;
-* approximately 0.5 = no systematic preference.
-
-This is not intended as a standard ML metric. It is a diagnostic specifically designed to answer the product question of whether a model is actually sensitive to vocal delivery.
-
-### Uncertainty
-
-Held-out speaker sets here are small — E6's test split is 20 clips from one person, so
-each class's recall rests on five to nine clips. Every E6 figure therefore carries a 95%
-percentile bootstrap interval over clips. Where two intervals overlap, I report the
-comparison as unresolved rather than as a result; several comparisons below fall into
-that category, and saying so is the point.
-
-The interval is a floor on the uncertainty, not a full account of it: resampling clips
-treats them as exchangeable when the same speaker and the same 35 sentences recur, so the
-true interval is if anything wider.
+- **UAR** (unweighted average recall) is the primary classification metric. It averages the three per-class recalls, so it treats the classes equally. Three-class chance is 0.333.
+- **Macro-F1** is reported alongside UAR.
+- **PSI** (Prosody Sensitivity Index) applies to incongruent clips. 1.0 means the prediction follows the delivery, 0.0 means it follows the words, 0.5 means no systematic preference. *Contested* PSI counts only clips where the model picked one of the two competing labels; *strict* PSI counts all incongruent clips (chance 0.333).
+- **Majority baseline** is a model that ignores the audio and always predicts the most frequent class in that set. Its UAR is always exactly 0.333, but its *accuracy* reaches 0.683 on CREMA-D test — which is precisely why accuracy is never reported alone here.
+- **Confidence intervals** are percentile bootstrap intervals over clips. They are a floor on uncertainty, not a full account of it, since the same speakers and sentences recur.
 
 ---
 
-# 5. Results
+## 4. Results
 
-## 5.1 Main model comparison
+Three training regimes were run across all backends (`make model-matrix` → `results/model_matrix.json`).
 
-Values are UAR. CREMA-D is the 300-clip stratified test subset; E3 is one speaker
-(two takes); E5 is synthetic; **E6 is 160 clips from eight real speakers**.
+### Experiment 1 — train CREMA-D → test Hume (E5)
 
-| Model                |   CREMA-D |   E3a |       E3b |        E5 | **E6 (n=160)** |
-| -------------------- | --------: | ----: | --------: | --------: | -------------: |
-| Lexical              |     0.360 | 0.333 |     0.370 |     0.333 | 0.314 [0.25, 0.39] |
-| Acoustic — WavLM     | **0.797** | 0.444 |     0.519 | **0.511** | 0.396 [0.33, 0.46] |
-| Acoustic — audeering |     0.450 | 0.444 | **0.593** |     0.400 | 0.356 [0.29, 0.43] |
-| Late fusion          | **0.797** | 0.444 |     0.556 |     0.489 | **0.402 [0.34, 0.47]** |
-| Explicit prosody     |     0.566 | 0.333 |     0.333 |     0.333 | 0.333 [0.33, 0.33] |
+| Backend | n | UAR [95% CI] | PSI contested | PSI strict | Reading |
+|---|---:|---|---:|---:|---|
+| research (2 thresholds) | 90 | 0.400 [0.31, 0.49] | **0.211** | 0.200 | below 0.5 — follows the words |
+| research (VAD → logreg) | 90 | 0.478 [0.42, 0.54] | 0.614 | 0.450 | above chance |
+| permissive (WavLM) | 90 | **0.511** [0.42, 0.60] | **0.682** | 0.500 | above chance |
+| prosody (eGeMAPS) | 90 | 0.278 [0.20, 0.36] | 0.378 | 0.233 | below the baseline |
+| majority baseline | 90 | 0.333 | 0.500 | 0.333 | — |
 
-On the full CREMA-D speaker-disjoint test split the WavLM-based acoustic system achieved
-**0.744 UAR** [0.71, 0.77]. The difference from 0.797 is that the latter is measured on
-the 300-clip subset used by the comparison harness; the full split is the headline
-CREMA-D result.
+The Hume clips deliberately contain contradictory wording and delivery. The research model's PSI is 0.211 — below 0.5 — meaning it follows the text more than the voice, on audio only. **An "acoustic" model is not automatically a prosody model.**
 
-The audeering column was previously blank because that backend had only ever been run on
-CREMA-D's *validation* split — the split its two valence thresholds were fitted on. It now
-has a held-out number: **0.435 [0.41, 0.46]** on the full test split. Two points about it:
+### Experiment 2 — train CREMA-D + Hume → test Zurich (E6)
 
-* **The two thresholds did not overfit.** Validation minus test is +0.019, so the older
-  0.454 figure was always a reasonable estimate. What was wrong was presenting it beside
-  the permissive backend's held-out 0.744 as though both were measured the same way.
-* **The 0.744-vs-0.435 gap is not a fair model comparison.** The WavLM probe is trained
-  on CREMA-D's own training split; the audeering model is zero-shot and was trained on
-  spontaneous podcast speech. On this corpus that is in-domain versus cross-domain. Where
-  neither is in domain — E5 and E6 — the two land close together.
+| Backend | n | UAR [95% CI] | macro-F1 | PSI contested | Dominant prediction |
+|---|---:|---|---:|---:|---|
+| research (2 thresholds) | 160 (8 spk) | 0.356 [0.29, 0.43] | 0.330 | 0.366 | 59% negative |
+| research (VAD → logreg) | 160 (8 spk) | 0.398 [0.35, 0.45] | 0.320 | 0.488 | **84% neutral** |
+| permissive (WavLM) | 160 (8 spk) | **0.433** [0.36, 0.51] | 0.402 | 0.646 | 65% negative |
+| prosody (eGeMAPS) | 160 (8 spk) | 0.372 [0.31, 0.44] | 0.303 | 0.547 | **1% neutral** — collapses to pos/neg |
+| majority baseline | 160 (8 spk) | 0.333 | 0.173 | 0.381 | always neutral |
 
-The audeering backend's failure on CREMA-D is concentrated in the minority classes, and
-it is a good illustration of why this report uses UAR rather than accuracy:
+On the single held-out Zurich speaker (20 clips): research-head 0.400, prosody 0.300, thresholds 0.289, permissive 0.222. All intervals are far too wide at n=20 to rank anything.
+
+Every system lands between 0.356 and 0.433 against a 0.333 baseline, with intervals that touch it. The "dominant prediction" column explains why: each model is mostly replaying a class prior rather than reading the speaker. Adding Hume to training did not help — on the held-out Zurich speaker the permissive probe goes from 0.278 zero-shot to 0.222 with Hume folded in.
+
+### Experiment 3 — train CREMA-D + Hume + Zurich → speaker-disjoint split of the union
+
+| Backend | CREMA-D test (1470) | Hume Colton (45) | Zurich test spk (20) |
+|---|---|---|---|
+| research (2 thresholds) | 0.435 [0.41, 0.46] | 0.422 | 0.289 |
+| research (VAD → logreg) | 0.605 [0.58, 0.63] | 0.422 | 0.400 |
+| permissive (WavLM) | **0.742** [0.71, 0.77] | **0.600** | 0.289 |
+| prosody (eGeMAPS, logreg) | 0.643 [0.61, 0.67] | 0.422 | 0.300 |
+
+Pooling all three corpora improves the **in-domain** CREMA-D result but does not improve transfer to the real human recordings. The pooled "all data" number is not a useful summary, because 1,470 of its 1,535 clips are CREMA-D — it is a CREMA-D number wearing a union's name.
+
+The comparison also isolates what "training" means per backend: giving audEERING a real trainable head instead of two thresholds moves it 0.435 → 0.605 on CREMA-D. Its flatness elsewhere is therefore partly "only two knobs", not only "insensitive encoder".
+
+---
+
+## 5. Cross-corpus comparison
+
+All values are UAR, models trained on CREMA-D and applied cold. CREMA-D is the 300-clip stratified subset; E3 is one speaker (two takes); E5 is synthetic; E6 is 160 clips from eight real speakers.
+
+| System | CREMA-D | E3a | E3b | E5 | **E6 UAR [95% CI]** | **E6 PSI [95% CI]** |
+|---|---:|---:|---:|---:|---|---|
+| A — Lexical | 0.360 | 0.333 | 0.370 | 0.333 | 0.314 [0.25, 0.39] | **0.104 [0.05, 0.17]** follows words |
+| B — WavLM (permissive) | **0.797** | 0.444 | 0.519 | **0.511** | 0.396 [0.33, 0.46] | 0.584 [0.47, 0.70] contains 0.5 |
+| B — audEERING (research) | 0.450 | 0.444 | **0.593** | 0.400 | 0.356 [0.29, 0.43] | **0.366 [0.27, 0.47]** follows words |
+| C — Late fusion | **0.797** | 0.444 | 0.556 | 0.489 | **0.402 [0.34, 0.47]** | 0.557 [0.44, 0.67] contains 0.5 |
+| D — Explicit prosody | 0.566 | 0.333 | 0.333 | 0.333 | 0.333 [0.33, 0.33] ⚠ collapsed | 0.521 [0.41, 0.64] |
+
+**This is the central empirical result.** E6 is the only evaluation with enough real speakers to support a generalization claim, and it does not support a positive one. Only fusion clears chance on UAR, and it clears it by 0.003 (0.402, lower bound 0.336 against chance 0.333). The system that scores 0.797 on the benchmark scores 0.396 on eight people using laptop microphones.
+
+Two reading notes:
+
+- On the **full** CREMA-D speaker-disjoint test split the WavLM system scores **0.744** [0.71, 0.77]. The 0.797 above is the 300-clip comparison subset; the full split is the headline number.
+- The **0.744-vs-0.435 gap is not a fair model comparison.** The WavLM probe is trained on CREMA-D's own training split; audEERING is zero-shot, trained on spontaneous podcast speech. On this corpus that is in-domain versus cross-domain. Where neither is in domain — E5 and E6 — they land close together.
+
+### Why UAR and not accuracy
 
 | Backend | accuracy | UAR | negative recall | neutral recall | positive recall |
-| --- | ---: | ---: | ---: | ---: | ---: |
+|---|---:|---:|---:|---:|---:|
 | WavLM probe | 0.816 | 0.744 | 0.882 | 0.693 | 0.657 |
-| audeering (zero-shot) | 0.599 | 0.435 | 0.747 | 0.247 | 0.311 |
+| audEERING (zero-shot) | 0.599 | 0.435 | 0.747 | 0.247 | 0.311 |
 
-The audeering model predicts negative for 67% of clips on a corpus that is 68% negative,
-so its accuracy sits 17 points above its UAR. Of 251 genuinely positive clips it labels 99
-as negative and only 78 correctly — it inverts a positive clip more often than it
-identifies one.
-
-The important observation is not the absolute CREMA-D number. It is what happens on E6.
-
-## 5.2 The cross-corpus result
-
-E6 is the only evaluation here with enough real speakers to support a generalization
-claim, and it does not support a positive one. With 95% bootstrap intervals, **only the
-fusion model clears chance on UAR, and it clears it by 0.003** (0.402, interval lower
-bound 0.336 against chance 0.333). The system that reaches 0.797 on the benchmark reaches
-0.396 [0.33, 0.46] on eight people recording through laptop microphones.
-
-Explicit prosody (Solution D) is worse than weak on E6: it predicts a single class for
-every clip. A collapsed model of this kind produces UAR of exactly 0.333 and PSI of
-exactly 0.500, which look like ordinary mediocre scores rather than a failure, so the
-evaluation flags the collapse explicitly rather than letting those numbers stand.
-
-I take this as the central empirical result of the project. Acted studio speech with
-fixed neutral sentences does not prepare a model for spontaneous, accented, consumer
-microphone audio, and every earlier transfer number in this report — measured on one
-speaker or on synthesized audio — was more optimistic than reality.
-
-## 5.3 Does training on the new speakers help?
-
-Refitting on E6's 100 training clips, scored on the two held-out validation speakers
-(40 clips; the 20-clip test split is too small to separate anything):
-
-| Training set | fit clips | WavLM probe | Prosody (logreg) | Prosody (SVM-RBF) |
-| --- | ---: | --- | --- | --- |
-| CREMA-D only | 5,235 | 0.330 [0.19, 0.47] | 0.332 [0.26, 0.40] | 0.333 (collapsed) |
-| CREMA-D + E6 train | 5,335 | 0.375 [0.22, 0.53] | 0.372 [0.23, 0.53] | 0.370 [0.23, 0.51] |
-
-Every interval overlaps, so **the UAR improvement is not established**. What does not
-depend on an interval is that adding E6's training clips stops Solution D collapsing: the
-SVM goes from predicting one class for every clip to producing real predictions. That is
-a qualitative change, and it points the same way as everything else in this project — the
-training corpus, not the model, is the binding constraint.
-
-**A claim I withdraw.** On an earlier six-speaker version of E6, training on the new
-clips *alone* gave the WavLM probe 0.452 against CREMA-D's 0.278, and I came close to
-reporting that 80 matched clips beat 5,235 acted ones. On the eight-speaker version the
-same configuration gives **0.222 [0.06, 0.40]** — the effect reversed. It was noise on a
-20-clip test split, and the only reason it was not written up as a finding is that the
-bootstrap interval already said it could not be resolved. I record it because it is a
-concrete example of the failure mode this report keeps returning to.
+audEERING predicts negative for 67% of clips on a corpus that is 68% negative, so its accuracy sits 16 points above its UAR. Of 251 genuinely positive clips it labels 99 as negative and only 78 correctly — it inverts a positive clip more often than it identifies one.
 
 ---
 
-# 6. What the experiments taught me
+## 6. Tests in this repository, and what each one teaches
 
-## 6.1 Acoustic representations are not necessarily purely prosodic
+These are the checks that make the numbers above trustworthy. Each is implemented in code and each produced a conclusion.
 
-This is the strongest diagnostic result in the project, and it now holds on two
-independent datasets.
+### 6.1 Speaker-disjoint splits (`tests/test_splits.py`, `ssa/splits.py`)
 
-On E5's 60 contradictory synthetic clips:
+**Test.** No speaker may appear in both training and evaluation. A function asserts this and is called at the top of every training run, not once when the split is created.
 
-* WavLM achieved PSI = **0.682**
-* the audeering representation achieved PSI = **0.211**
-* the lexical baseline achieved PSI = **0.000**
+**Result.** All splits pass. A deliberately leaky random split was also measured for comparison: 0.761 UAR versus 0.744 on the speaker-disjoint split.
 
-On E6's 111 contradictory clips from eight real speakers, with 95% intervals:
+**What it teaches.** The guard is essential in principle, but on this corpus leakage inflated the score by only ~1.7 points. Random-split leakage is not always dramatic — which makes it *more* dangerous, not less, because a small unexplained gain is easy to accept.
 
-* lexical baseline: PSI = **0.104 [0.047, 0.170]** — entirely below chance
-* audeering: PSI = **0.366 [0.265, 0.472]** — **entirely below chance**
-* WavLM: PSI = 0.584 [0.472, 0.697] — contains chance
-* late fusion: PSI = 0.557 [0.443, 0.667] — contains chance
+### 6.2 The "too good to be true" ceiling (`ssa/train.py`, all experiment scripts)
 
-The lexical baseline is the sanity check: on deliberately contradictory examples it
-follows the words, as it must. Because E6's lexical labels are the one column I assigned
-by hand, this also validates that labelling.
+**Test.** Any speaker-independent UAR above 0.90 is treated as a bug, since published state of the art is below that on comparable tasks.
 
-The finding is that **the audeering representation also follows the words**, from audio
-alone, with no transcript anywhere in its path — and on E6 its entire confidence interval
-sits below chance. Pretrained speech representations can encode linguistic information
-implicitly, and calling a model "acoustic" does not establish that it solves the prosodic
-problem. For a product whose purpose is detecting vocal affect, this distinction is the
-difference between a system that works and one that appears to.
+**Result.** It fired for real. One E6 retraining run reported **UAR 1.000** because the `split` column was ignored and the model was fitted on the validation speaker it was then scored on. The bug was found, the training path fixed to use `split == "train"` only, and the result discarded.
 
-**What I am careful not to claim:** that WavLM is prosody-sensitive. Its E6 interval
-contains chance. The *direction* is consistent across E5 and E6, but only the audeering
-failure is statistically clean. On the smaller six-speaker build I briefly had this as a
-clear WavLM win; the intervals on the full set say the two representations merely touch.
+**What it teaches.** A plausibility ceiling catches leakage that a passing unit test does not. The first sign of a data bug is usually a result that is *better* than it should be.
 
-## 6.2 PSI and UAR measure different things, and come apart
+### 6.3 The words-versus-tone test (PSI, `ssa/eval/metrics.py`)
 
-On E6 the WavLM probe is at chance on *which* sentiment a clip carries while its PSI
-point estimate sits above chance. Recognising that a delivery contradicts the wording is
-an easier problem than naming the emotion.
+**Test.** On clips where wording and delivery disagree, does the prediction follow the words or the voice?
 
-This has a product consequence. For an assistant whose correct behaviour under ambiguity
-is to *ask* rather than assume, a reliable "the tone doesn't match the words" detector may
-be both more useful and more attainable than a sentiment classifier — and it is the part
-of the signal that survives here.
+**Result.** On E5's 60 contradictory synthetic clips: permissive 0.682, research 0.211, lexical 0.000. On E6's 111 contradictory human clips: permissive 0.584 [0.47, 0.70], research **0.366 [0.27, 0.47]**, lexical **0.104 [0.05, 0.17]**.
 
-## 6.3 Stability and generalization are different properties
+**What it teaches.** The lexical baseline follows the words, as designed. The research acoustic model *also* follows the words, with no transcript as input, and its E6 interval lies entirely below chance. This replicates across a synthetic and a human dataset. The permissive model is **not** proven prosodic either: its interval contains 0.5.
 
-The audeering representation produced highly correlated predictions across the two E3
-recordings of the same prompts:
+### 6.4 Are the synthetic emotion tags real? (`scripts/gen_emotion_probe_d1.py`, `scripts/probe_hume.py`)
 
-$$
-r = 0.921
-$$
+**Test.** If a TTS provider is asked for an emotion, can that emotion be recovered from the audio it returns? Measured with a leave-one-carrier-out classifier on descriptive features, plus F0 spread.
 
-The corresponding correlation for the WavLM probe was:
+**Result.** Cartesia: recoverability **0.175** against 0.200 chance — the tags did not render. Hume with an explicit `description` field: **0.50** against 0.20 chance, F0 span 124 Hz; without it, exactly 0.20 (chance) and F0 span 38 Hz. On neutral wording, where prosody is the only signal, Hume's F0 span was 135 Hz.
 
-$$
-r = -0.191
-$$
+**What it teaches.** A vendor's emotion label is not ground truth. One provider's tags were inaudible; another's worked, but only through a specific parameter. Synthetic data is usable as a controlled probe **only after verifying the audio**. This is also why the Cartesia clips were excluded from training.
 
-The two representations behave very differently under repeated recording conditions. This
-should not be read as audeering being generally superior: the experiment contains one
-human speaker, and E5 and E6 both show the same model following words rather than tone. A
-model can be highly self-consistent and consistently wrong about the thing you care
-about, which is the useful lesson here.
+### 6.5 Is the prosodic signal even reachable? (`scripts/compare_representations.py`)
 
-## 6.4 The training corpus dominates everything else
+**Test.** Fit a classifier *inside* the evaluation set (grouped by carrier sentence) on each representation. This is a ceiling measurement, not a deployable score: it asks whether the information exists in the features at all, separately from whether a CREMA-D-trained model can use it.
 
-Across the representation comparison, the backend comparison, the four-way prosodic model
-comparison and now E6, the same pattern recurs: differences between architectures,
-representations and feature sets are small next to the difference between training
-corpora. Fitting within a dataset reaches 0.76–0.87; transferring from CREMA-D to
-anything else costs 0.24–0.52 UAR. That gap is larger than any modelling choice measured
-in this project.
+**Result.** On E3: prosodic 0.870, WavLM 0.759. On E5: prosodic 0.800, WavLM 0.789. The same representations reach 0.278–0.511 when the classifier is trained on CREMA-D instead.
 
----
+**What it teaches.** This is the strongest evidence in the project that **the training corpus, not the features or the encoder, is the bottleneck**. The signal is present and reachable at ~0.8 UAR from both representations. What fails is transferring a decision boundary learned on acted studio speech.
 
-# 7. Limitations
+### 6.6 Per-speaker normalisation (`scripts/normalise_speaker.py`, `scripts/normalise_skew.py`)
 
-I would rather state these precisely than gesture at them, because several of them bound
-the conclusions above more tightly than the numbers suggest.
+**Test.** Subtract each speaker's own feature means before classifying, to remove their baseline voice. Then stress-test it: does the benefit survive when a speaker's clips are *not* class-balanced?
 
-### Sample sizes are small where it matters most
+**Result.** Large gains for the prosody model: E5 0.278 → 0.611 (+0.33), E3a +0.19, E3b +0.22, CREMA-D +0.03. Under increasing class imbalance the gain degrades but does not vanish: E5 +0.33 → +0.27, E3b +0.22 → +0.05.
 
-CREMA-D is large (7,442 clips, 91 speakers) and is the only set where a result is
-statistically comfortable. Every set that tests the interesting question is small: E3 is
-one speaker, E5 is two synthetic voices, and E6 — the largest real-speaker set — has 160
-clips with only 20 in the held-out test split. Comparisons between retrained models on
-that split cannot be resolved, and I report them as unresolved rather than ranking them.
+**What it teaches.** A large part of the prosody model's brittleness is **speaker baseline offset**, not missing signal — which is measured, not assumed. But the fix is transductive: it needs a pool of that speaker's clips, so a per-clip API cannot use it. It is a mitigation for a device that knows its user over time, not a fix for domain shift.
 
-### One derived label
+### 6.7 Repeatability across two takes (`scripts/eval_e3.py`, `results/d1_vs_e3_control.json`)
 
-E6's lexical valence is my own judgment, not the dataset's (see §3). PSI on E6 therefore
-depends on that labelling in a way it does not for E5, where the text valence was fixed
-by design before any audio was generated. The lexical baseline's PSI acts as a check on
-it: a transcript-only model should follow the transcript, and it does.
+**Test.** The same speaker recorded the same prompts twice. How consistent is each model's reading across takes? Correlation over 27 paired clips.
 
-### The population the product targets is still unmeasured
+**Result.** audEERING valence correlates at **r = 0.92** across takes. The WavLM probe's equivalent correlates at **r = −0.19**.
 
-The intended deployment is a voice companion for seniors. CREMA-D's actors are not
-elderly, and E3/E6 are working-age adults, mostly non-native English speakers. The
-presbyphonia argument in the design document — that age-related voice changes will shift
-the acoustic baseline — remains **reasoned from literature, not measured on our data**.
-Nothing here tests it, and I have deliberately not presented it as though it does.
+**What it teaches.** **Stability is not correctness.** The most repeatable model is the one that follows the words rather than the tone (§6.3), and the less repeatable one is the more prosody-sensitive. High test-retest agreement would have looked like a quality signal; it was measuring something else.
 
-### A leakage bug, and what it says about the rest
+### 6.8 Collapse and baseline detection (`scripts/train_model_matrix.py`, `ssa/eval/runner.py`)
 
-During the E6 work, one retraining combination reported UAR 1.000 on its validation
-speaker. The cause was that the feature-fitting path ignored the split column and trained
-on the evaluation speaker. It was caught only because the project fixes a plausibility
-ceiling — speaker-independent results above 0.90 are treated as bugs, since published
-state of the art sits below it — and shouts when a number exceeds it.
+**Test.** Flag any model that predicts one class for ≥95% of clips, and compute a majority-class baseline for every evaluation set.
 
-I record this because it is the honest lesson of the whole exercise: **the failure mode
-of this kind of work is a number that looks like good news.** Every other guard in the
-repository exists for the same reason, and the leak surfaced as an unusually good result
-rather than as an error.
+**Result.** It caught the prosody model predicting a single class for all of E6, which produces UAR exactly 0.333 and PSI exactly 0.500 — numbers that look like ordinary mediocre performance. It also exposed that a do-nothing model scores **PSI contested 1.000** on CREMA-D, because CREMA-D's text is neutral on every clip, so "always negative" can never match the text label.
 
-### Synthetic speech is a diagnostic, not a substitute
+**What it teaches.** A degenerate model can hide inside plausible-looking metrics. And **PSI is only meaningful where the text label actually varies** — on CREMA-D it should not be read at all.
 
-One TTS vendor's emotion tags proved not to be reliably audible on this content
-(below-chance recoverability), while another's produced real differentiation. Generated
-audio was therefore used to construct controlled contradictions, never as a stand-in for
-diverse real conversational speech. E6 exists precisely because that substitution would
-not have been sound.
+### 6.9 Ambiguous emotions are excluded, not guessed (`tests/test_mapping.py`)
+
+**Test.** Emotions without an agreed sentiment valence (`surprised`, `nostalgic`, `sarcastic`, `mysterious`, `determined`, `calm`) must raise an error rather than defaulting to a class.
+
+**Result.** Enforced by test; those tags never enter a labelled set.
+
+**What it teaches.** Silently bucketing an ambiguous emotion into positive/negative would inflate the label set with guesses and make every downstream number partly a coding decision. Refusing to label is a result in itself — and it points at the taxonomy problem in §7.
+
+### 6.10 Test suite
+
+`uv run pytest` runs **353 tests** covering the split invariant, the label mapping, the PSI implementation on hand-computed fixtures, the manifest schema and the report renderers. Fixtures are small and deterministic; network-dependent tests are marked and skipped by default.
+
+**What it teaches.** The tests exist to encode the invariants that make results trustworthy, not to reach a coverage figure. The two that matter most — speaker disjointness and ambiguous-label rejection — are the ones that would silently invalidate every number in this report if they broke.
 
 ---
 
-# 8. What I would do next
+## 7. Limitations
 
-In the order I would actually do them:
+**Sample size and population**
 
-1. **Change the training corpus, not the model.** Every experiment points the same way:
-   the gap between corpora dwarfs the gap between architectures, representations and
-   feature sets. I would train on spontaneous in-the-wild speech (MSP-Podcast is the
-   obvious candidate; it requires an access request) rather than acted studio speech, and
-   expect that to move the numbers more than any modelling change tried here.
+- E6's held-out test split is 20 clips from one speaker; the 160-clip, eight-speaker view is the only one worth reading.
+- E3 is one human speaker; E5 is two synthetic voices. Neither supports a population claim.
+- The target population is older adults, and **no older adults were recorded**. Any claim about age-related voice changes is a hypothesis from the literature, not a measured finding here.
+- All corpora are English, so language and accent effects were never isolated.
 
-2. **Collect more held-out speakers, not more clips per speaker.** The binding constraint
-   on every cross-speaker claim is the number of *people*, not the number of recordings.
-   Twenty speakers with ten clips each would be worth more than the reverse.
+**Labels and design**
 
-3. **Record the actual target population.** Nothing in this project measures elderly
-   voices. Until it does, the presbyphonia argument stays a hypothesis, and a system
-   shipped to seniors would be extrapolating.
+- E6's labels were assigned by me, the analyst. The lexical baseline's below-chance PSI is a useful sanity check but does not remove this limitation.
+- Many clips are short (median 3.4 s), and prompts are deliberately contradictory, so even a human listener may not read the intended emotion consistently. This adds label noise and weakens the learning signal.
+- Acted and synthetic contradictory delivery may itself be unnatural, distorting the prosodic signal relative to spontaneous speech.
 
-4. **Make per-speaker baselining longitudinal.** Per-speaker feature normalisation was
-   the largest single intervention measured, but it is transductive — it needs a pool of
-   that speaker's audio, which a single-clip classifier does not have. For a companion
-   device used daily by one person, a running baseline accumulated over weeks is the
-   natural form of it, and is also the version the design document argues for.
+**Withdrawn claims** (kept visible rather than deleted)
 
-5. **Treat "does the delivery contradict the words?" as its own product signal.** PSI and
-   UAR come apart in the results: a model can be at chance on naming the sentiment while
-   still beating chance on detecting a mismatch between tone and wording. For an
-   assistant whose correct response to ambiguity is to *ask* rather than assume, the
-   mismatch detector may be the more useful and more attainable component.
+- An earlier six-speaker version of E6 suggested that training on 80 matched clips *alone* beat 5,235 acted ones (0.452 versus 0.278). On the eight-speaker version the same configuration gives **0.222 [0.06, 0.40]** — the effect reversed. It was noise on a 20-clip split.
+- The E6 retraining run that reported UAR 1.000 was a leak (§6.2), not a result.
+
+**The taxonomy problem**
+
+Three classes may be the wrong label space for this product. "Neutral" absorbs calm, resignation and low-energy speech, which mean different things to a companion device, while sarcasm, disappointment and sadness may deserve separate treatment rather than being folded into "negative". For older adults a more useful taxonomy might be: positive/energetic; calm/relaxed; angry/disappointed/frustrated; sarcastic; depressed/sad; crying; low-energy, trembling or illness-related vocal change.
+
+This is not a side note. Defining which emotional states actually matter to the user population is arguably a larger open problem here than the choice of model.
+
+---
+
+## 8. Next steps
+
+1. Train on naturalistic, multi-speaker, multi-language speech rather than acted CREMA-D.
+2. Add more held-out **speakers**, not more clips from the same speakers.
+3. Record the older adult population the product targets, in realistic settings.
+4. Re-record longer, less ambiguous prompts so emotional intent is humanly interpretable.
+5. Design the label taxonomy around the use case instead of assuming three-class sentiment.
+6. Investigate a longitudinal per-speaker baseline, which §6.6 shows is where the recoverable performance is — appropriate for a device used by one person over time.
+7. Treat tone–word mismatch as a product signal that triggers a clarifying question, rather than forcing a label.
+
+---
+
+## 9. Conclusion
+
+> Models trained on acted CREMA-D speech do not provide practically useful cross-speaker generalization on real-world recordings.
+
+The best cross-speaker result is 0.402 UAR against a chance level of 0.333. A model can score 0.797 on the benchmark and still fail on people speaking into laptop microphones.
+
+The most useful output of this project is not the benchmark score but the diagnostics: an "acoustic" model can follow the wording rather than the delivery (§6.3); a highly repeatable model can be repeatably wrong (§6.7); the prosodic signal is reachable at ~0.8 UAR when the classifier is fitted in-domain, which locates the bottleneck in the training corpus rather than in the features (§6.5).
+
+For a voice-first assistant for older adults, the defensible design is therefore not to force a three-class label, but to detect ambiguity, flag mismatch between wording and tone, and ask a clarifying question when the evidence is weak.
+
+For the full interactive results dashboard and additional evaluation outputs, see [report/index.html](report/index.html).
